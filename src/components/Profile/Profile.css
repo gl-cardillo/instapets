@@ -1,0 +1,205 @@
+.profile-section {
+  display: flex;
+  margin: auto;
+  width: 95%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  justify-content: space-between;
+  border-bottom: 1px solid #c5c5c5;
+}
+
+.post-follower {
+  display: flex;
+  gap: 10px;
+}
+
+.profile-details {
+  display: flex;
+  flex-direction: column;
+  width: 70%;
+  justify-content: space-around;
+}
+
+.profile-pic-container {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+  transition: .3s ease;
+  border-radius: 50px;  
+  cursor: pointer;
+}
+
+.profile-pic-container:hover .overlay {
+  opacity: 0.7;
+}
+
+.icon {
+  color: white;
+  font-size: 100px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  text-align: center;
+  border-radius: 50px;
+  background-color: rgba(0, 0, 0, 0.274);
+}
+
+.icon:hover {
+  color: #eee;
+}
+
+.name-follow {
+  display: flex;
+  gap: 70px;
+  align-items: center;
+}
+
+.follow-button {
+  background-color: #0095f6;
+  padding: 5px 10px;
+  border: 0;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 5px;
+  width: 70px !important;
+}
+
+.post-follower p {
+  cursor: pointer;
+}
+
+.foll-section {
+  width: 60%;
+  margin: auto;  
+  text-align: center;
+}
+
+.foll-section h4{
+  font-size: 20px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+
+.profile-details h3 {
+  font-size: 34px;
+}
+
+.post-follower p {
+  font-size: 14px;
+}
+
+.profile-picture>input {
+  display: none;
+}
+
+.profile-picture img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+}
+
+.post-section {
+  width: 95%;
+  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.post-section a {
+  width: 45%;
+  height: 200px;
+}
+
+.post-section h4 {
+  margin: auto;
+  font-size: 25px;
+}
+
+.post-pic {
+  width: 100%;
+  height: 100%;
+}
+
+@media only screen and (min-width: 768px) {
+
+  .profile-picture img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+  }
+  
+  .profile-section, .post-section {
+    width: 70%;
+  }
+
+  .post-follower {
+    gap: 30px;
+  }
+
+  .post-follower p {
+    font-size: 18px;
+  }
+
+  .post-section a {
+    width: 30%;
+    height: 250px;
+  }
+
+  .foll-section {
+    width: 40%;
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+  .profile-section, .post-section {
+    width: 60%;
+  }
+
+  .profile-details  h3 {
+    font-size: 50px;
+  }
+  
+  .profile-picture img {
+    width: 100px;
+    border-radius: 50%;
+  }
+
+  .post-follower p {
+    font-size: 20px;
+  }
+  
+  .post-section a {
+    width: 24%;
+    height: 300px;
+  }
+
+  .foll-section {
+    width: 30%;
+  }
+
+  .foll-user {
+    gap: 60px;
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+  .foll-section {
+    width: 20%;
+  }
+}

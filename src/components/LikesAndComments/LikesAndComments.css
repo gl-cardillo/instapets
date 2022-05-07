@@ -1,0 +1,136 @@
+.heart-chat {
+  padding-left: 10px;
+}
+
+.likes-comments {
+  margin: 10px 10px 10px;
+}
+
+.l-c-button {
+  margin-right: 20px;
+  cursor: pointer;
+  font-size: 22px;
+}
+
+.l-c-section p {
+  margin: 5px 0;
+}
+
+.name-profile-pic img {
+  width: 30px;
+  border-radius: 50px;
+}
+.who-likes {
+  font-size: 14px;
+  padding-left: 2px;
+  margin: 5px 0;
+}
+
+.user-who-liked {
+  font-weight: bold;
+}
+
+.show-comments-button {
+  margin-top: 15px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.comments-section {
+  max-height: 300px;
+  overflow-y: scroll;
+}
+
+.add-comment {
+  display: flex;
+  flex-direction: row;
+  border-top: 1px solid #cfcfcf;
+  padding: 5px;
+}
+
+.add-comment img, .comments-posted img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50px;
+}
+
+.comments-posted {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 10px 0;
+  width: 100%;
+}
+
+.comments-details {
+  display: flex;
+  flex-direction: column;
+  margin-left: 20px;
+  max-width: 50%;
+}
+
+.time-posted {
+  font-size: 12px;
+  font-weight: 100;
+  margin-right: 5px;
+}
+
+.username-comment {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.comment-text {
+  font-weight: 300;
+}
+
+.textarea-comment {
+  width: 100%;
+  outline: 0;
+  border: 0;
+  padding-left: 10px;
+}
+
+.comment-button {
+  background-color: #0095f6;
+  padding: 5px 10px;
+  border: 0;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+textarea {
+  resize: none;
+}
+
+@media only screen and (min-width: 425px) {
+  .comments-details {
+    max-width: 65%;
+  }
+
+  .comments-section {
+    max-height: 220px;
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+  .right-section>.l-c-section {
+    height: 410px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+}
+
+@media only screen and (min-width: 1440px) {
+  .right-section>.l-c-section {
+    height: 490px;
+  }
+
+  .comments-section {
+    max-height: 320px;
+  }
+}

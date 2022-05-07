@@ -1,0 +1,146 @@
+.main-bar {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-bottom: 1px solid #cfcfcf;
+  padding: 5px 0;
+  height: 6vh;
+  position: sticky;
+  top: 0;
+  background-color: white;
+}
+
+.main-bar-buttons {
+  display: flex;
+  gap: 15px;
+}
+
+.main-bar input {
+  width: 110px;
+  border:0;
+  outline:0;
+  background-color: rgb(233 233 233);
+  padding: 2px 0  2px 10px;  
+  font-size: 16px;
+}
+
+.title-home {
+  font-family: 'Cookie', cursive, 'Dancing Script', cursive;
+}
+
+.search {
+  background-color: rgb(233 233 233);
+  padding: 3px 0px;
+  display: flex;
+}
+
+.search-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.search-result {
+  overflow: hidden;
+  overflow-y: auto;
+  max-height: 210px;
+  position: absolute;
+  margin-top: 25px;
+  width: 142px;
+}
+
+.search-result::-webkit-scrollbar {
+  display: none;
+}
+
+.search-result p {
+  background-color: rgb(233 233 233);
+  padding: 10px 10px;
+  height: 40px;
+  color: black;
+  font-weight: bold;
+}
+
+.result-user p:hover {
+  text-decoration: underline;
+}
+
+.result-user {
+  display: flex;
+  gap: 20px;
+  background-color: rgb(233 233 233);
+  padding: 10px 5px;
+  height: 40px;
+  color: black;
+  font-weight: bold;
+}
+
+.result-user img {
+  align-self: center;
+}
+
+.main-bar img {
+  height: 25px;
+  width: 25px;
+  border-radius: 50px;
+}
+
+.icons {
+  height: 25px;
+  width: 25px;
+  cursor: pointer;
+}
+
+.home {
+  display: none;
+}
+
+@media only screen and (min-width: 420px) {
+  .main-bar-buttons {
+    display: flex;
+    gap: 15px;
+  }
+
+  .title-home {
+    display: block;
+  }
+
+  .main-bar input {
+    width: 130px;
+  }
+
+  .search-result {
+    width: 162px;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .home {
+    display: block;
+   }
+
+  .main-bar input {
+    width: 200px;
+  }
+
+  .search-result {
+    width: 232px;
+  }
+
+  .main-bar-buttons {
+    gap: 25px;
+  }
+
+  .icons {
+    height: 30px;
+    width: 30px;
+  }
+
+  .main-bar-buttons img {
+    height: 30px;
+    width: 30px;
+  }
+
+  .title-home {
+    font-size: 45px;
+  }
+}

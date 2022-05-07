@@ -1,0 +1,87 @@
+import "./Post.css";
+import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect, useContext } from "react";
+import { UserDataContext } from "../../dataContext/dataContext";
+import { collection, getDocs, where, query } from "firebase/firestore";
+import { BsX } from "react-icons/bs";
+import { db } from "../../firebase/config";
+import { deletePost } from "../../utils/utils";
+import { LikeAndComment } from "../LikesAndComments/LikesAndComments";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+
+export function Post() {
+  const { userData } = useContext(UserDataContext);
+  let navigate = useNavigate();
+  let { postId } = useParams();
+  const [post, setPost] = useState(null);
+  const [render, setRender] = useState(false);
+
+  useEffect(() => {
+    async function getPost() {
+      const q = query(collection(db, "posts"), where("id", "==", postId));
+      const snapshot = await getDocs(q);
+      snapshot.forEach((doc) => {
+        setPost(doc.data());
+      });
+    }
+    getPost();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [render]);
+
+  return (
+    <div className="main-page">
+      {post ? (
+        <div className="single-post">
+          <div className="user-section-425px">
+            <div className="avatar-pic">
+              <img src={post.userPic} alt="user avatar" />
+              <h3>{post.user}</h3>
+            </div>
+            {post.user === userData.username ? (
+              <BsX
+                className="delete-button"
+                onClick={() => {
+                  deletePost(post.id);
+                  navigate(-1);
+                }}
+              />
+            ) : (
+              ""
+            )}
+          </div>
+          <div className="left-section">
+            <img src={post.urlPic} alt="post" />
+          </div>
+          <div className="right-section">
+            <div className="user-section-1024px">
+              <div className="avatar-pic">
+                <img src={post.userPic} alt="user avatar" />
+                <h3>{post.user}</h3>
+              </div>
+              {post.user === userData.username ? (
+                <BsX
+                  className="delete-button"
+                  onClick={() => {
+                    deletePost(post.id);
+                    navigate(-1);
+                  }}
+                />
+              ) : (
+                ""
+              )}
+            </div>
+            <LikeAndComment post={post} render={render} setRender={setRender} />
+          </div>
+        </div>
+      ) : (
+        <div>
+          <Skeleton height={400} style={{ margin: "10px 0" }} />
+          <p>
+            <Skeleton count={3} />
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}

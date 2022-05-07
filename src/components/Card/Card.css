@@ -1,0 +1,31 @@
+.search-section {
+  margin: auto;
+  width: 30%;
+  text-align: center;
+  padding: 50px;
+}
+
+.search-section h4{
+  font-size: 20px;
+  margin-bottom: 30px;
+}
+
+.card-user {
+  display: flex;
+  gap: 50px;
+  padding: 10px;
+  margin: 20px;
+  border: 1px solid #b2b2b2;
+  border-radius: 5px;
+}
+
+.card-user img {
+  width: 50px;
+  border-radius: 50px;
+}
+
+.card-user p {
+  align-self: center;
+  font-weight: bold;
+  font-size: 22px;
+}

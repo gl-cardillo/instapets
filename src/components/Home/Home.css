@@ -1,0 +1,50 @@
+.home-section {
+  width: 100%;
+  margin: auto;
+}
+
+.home-post {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px ;
+  border: 1px solid #cfcfcf;
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 1px 1px black;
+}
+
+.name-delete {
+ display: flex;
+ justify-content: space-between;
+}
+
+.delete-button {
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.name-profile-pic p {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.home-post-pic {
+  margin: 10px 0;
+  width: 100%;
+}
+
+.home-post>.post-pic {
+  align-self: center;
+}
+
+@media only screen and (min-width: 768px) {
+  .home-section {
+    width: 60%;
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+  .home-section {
+    width: 40%;
+  }
+}

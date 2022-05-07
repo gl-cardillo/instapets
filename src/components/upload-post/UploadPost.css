@@ -1,0 +1,72 @@
+.upload-post-section {
+  width: 80%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #cfcfcf;
+  margin-top: 50px;
+}
+
+.profile-pic-upload-post, .name-profile-pic {
+  margin: 10px;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.profile-pic-upload-post img {
+  width: 30px;
+  border-radius: 50px;
+}
+
+.add-pic {
+  width: 100%;
+  height: 100%;
+}
+
+.buttons-post {
+  display: flex;
+  gap: 30px;
+  padding: 10px;
+  justify-content: space-around;
+  border-top: 1px solid #cfcfcf;
+}
+
+.buttons-post button {
+  padding: 5px 10px;
+  background-color: #0095f6;
+  border: 0;
+  color: white;
+  font-weight: 500;
+  border-radius: 2px;
+}
+
+.pic-upload-post>input {
+  display: none;
+}
+
+.upload-post-section textarea {
+  border: 0;
+  padding: 5px;
+  height: 60px;
+  outline: 0;
+}
+
+.pic-upload-post {
+  height: 400px;
+  width: 100%;
+  border-top: 1px solid #cfcfcf;
+  border-bottom: 1px solid #cfcfcf;
+}
+
+@media only screen and (min-width: 768px) {
+  .upload-post-section {
+    width: 45%;
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+  .upload-post-section {
+    width: 30%;
+  }
+}
