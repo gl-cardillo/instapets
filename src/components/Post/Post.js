@@ -60,7 +60,10 @@ export function Post() {
           <div className="right-section">
             <div className="user-section-1024px">
               <div className="avatar-pic">
-                <img src={post.userPic} alt="user avatar" />
+                <img src={
+                  users.filter((user) => user.username === post.user)[0]
+                    .profilePic
+                } alt="user avatar" />
                 <h3>{post.user}</h3>
               </div>
               {post.user === userData.username ? (
