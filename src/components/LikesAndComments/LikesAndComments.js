@@ -137,7 +137,7 @@ export function LikeAndComment({ post, render, setRender }) {
                         <BsX
                           className="delete-button"
                           onClick={() => {
-                            deleteComment(comment.commentId);
+                            deleteComment(comment.commentId, userData.username);
                             setShowComments(true);
                             setRender(!render);
                           }}

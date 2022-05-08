@@ -13,7 +13,8 @@
 }
 
 .name-profile-pic img {
-  width: 30px;
+  width: 50px;
+  height: 50px;
   border-radius: 50px;
 }
 
@@ -111,16 +112,15 @@ textarea {
 }
 
 @media only screen and (min-width: 425px) {
-  .comments-details {
-    max-width: 65%;
-  }
-
   .comments-section {
     max-height: 220px;
   }
 }
 
 @media only screen and (min-width: 1024px) {
+  .comments-details {
+    max-width: none;
+  }
   .right-section>.l-c-section {
     height: 410px;
     display: flex;

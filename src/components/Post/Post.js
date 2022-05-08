@@ -11,7 +11,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
 export function Post() {
-  const { userData } = useContext(UserDataContext);
+  const { userData, users } = useContext(UserDataContext);
   let navigate = useNavigate();
   let { postId } = useParams();
   const [post, setPost] = useState(null);
@@ -35,7 +35,11 @@ export function Post() {
         <div className="single-post">
           <div className="user-section-425px">
             <div className="avatar-pic">
-              <img src={post.userPic} alt="user avatar" />
+              <img 
+                src={
+                  users.filter((user) => user.username === post.user)[0]
+                    .profilePic
+                } alt="user avatar" />
               <h3>{post.user}</h3>
             </div>
             {post.user === userData.username ? (

@@ -11,8 +11,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 export function Home() {
   const [posts, setPosts] = useState(null);
   const [render, setRender] = useState(false);
-  const { userData } = useContext(UserDataContext);
-
+  const { userData, users } = useContext(UserDataContext);
 
   useEffect(() => {
     getPostsForHome(setPosts);
@@ -29,7 +28,13 @@ export function Home() {
                   {" "}
                   <Link to={`/profile/${post.user}`}>
                     <div className="name-profile-pic">
-                      <img src={post.userPic} alt="post" />
+                      <img
+                        src={users ? 
+                          users.filter((user) => user.username === post.user)[0]
+                            .profilePic
+                       : "" }
+                        alt="post"
+                      />
                       <p>{post.user}</p>
                     </div>{" "}
                   </Link>
@@ -37,11 +42,13 @@ export function Home() {
                     <BsX
                       className="delete-button"
                       onClick={() => {
-                        deletePost(post.id)
-                        setRender(!render)
+                        deletePost(post.id);
+                        setRender(!render);
                       }}
                     />
-                  ) : ( "" )}
+                  ) : (
+                    ""
+                  )}
                 </div>
                 <img
                   src={post.urlPic}
