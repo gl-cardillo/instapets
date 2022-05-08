@@ -21,8 +21,12 @@ function App() {
   const [ user, setUser] = useState(null)
   const { setUserData, setUsers } = useContext(UserDataContext);
 
-  useEffect(() => { 
+  useEffect(() => {
     getUsers(setUsers);
+  }, [])
+
+  useEffect(() => { 
+
     onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
     });  
