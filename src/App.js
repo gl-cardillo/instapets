@@ -1,5 +1,4 @@
 import "./App.css";
-import { useEffect, useContext, useState } from "react";
 import { HashRouter,  Routes, Route } from 'react-router-dom';
 import { Login } from "./components/Login/Login";
 import { SignIn } from "./components/SignIn/SignIn";
@@ -10,16 +9,17 @@ import { Post } from "./components/Post/Post";
 import { Footer } from "./components/Footer/Footer";
 import { UploadPost } from "./components/upload-post/UploadPost";
 import { SearchPage } from "./components/SearchPage/SearchPage";
-import { UserDataContext } from "./dataContext/dataContext";
-import { auth } from "./firebase/config";
 import { SkeletonTheme } from 'react-loading-skeleton'
+import { useState, useEffect, useContext } from "react";
+import { UserDataContext } from "./dataContext/dataContext";
 import { onAuthStateChanged } from "firebase/auth";
-import { getDataByEmail } from "./utils/utils";
+import { auth  } from "./firebase/config";
+import { getDataByEmail  } from "./utils/utils";
 
 function App() {
-  
-  const {  setUserData } = useContext(UserDataContext);
+
   const [ user, setUser] = useState(null)
+  const { setUserData } = useContext(UserDataContext);
 
   useEffect(() => { 
     onAuthStateChanged(auth, (currentUser) => {

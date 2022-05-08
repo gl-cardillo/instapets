@@ -32,15 +32,6 @@
   border-top: 1px solid #cfcfcf;
 }
 
-.buttons-post button {
-  padding: 5px 10px;
-  background-color: #0095f6;
-  border: 0;
-  color: white;
-  font-weight: 500;
-  border-radius: 2px;
-}
-
 .pic-upload-post>input {
   display: none;
 }

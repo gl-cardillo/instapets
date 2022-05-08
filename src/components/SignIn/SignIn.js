@@ -41,6 +41,8 @@ export function SignIn() {
         username: data.name,
         follower: [],
         following: [],
+        likes: [],
+        comments: [],
         posts: [],
         profilePic:
           "https://firebasestorage.googleapis.com/v0/b/instapets-a12eb.appspot.com/o/profilePic%2Fdefault-profile-pic.png?alt=media&token=ae7f8cab-fa03-44d2-89a1-104c290c0ca0",
@@ -48,7 +50,7 @@ export function SignIn() {
 
       navigate("/home");
     } catch (error) {
-      console.log(error.message);
+      setError(error.message);
     }
   };
 

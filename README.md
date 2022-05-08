@@ -23,6 +23,7 @@ I used React and React Router and firebase for this project.
 - check followers and following for each pets.
 - Delete pictures.
 - Delete comments.
+- Delete users.
 
 ## Link
 ---

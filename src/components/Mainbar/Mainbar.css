@@ -19,18 +19,18 @@
   width: 110px;
   border:0;
   outline:0;
-  background-color: rgb(233 233 233);
   padding: 2px 0  2px 10px;  
   font-size: 16px;
 }
 
 .title-home {
   font-family: 'Cookie', cursive, 'Dancing Script', cursive;
+  display: none;
 }
 
 .search {
-  background-color: rgb(233 233 233);
   padding: 3px 0px;
+  border-bottom: 1px solid #d1cece;
   display: flex;
 }
 
@@ -53,7 +53,7 @@
 }
 
 .search-result p {
-  background-color: rgb(233 233 233);
+  background-color: white;
   padding: 10px 10px;
   height: 40px;
   color: black;
@@ -67,11 +67,12 @@
 .result-user {
   display: flex;
   gap: 20px;
-  background-color: rgb(233 233 233);
+  background-color: white;
   padding: 10px 5px;
   height: 40px;
   color: black;
   font-weight: bold;
+  border-radius: 5px;
 }
 
 .result-user img {
@@ -90,8 +91,16 @@
   cursor: pointer;
 }
 
-.home {
-  display: none;
+
+
+@media only screen and (min-width: 375px) {
+    .title-home {
+    display: block;
+  }
+
+  .home {
+    display: none;
+  }
 }
 
 @media only screen and (min-width: 420px) {
@@ -100,9 +109,7 @@
     gap: 15px;
   }
 
-  .title-home {
-    display: block;
-  }
+
 
   .main-bar input {
     width: 130px;

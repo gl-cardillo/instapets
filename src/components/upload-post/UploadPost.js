@@ -49,8 +49,8 @@ export function UploadPost() {
           placeholder="Write a caption..."
         />
         <div className="buttons-post">
-          <button>Cancel</button>
-          <button onClick={() => addPostTimeOut(pic, userData, caption)}>
+          <button className="button">Cancel</button>
+          <button className="button" onClick={() => addPostTimeOut(pic, userData, caption)}>
             Post
           </button>
         </div>

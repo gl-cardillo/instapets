@@ -1,5 +1,4 @@
 import "./Home.css";
-import "firebase/compat/firestore";
 import { useState, useEffect, useContext } from "react";
 import { UserDataContext } from "../../dataContext/dataContext";
 import { Link } from "react-router-dom";

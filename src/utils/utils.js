@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
-import { storage, db } from "../firebase/config";
+import { deleteUser } from "firebase/auth";
+import { storage, db, auth } from "../firebase/config";
 import {
   ref,
   uploadBytes,
@@ -20,16 +21,6 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 
-export async function getPostsData() {
-  try {
-    let reponse = [];
-    const data = await getDocs(collection(db, "posts"));
-    data.docs.map((doc) => reponse.push(doc.data()));
-    return reponse;
-  } catch (error) {
-    console.log(error.message);
-  }
-}
 
 export async function getDataByEmail(set, email = "anon@anon.com") {
   try {
@@ -109,8 +100,83 @@ export async function getComments(set, id) {
   }
 }
 
-export async function deletePost(id) {
+export async function RemoveUser(username) {
   try {
+    //remove users posts
+    const q = query(collection(db, "posts"), where("user", "==", username));
+    const snapshot = await getDocs(q);
+    let postIdToRemove = [];
+    snapshot.forEach((doc) => {
+      postIdToRemove.push(doc.data().id);
+    });
+    postIdToRemove.forEach((id) => {
+      deletePost(id);
+    });
+
+    //remove users likes and follower
+    const q2 = query(
+      collection(db, "users"),
+      where("username", "==", username)
+    );
+    const snapshot2 = await getDocs(q2);
+    let likesToRemove = [];
+    let followerToRemove = [];
+    let followingToRemove = [];
+    let commentsToRemove = [];
+
+    snapshot2.forEach((doc) => (likesToRemove = doc.data().likes));
+    snapshot2.forEach((doc) => {
+      followerToRemove = doc.data().follower;
+    });
+    snapshot2.forEach((doc) => {
+      followingToRemove = doc.data().following;
+    });
+
+    snapshot2.forEach((doc) => {
+      commentsToRemove = doc.data().comments;
+    });
+
+    likesToRemove.forEach((id) => {
+      removeLikesFromPosts(id, username);
+    });
+
+    followingToRemove.forEach((profileName) => {
+      console.log(profileName);
+      removeFollow(profileName, username);
+    });
+
+    followerToRemove.forEach((profileName) => {
+      removeFollow(username, profileName);
+    });
+
+    commentsToRemove.forEach(async (id) => {
+      await deleteDoc(doc(db, "comments", id));
+    });
+
+    const user = auth.currentUser;
+    await deleteDoc(doc(db, "users", username));
+    deleteUser(user);
+    const profilePicRef = ref(storage, `profilePic/${username}`);
+    getDownloadURL(profilePicRef)
+      .then((url) => {
+        deleteObject(profilePicRef);
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+export async function removeLikesFromPosts(id, username) {
+  await updateDoc(doc(db, `posts`, id), {
+    likes: arrayRemove(username),
+  });
+}
+
+export async function deletePost(id) {
+  try {console.log(id)
     await deleteDoc(doc(db, "posts", id));
     const q = query(collection(db, "comments"), where("postId", "==", id));
     const snapshot = await getDocs(q);
@@ -136,6 +202,9 @@ export async function addComment(postId, set, render, commentText, userData) {
       userPic: userData.profilePic,
       created: Date.now(),
     });
+    await updateDoc(doc(db, "users", userData.username), {
+      comments: arrayUnion(id)
+    })
     set(!render);
   } catch (error) {
     console.log(error.message);
@@ -240,6 +309,9 @@ async function addLike(id, userData) {
     await updateDoc(doc(db, `posts`, id), {
       likes: arrayUnion(userData.username),
     });
+    await updateDoc(doc(db, "users", userData.username), {
+      likes: arrayUnion(id)
+    })
   } catch (error) {
     console.log(error);
   }
@@ -250,6 +322,9 @@ async function removeLike(id, userData) {
     await updateDoc(doc(db, `posts`, id), {
       likes: arrayRemove(userData.username),
     });
+    await updateDoc(doc(db, "users", userData.username), {
+      likes: arrayRemove(id)
+    })
   } catch (error) {
     console.log(error);
   }
@@ -309,7 +384,6 @@ export function handleSearch(e, set, users) {
 export function blur(input, set) {
   input.current.value = "";
   setTimeout(() => {
-    console.log("cia");
     set([]);
   }, 100);
 }

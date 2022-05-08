@@ -94,7 +94,7 @@ export function LikeAndComment({ post, render, setRender }) {
           {showComments
             ? comments.map((comment, index) => (
                 <div key={index} className="comments-posted">
-                           <div style={{display:"flex"}}>
+                           <div className="comments-posted-pic-name">
                   <Link to={`/profile/${comment.username}`}>
                     <img src={comment.userPic} alt="avatar" />
                   </Link>
@@ -133,7 +133,7 @@ export function LikeAndComment({ post, render, setRender }) {
               ref={inputRef}
             />
             <button
-              className="comment-button"
+              className="button"
               onClick={() => {
                 setShowComments(true)
                 inputRef.current.value = ""
@@ -145,8 +145,7 @@ export function LikeAndComment({ post, render, setRender }) {
                   userData
                 )
               }
-          }
-              
+          } 
             >
               Add
             </button>

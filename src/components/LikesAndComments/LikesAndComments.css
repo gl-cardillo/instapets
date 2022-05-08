@@ -12,9 +12,6 @@
   font-size: 22px;
 }
 
-.l-c-section p {
-  margin: 5px 0;
-}
 
 .name-profile-pic img {
   width: 30px;
@@ -40,6 +37,7 @@
 .comments-section {
   max-height: 300px;
   overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .add-comment {
@@ -63,11 +61,15 @@
   width: 100%;
 }
 
+.comments-posted-pic-name {
+  display: flex;
+  align-items: center;
+}
+
 .comments-details {
   display: flex;
   flex-direction: column;
   margin-left: 20px;
-  max-width: 50%;
 }
 
 .time-posted {

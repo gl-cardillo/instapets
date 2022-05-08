@@ -2,7 +2,8 @@ import "./Profile.css";
 import { useContext, useEffect, useState } from "react";
 import { Card } from "../Card/Card";
 import { TiPlusOutline } from "react-icons/ti";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { BsX } from "react-icons/bs";
 import { UserDataContext } from "../../dataContext/dataContext";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -12,6 +13,7 @@ import {
   getUsers,
   addRemovefollow,
   changeProfilePic,
+  RemoveUser,
 } from "../../utils/utils";
 
 export function Profile() {
@@ -21,8 +23,10 @@ export function Profile() {
   const [userProfile, setUserProfile] = useState("");
   const [toShow, setToShow] = useState("posts");
   const [users, setUsers] = useState([]);
+  const [showDelete, setShowDelete] = useState(false);
 
   let { profileName } = useParams();
+  let navigate = useNavigate();
 
   useEffect(() => {
     getUserData(setUserProfile, profileName);
@@ -49,7 +53,7 @@ export function Profile() {
                   <div className="overlay">
                     <TiPlusOutline className="icon" />
                   </div>
-                ) : ( "" )}
+                ) : (  "" )}
               </div>
             ) : (
               <Skeleton circle width={80} height={80} />
@@ -60,7 +64,13 @@ export function Profile() {
               type="file"
               id="file-input"
               onChange={(e) =>
-                changeProfilePic(e.target.files[0], userData, setRender, render, setUserData)
+                changeProfilePic(
+                  e.target.files[0],
+                  userData,
+                  setRender,
+                  render,
+                  setUserData
+                )
               }
             />
           ) : ( "" )}
@@ -70,7 +80,7 @@ export function Profile() {
             <h3>{userProfile.username || <Skeleton width={300} />}</h3>
             {profileName !== userData.username ? (
               <button
-                className="follow-button"
+                className="follow button"
                 onClick={() =>
                   addRemovefollow(
                     profileName,
@@ -83,13 +93,33 @@ export function Profile() {
                 {userProfile ? (
                   userProfile.follower.includes(userData.username) ? (
                     "Unfollow"
-                  ) : (
-                    "Follow"
-                  )
+                  ) : ( "Follow" )
                 ) : (
                   <Skeleton />
                 )}
               </button>
+            ) : ( "" )}
+            {showDelete ? (
+              <div className="delete-screen">
+                <div className="delete-container">
+                  <p>Are you sure you want to delete this account?</p>
+                  <button
+                    className="button delete"
+                    onClick={() => setShowDelete(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="button delete"
+                    onClick={() => {
+                      RemoveUser(userData.username);
+                      navigate("/login");
+                    }}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
             ) : ( "" )}
           </div>
           <div className="post-follower">
@@ -112,6 +142,17 @@ export function Profile() {
             </p>
           </div>
         </div>
+          <div style={{width: "20px"}}>
+            {userProfile.username === userData.username &&
+                userProfile.username !== "anon" ? (
+                  <BsX
+                    className="delete-button"
+                    onClick={() => {
+                      setShowDelete(true);
+                    }}
+                  />
+                ) : ( "" )}
+          </div>
       </div>
       <div className="post-section">
         {toShow === "posts" ? (
