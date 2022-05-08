@@ -141,7 +141,6 @@ export async function RemoveUser(username) {
     });
 
     followingToRemove.forEach((profileName) => {
-      console.log(profileName);
       removeFollow(profileName, username);
     });
 
@@ -176,7 +175,7 @@ export async function removeLikesFromPosts(id, username) {
 }
 
 export async function deletePost(id) {
-  try {console.log(id)
+  try {
     await deleteDoc(doc(db, "posts", id));
     const q = query(collection(db, "comments"), where("postId", "==", id));
     const snapshot = await getDocs(q);
@@ -188,6 +187,13 @@ export async function deletePost(id) {
   } catch (error) {
     console.log(error.message);
   }
+}
+
+export async function deleteComment(id, username) {
+  await deleteDoc(doc(db, "comments", id));
+  await updateDoc(doc(db, `users`, username), {
+    comments: arrayRemove(id),
+  })
 }
 
 export async function addComment(postId, set, render, commentText, userData) {
@@ -291,6 +297,9 @@ export async function addRemoveLike(id, userData, set, render) {
     snapshot.forEach(async (doc) => {
       if (doc.data().likes.includes(userData.username)) {
         await removeLike(id, userData);
+        await updateDoc(doc(db, `users`, userData.username), {
+          likes: arrayRemove(id),
+        });
       } else {
         // else add it to array
         await addLike(id, userData);
@@ -385,7 +394,7 @@ export function blur(input, set) {
   input.current.value = "";
   setTimeout(() => {
     set([]);
-  }, 100);
+  }, 200);
 }
 
 export function getTime(time) {

@@ -12,12 +12,13 @@
   font-size: 22px;
 }
 
-
 .name-profile-pic img {
   width: 30px;
   border-radius: 50px;
 }
+
 .who-likes {
+  display: flex;
   font-size: 14px;
   padding-left: 2px;
   margin: 5px 0;
@@ -25,6 +26,7 @@
 
 .user-who-liked {
   font-weight: bold;
+  cursor: pointer;
 }
 
 .show-comments-button {

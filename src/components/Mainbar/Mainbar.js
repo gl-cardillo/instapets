@@ -1,10 +1,10 @@
 import "./Mainbar.css";
-import { useContext, useState, useEffect, useRef } from "react";
+import { useContext, useState, useRef } from "react";
 import { UserDataContext } from "../../dataContext/dataContext";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebase/config";
-import { getUsers, blur, handleSearch } from "../../utils/utils";
+import { blur, handleSearch } from "../../utils/utils";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import {
@@ -17,17 +17,12 @@ import {
 export function Mainbar() {
   let navigate = useNavigate();
 
-  const { userData, setUserData } = useContext(UserDataContext);
+  const { userData, setUserData, users } = useContext(UserDataContext);
   //use to set input value to empty
   const inputRef = useRef(null);
   const [search, setSearch] = useState([]);
-  const [users, setUsers] = useState([]);
   //use for remove the searchresult when user click somewhere else in the page
   const [expanded, setExpanded] = useState(false);
-
-  useEffect(() => {
-    getUsers(setUsers);
-  }, []);
 
   const logoutUser = async () => {
     await signOut(auth);

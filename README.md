@@ -20,7 +20,7 @@ I used React and React Router and firebase for this project.
 - Like pictures.
 - Comment on pictures.
 - Follow/Unfollow other pets.
-- check followers and following for each pets.
+- Check followers and following for each pets.
 - Delete pictures.
 - Delete comments.
 - Delete users.

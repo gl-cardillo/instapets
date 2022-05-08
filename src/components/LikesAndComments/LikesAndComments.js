@@ -2,158 +2,179 @@ import "./LikesAndComments.css";
 import { BsSuitHeart, BsSuitHeartFill, BsChat, BsX } from "react-icons/bs";
 import { UserDataContext } from "../../dataContext/dataContext";
 import { useContext, useState, useEffect, useRef } from "react";
-import { deleteDoc, doc } from "firebase/firestore";
-import { db } from "../../firebase/config";
 import { Link } from "react-router-dom";
+import { Card } from "../Card/Card";
 import {
   getTime,
   getComments,
   addRemoveLike,
   addComment,
+  deleteComment,
 } from "../../utils/utils";
 
 export function LikeAndComment({ post, render, setRender }) {
-  const { userData } = useContext(UserDataContext);
+  const { userData, users } = useContext(UserDataContext);
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState("");
   const [showComments, setShowComments] = useState(false);
   const [showAddComments, setShowAddComments] = useState(false);
+  const [showLikes, setShowLikes] = useState(false);
   const inputRef = useRef(null);
 
   useEffect(() => {
     getComments(setComments, post.id);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [render]);
-
-  async function deleteComment(id) {
-    await deleteDoc(doc(db, "comments", id));
-    setShowComments(true)
-    setRender(!render);
-  }
 
   return (
     <div className="l-c-section">
-      <div >
-      <div className="heart-chat">
-        {post.likes.includes(userData.username) ? (
-          <BsSuitHeartFill
+      <div>
+        <div className="heart-chat">
+          {post.likes.includes(userData.username) ? (
+            <BsSuitHeartFill
+              className="l-c-button"
+              onClick={() =>
+                addRemoveLike(post.id, userData, setRender, render)
+              }
+              style={{ color: "red" }}
+            />
+          ) : (
+            <BsSuitHeart
+              className="l-c-button"
+              onClick={() =>
+                addRemoveLike(post.id, userData, setRender, render)
+              }
+            />
+          )}
+          <BsChat
             className="l-c-button"
-            onClick={() => addRemoveLike(post.id, userData, setRender, render)}
-            style={{ color: "red" }}
+            onClick={() => setShowAddComments(!showAddComments)}
           />
-        ) : (
-          <BsSuitHeart
-            className="l-c-button"
-            onClick={() => addRemoveLike(post.id, userData, setRender, render)}
-          />
-        )}
-        <BsChat
-          className="l-c-button"
-          onClick={() => setShowAddComments(!showAddComments)}
-        />
-      </div>
-      <div className="likes-comments">
-        {post.likes.length > 1 ? (
-          <p>{post.likes.length} likes</p>
-        ) : (
-          <p>{post.likes.length} like</p>
-        )}
-        {post.likes.length > 0 ? (
-          <p className="who-likes">
-            post liked by{" "}
-            {post.likes.length > 1 ? (
-              post.likes.slice(0, 3).map((user, index) => (
-                <Link
-                  key={index}
-                  className="user-who-liked"
-                  to={`/profile/${user}`}
-                >
-                  {post.likes[index + 1] ? `${user}, ` : `${user}`}
-                  {index === 3 ? "..." : ""}
-                </Link>
-              ))
-            ) : (
+        </div>
+        <div className="likes-comments">
+          {post.likes.length > 1 ? (
+            <p>{post.likes.length} likes</p>
+          ) : (
+            <p>{post.likes.length} like</p>
+          )}
+          {post.likes.length > 0 ? (
+            <div className="who-likes">
+              <p>post liked by&nbsp; </p>
               <Link className="user-who-liked" to={`/profile/${post.likes[0]}`}>
                 {post.likes[0]}
               </Link>
-            )}
-          </p>
-        ) : ( "" )}
-        <p>{post.caption}</p>
-        <p className="time-posted">{getTime(post.created)}</p>
-        {comments.length > 0 ? (
-          <p
-            className="show-comments-button"
-            onClick={() => setShowComments(!showComments)}
-          >
-            Show comments
-          </p>
-        ) : ( "" )}
+              {post.likes.length > 1 ? (
+                <p>
+                  &nbsp; and other{" "}
+                  <span
+                    onClick={() => setShowLikes(true)}
+                    className="user-who-liked"
+                  >
+                    {post.likes.length - 1}
+                  </span>
+                </p>
+              ) : (
+                ""
+              )}
+            </div>
+          ) : (
+            ""
+          )}
+          {showLikes ? (
+            <div className="black-screen">
+              <div className="screen-container">
+                {" "}
+                <BsX
+                  className="delete-button"
+                  onClick={() => {
+                    setShowLikes(false);
+                  }}
+                />
+                {users
+                  .filter((user) => post.likes.includes(user.username))
+                  .map((user, index) => {
+                    return <Card user={user} key={index} />;
+                  })}
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
+          <p>{post.caption}</p>
+          <p className="time-posted">{getTime(post.created)}</p>
+          {comments.length > 0 ? (
+            <p
+              className="show-comments-button"
+              onClick={() => setShowComments(!showComments)}
+            >
+              Show comments
+            </p>
+          ) : (
+            ""
+          )}
         </div>
         <div className="comments-section">
           {showComments
             ? comments.map((comment, index) => (
                 <div key={index} className="comments-posted">
-                           <div className="comments-posted-pic-name">
-                  <Link to={`/profile/${comment.username}`}>
-                    <img src={comment.userPic} alt="avatar" />
-                  </Link>
-                  <div className="comments-details">
+                  <div className="comments-posted-pic-name">
                     <Link to={`/profile/${comment.username}`}>
-                      <p className="username-comment">{comment.username}</p>
+                      <img src={comment.userPic} alt="avatar" />
                     </Link>
-                    <p className="comment-text">{comment.text}</p>
+                    <div className="comments-details">
+                      <Link to={`/profile/${comment.username}`}>
+                        <p className="username-comment">{comment.username}</p>
+                      </Link>
+                      <p className="comment-text">{comment.text}</p>
+                    </div>
                   </div>
-                  </div>
-                  <div style={{display:"flex"}}>
-                  <p style={{ marginLeft: "auto" }} className="time-posted">
-                    {getTime(comment.created)}
-                  </p>
-                  <div style={{width: "20px"}}>
-                  {comment.username === userData.username ? (
-                    <BsX
-                      className="delete-button" 
-                      onClick={() => deleteComment(comment.commentId)}
-                    />
-                  ) : ( "" )}
-                  </div>
+                  <div style={{ display: "flex" }}>
+                    <p style={{ marginLeft: "auto" }} className="time-posted">
+                      {getTime(comment.created)}
+                    </p>
+                    <div style={{ width: "20px" }}>
+                      {comment.username === userData.username ? (
+                        <BsX
+                          className="delete-button"
+                          onClick={() => {
+                            deleteComment(comment.commentId);
+                            setShowComments(true);
+                            setRender(!render);
+                          }}
+                        />
+                      ) : (
+                        ""
+                      )}
+                    </div>
                   </div>
                 </div>
               ))
             : ""}
         </div>
+      </div>
+      {showAddComments ? (
+        <div className="add-comment">
+          <img src={userData.profilePic} alt="avatar user" />
+          <textarea
+            onChange={(e) => setCommentText(e.target.value)}
+            placeholder="Write a comment..."
+            className="textarea-comment"
+            ref={inputRef}
+          />
+          <button
+            className="button"
+            onClick={() => {
+              setShowComments(true);
+              inputRef.current.value = "";
+              addComment(post.id, setRender, render, commentText, userData);
+            }}
+          >
+            Add
+          </button>
         </div>
-        {showAddComments ? (
-          <div className="add-comment">
-            <img src={userData.profilePic} alt="avatar user" />
-            <textarea
-              onChange={(e) => setCommentText(e.target.value)}
-              placeholder="Write a comment..."
-              className="textarea-comment"
-              ref={inputRef}
-            />
-            <button
-              className="button"
-              onClick={() => {
-                setShowComments(true)
-                inputRef.current.value = ""
-                addComment(
-                  post.id,
-                  setRender,
-                  render,
-                  commentText,
-                  userData
-                )
-              }
-          } 
-            >
-              Add
-            </button>
-          </div>
-        ) : (
-          ""
-        )}
-     
+      ) : (
+        ""
+      )}
     </div>
   );
 }

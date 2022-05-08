@@ -10,29 +10,30 @@ import "react-loading-skeleton/dist/skeleton.css";
 import {
   getPostsUser,
   getUserData,
-  getUsers,
   addRemovefollow,
   changeProfilePic,
   RemoveUser,
 } from "../../utils/utils";
 
 export function Profile() {
-  const { userData, setUserData } = useContext(UserDataContext);
+  const { userData, setUserData, users } = useContext(UserDataContext);
   const [userPosts, setUserPosts] = useState([]);
   const [render, setRender] = useState(false);
   const [userProfile, setUserProfile] = useState("");
   const [toShow, setToShow] = useState("posts");
-  const [users, setUsers] = useState([]);
   const [showDelete, setShowDelete] = useState(false);
 
   let { profileName } = useParams();
   let navigate = useNavigate();
 
   useEffect(() => {
+
     getUserData(setUserProfile, profileName);
     getPostsUser(setUserPosts, profileName);
-    getUsers(setUsers);
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    setTimeout(() => {
+      setToShow("posts")
+    }, 100)
   }, [profileName, render]);
 
   return (
@@ -100,8 +101,8 @@ export function Profile() {
               </button>
             ) : ( "" )}
             {showDelete ? (
-              <div className="delete-screen">
-                <div className="delete-container">
+              <div className="black-screen">
+                <div className="screen-container">
                   <p>Are you sure you want to delete this account?</p>
                   <button
                     className="button delete"
@@ -172,7 +173,7 @@ export function Profile() {
           <h4>Follower</h4>
           {userProfile.follower.length > 0 ? (
             users
-              .filter((user) => user.username.includes(userProfile.follower))
+              .filter((user) => userProfile.follower.includes(user.username))
               .map((user, index) => {
                 return <Card user={user} key={index} />;
               })
@@ -186,9 +187,9 @@ export function Profile() {
           <h4>Following</h4>
           {userProfile.following.length > 0 ? (
             users
-              .filter((user) => user.username.includes(userProfile.following))
+              .filter((user) => userProfile.following.includes(user.username))
               .map((user, index) => {
-                return <Card user={user} key={index} />;
+                return <Card user={user} key={index}  />;
               })
           ) : (
             <h5>No following :(</h5>

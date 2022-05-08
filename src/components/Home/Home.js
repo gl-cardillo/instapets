@@ -2,10 +2,8 @@ import "./Home.css";
 import { useState, useEffect, useContext } from "react";
 import { UserDataContext } from "../../dataContext/dataContext";
 import { Link } from "react-router-dom";
-import { deleteDoc, doc } from "firebase/firestore";
-import { db } from "../../firebase/config";
 import { BsX } from "react-icons/bs";
-import { getPostsForHome, addRemoveLike } from "../../utils/utils";
+import { getPostsForHome, addRemoveLike, deletePost } from "../../utils/utils";
 import { LikeAndComment } from "../LikesAndComments/LikesAndComments";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -15,10 +13,6 @@ export function Home() {
   const [render, setRender] = useState(false);
   const { userData } = useContext(UserDataContext);
 
-  async function deletePost(id) {
-    await deleteDoc(doc(db, "posts", id));
-    setRender(!render);
-  }
 
   useEffect(() => {
     getPostsForHome(setPosts);
@@ -42,7 +36,10 @@ export function Home() {
                   {post.user === userData.username ? (
                     <BsX
                       className="delete-button"
-                      onClick={() => deletePost(post.id)}
+                      onClick={() => {
+                        deletePost(post.id)
+                        setRender(!render)
+                      }}
                     />
                   ) : ( "" )}
                 </div>

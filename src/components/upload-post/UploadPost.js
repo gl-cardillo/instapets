@@ -50,9 +50,12 @@ export function UploadPost() {
         />
         <div className="buttons-post">
           <button className="button">Cancel</button>
-          <button className="button" onClick={() => addPostTimeOut(pic, userData, caption)}>
+          <button
+            className="button"
+            onClick={() => addPostTimeOut(pic, userData, caption)}
+          >
             Post
-          </button>
+          </button>;
         </div>
       </div>
     </div>

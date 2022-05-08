@@ -23,7 +23,6 @@ export function SignIn() {
 
   const registerUser = async (data) => {
     try {
-      //if username already exists return;
       let response = [];
       const q = query(
         collection(db, "users"),
@@ -43,7 +42,6 @@ export function SignIn() {
         following: [],
         likes: [],
         comments: [],
-        posts: [],
         profilePic:
           "https://firebasestorage.googleapis.com/v0/b/instapets-a12eb.appspot.com/o/profilePic%2Fdefault-profile-pic.png?alt=media&token=ae7f8cab-fa03-44d2-89a1-104c290c0ca0",
       });

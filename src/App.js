@@ -14,14 +14,15 @@ import { useState, useEffect, useContext } from "react";
 import { UserDataContext } from "./dataContext/dataContext";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth  } from "./firebase/config";
-import { getDataByEmail  } from "./utils/utils";
+import { getDataByEmail, getUsers  } from "./utils/utils";
 
 function App() {
 
   const [ user, setUser] = useState(null)
-  const { setUserData } = useContext(UserDataContext);
+  const { setUserData, setUsers } = useContext(UserDataContext);
 
   useEffect(() => { 
+    getUsers(setUsers);
     onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
     });  
