@@ -59,7 +59,7 @@ export function Mainbar() {
                       }}
                     >
                       <div className="result-user">
-                        <img src={user.profilePic} alt="avatar" />
+                        <img src={user.profilePic} alt="avatar" className="avatar" />
                         <p>{user.username}</p>
                       </div>
                     </Link>
@@ -81,7 +81,7 @@ export function Mainbar() {
           <IoExitOutline onClick={() => logoutUser()} className="icons" />
           <Link to={`/profile/${userData.username}`}>
             {userData.profilePic ? (
-              <img src={userData.profilePic} alt="profilep" />
+              <img src={userData.profilePic} alt="avatar" className="avatar" />
             ) : (
               <Skeleton circle width={30} height={30} />
             )}

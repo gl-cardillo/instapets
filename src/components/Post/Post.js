@@ -39,7 +39,7 @@ export function Post() {
                 src={
                   users.filter((user) => user.username === post.user)[0]
                     .profilePic
-                } alt="user avatar" />
+                } alt="user avatar" className="avatar" />
               <h3>{post.user}</h3>
             </div>
             {post.user === userData.username ? (
@@ -63,7 +63,7 @@ export function Post() {
                 <img src={
                   users.filter((user) => user.username === post.user)[0]
                     .profilePic
-                } alt="user avatar" />
+                } alt="user avatar" className="avatar" />
                 <h3>{post.user}</h3>
               </div>
               {post.user === userData.username ? (

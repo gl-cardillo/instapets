@@ -119,7 +119,10 @@ export function LikeAndComment({ post, render, setRender }) {
                 <div key={index} className="comments-posted">
                   <div className="comments-posted-pic-name">
                     <Link to={`/profile/${comment.username}`}>
-                      <img src={comment.userPic} alt="avatar" />
+                      <img  src={users ? 
+                          users.filter((user) => user.username === comment.username)[0]
+                            .profilePic
+                       : "" } alt="avatar" className="avatar" />
                     </Link>
                     <div className="comments-details">
                       <Link to={`/profile/${comment.username}`}>
@@ -154,7 +157,7 @@ export function LikeAndComment({ post, render, setRender }) {
       </div>
       {showAddComments ? (
         <div className="add-comment">
-          <img src={userData.profilePic} alt="avatar user" />
+          <img src={userData.profilePic} alt="avatar" className="avatar" />
           <textarea
             onChange={(e) => setCommentText(e.target.value)}
             placeholder="Write a comment..."

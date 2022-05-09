@@ -33,6 +33,7 @@ export function Home() {
                           users.filter((user) => user.username === post.user)[0]
                             .profilePic
                        : "" }
+                       className="avatar"
                         alt="post"
                       />
                       <p>{post.user}</p>

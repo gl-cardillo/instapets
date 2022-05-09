@@ -46,7 +46,7 @@ export function Profile() {
                 <img
                   src={userProfile.profilePic}
                   className={
-                    profileName === userData.username ? "change-pic" : ""
+                    profileName === userData.username ? "change-pic avatar" : "avatar"
                   }
                   alt="profile"
                 />

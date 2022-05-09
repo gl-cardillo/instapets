@@ -31,3 +31,8 @@ a:hover {
   padding: 5px;
 
 }
+
+.avatar {
+  border-radius: 50px;
+  object-fit: cover;
+}

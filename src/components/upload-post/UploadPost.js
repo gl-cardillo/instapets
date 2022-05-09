@@ -23,7 +23,7 @@ export function UploadPost() {
     <div className="main-page">
       <div className="upload-post-section">
         <div className="profile-pic-upload-post">
-          <img src={userData.profilePic} alt="profile" />
+          <img src={userData.profilePic} alt="profile" className="avatar" />
           <h3>{userData.username}</h3>
         </div>
         <div className="pic-upload-post">

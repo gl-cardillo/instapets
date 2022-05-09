@@ -15,7 +15,6 @@
 .name-profile-pic img {
   width: 50px;
   height: 50px;
-  border-radius: 50px;
 }
 
 .who-likes {
@@ -39,7 +38,6 @@
 
 .comments-section {
   max-height: 300px;
-  overflow-y: scroll;
   overflow-x: hidden;
 }
 
@@ -60,8 +58,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 10px 0;
-  width: 100%;
+  margin: 10px 5px;
 }
 
 .comments-posted-pic-name {
