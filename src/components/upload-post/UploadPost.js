@@ -33,7 +33,7 @@ export function UploadPost() {
             ) : (
               <img
                 src={require("../../img/add-pic.png")}
-                className="add-pic"
+                className="add-pic-placeholder"
                 alt="add"
               />
             )}
@@ -55,7 +55,7 @@ export function UploadPost() {
             onClick={() => addPostTimeOut(pic, userData, caption)}
           >
             Post
-          </button>;
+          </button>
         </div>
       </div>
     </div>

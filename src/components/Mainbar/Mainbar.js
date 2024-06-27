@@ -41,7 +41,7 @@ export function Mainbar() {
             type="text"
             id="search"
             ref={inputRef}
-            placeholder="search pets..."
+            placeholder="Search pets..."
             onChange={(e) => handleSearch(e, setSearch, users)}
             onFocus={() => setExpanded(true)}
           />

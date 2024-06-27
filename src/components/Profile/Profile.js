@@ -27,13 +27,12 @@ export function Profile() {
   let navigate = useNavigate();
 
   useEffect(() => {
-
     getUserData(setUserProfile, profileName);
     getPostsUser(setUserPosts, profileName);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     setTimeout(() => {
-      setToShow("posts")
-    }, 100)
+      setToShow("posts");
+    }, 100);
   }, [profileName, render]);
 
   return (
@@ -46,7 +45,9 @@ export function Profile() {
                 <img
                   src={userProfile.profilePic}
                   className={
-                    profileName === userData.username ? "change-pic avatar" : "avatar"
+                    profileName === userData.username
+                      ? "change-pic avatar"
+                      : "avatar"
                   }
                   alt="profile"
                 />
@@ -54,7 +55,9 @@ export function Profile() {
                   <div className="overlay">
                     <TiPlusOutline className="icon" />
                   </div>
-                ) : (  "" )}
+                ) : (
+                  ""
+                )}
               </div>
             ) : (
               <Skeleton circle width={80} height={80} />
@@ -74,7 +77,9 @@ export function Profile() {
                 )
               }
             />
-          ) : ( "" )}
+          ) : (
+            ""
+          )}
         </div>
         <div className="profile-details">
           <div className="name-follow">
@@ -94,12 +99,16 @@ export function Profile() {
                 {userProfile ? (
                   userProfile.follower.includes(userData.username) ? (
                     "Unfollow"
-                  ) : ( "Follow" )
+                  ) : (
+                    "Follow"
+                  )
                 ) : (
                   <Skeleton />
                 )}
               </button>
-            ) : ( "" )}
+            ) : (
+              ""
+            )}
             {showDelete ? (
               <div className="black-screen">
                 <div className="screen-container">
@@ -121,7 +130,9 @@ export function Profile() {
                   </button>
                 </div>
               </div>
-            ) : ( "" )}
+            ) : (
+              ""
+            )}
           </div>
           <div className="post-follower">
             <p onClick={() => setToShow("posts")}>{userPosts.length} posts</p>
@@ -143,17 +154,19 @@ export function Profile() {
             </p>
           </div>
         </div>
-          <div style={{width: "20px"}}>
-            {userProfile.username === userData.username &&
-                userProfile.username !== "anon" ? (
-                  <BsX
-                    className="delete-button"
-                    onClick={() => {
-                      setShowDelete(true);
-                    }}
-                  />
-                ) : ( "" )}
-          </div>
+        <div style={{ width: "20px" }}>
+          {userProfile.username === userData.username &&
+          userProfile.username !== "anon" ? (
+            <BsX
+              className="delete-button"
+              onClick={() => {
+                setShowDelete(true);
+              }}
+            />
+          ) : (
+            ""
+          )}
+        </div>
       </div>
       <div className="post-section">
         {toShow === "posts" ? (
@@ -164,9 +177,11 @@ export function Profile() {
               </Link>
             ))
           ) : (
-            <h4>No posts yet :(</h4>
+            <p>No posts yet </p>
           )
-        ) : ( "" )}
+        ) : (
+          ""
+        )}
       </div>
       {toShow === "follower" ? (
         <div className="foll-section">
@@ -181,7 +196,9 @@ export function Profile() {
             <h5>No follower :(</h5>
           )}
         </div>
-      ) : ( "" )}
+      ) : (
+        ""
+      )}
       {toShow === "following" ? (
         <div className="foll-section">
           <h4>Following</h4>
@@ -189,13 +206,15 @@ export function Profile() {
             users
               .filter((user) => userProfile.following.includes(user.username))
               .map((user, index) => {
-                return <Card user={user} key={index}  />;
+                return <Card user={user} key={index} />;
               })
           ) : (
             <h5>No following :(</h5>
           )}
         </div>
-      ) : ( "" )}
+      ) : (
+        ""
+      )}
     </div>
   );
 }

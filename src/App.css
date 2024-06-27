@@ -1,7 +1,7 @@
 * {
   margin: 0;
   padding: 0;
-  font-family: 'Roboto', sans-serif, 'Open Sans', sans-serif, 'Lato', sans-serif;
+  font-family: "Roboto", sans-serif, "Open Sans", sans-serif, "Lato", sans-serif;
 }
 
 a {
@@ -9,8 +9,8 @@ a {
   text-decoration: none;
 }
 
-a:hover { 
-  cursor:pointer;  
+a:hover {
+  cursor: pointer;
 }
 
 .main-page {
@@ -20,16 +20,18 @@ a:hover {
 }
 
 .footer {
-  min-height: 2vh;
+  height: 25px;
   justify-content: center;
   display: flex;
   gap: 10px;
   position: sticky;
   bottom: 0;
   background-color: white;
-  border-top: 1px solid #a1a1a1;;
+  border-top: 1px solid #dfdfdf;
   padding: 5px;
-
+  position: fixed;
+  bottom: 0;
+  width: 100%;
 }
 
 .avatar {
