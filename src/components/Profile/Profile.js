@@ -135,14 +135,16 @@ export function Profile() {
             )}
           </div>
           <div className="post-follower">
-            <p onClick={() => setToShow("posts")}>{userPosts.length} posts</p>
+            <p onClick={() => setToShow("posts")}>
+              {userPosts.length} post{userPosts.length !== 1 && "s"}
+            </p>
             <p onClick={() => setToShow("follower")}>
               {userProfile ? (
                 userProfile.follower.length
               ) : (
                 <Skeleton width={10} />
               )}{" "}
-              follower
+              Follower{userProfile.follower.length !== 1 && "s"}
             </p>
             <p onClick={() => setToShow("following")}>
               {userProfile ? (
@@ -150,7 +152,7 @@ export function Profile() {
               ) : (
                 <Skeleton width={10} />
               )}{" "}
-              following
+              Following
             </p>
           </div>
         </div>
@@ -193,7 +195,7 @@ export function Profile() {
                 return <Card user={user} key={index} />;
               })
           ) : (
-            <h5>No follower :(</h5>
+            <p>No follower </p>
           )}
         </div>
       ) : (

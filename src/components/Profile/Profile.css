@@ -97,7 +97,8 @@
   font-size: 34px;
 }
 
-.post-follower p {
+.post-follower p,
+.follower p {
   font-size: 14px;
 }
 

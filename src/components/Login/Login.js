@@ -70,7 +70,7 @@ export function Login() {
           </Link>
         </p>
         <p>
-          Or click
+          Or continue as a guest
           <Link
             to="/home"
             style={{
@@ -79,9 +79,8 @@ export function Login() {
               fontWeight: "600",
             }}
           >
-            &nbsp;here&nbsp;
+            &nbsp;guest&nbsp;
           </Link>
-          enter without ;)
         </p>
       </div>
     </div>

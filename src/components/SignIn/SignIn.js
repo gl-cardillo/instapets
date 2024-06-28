@@ -99,15 +99,16 @@ export function SignIn() {
                 id="passowrd"
                 {...register("password", {
                   required: true,
-                  pattern: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
+                  pattern: {
+                    value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#%&*]{8,}$/,
+                    message:
+                      "The password must be minimum eight characters, at least one letter, one number, and may include !@#%&*",
+                  },
                 })}
               />
             </label>
           </div>
-          <p className="error">
-            {errors.password &&
-              "The password must be minimum eight characters, at least one letter and one number"}
-          </p>
+          <p className="error">{errors.password && errors.password.message}</p>
           <button className="signIn-button">Register</button>
         </form>
         <p>
