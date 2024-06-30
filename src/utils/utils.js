@@ -20,7 +20,7 @@ import {
   setDoc,
   deleteDoc,
 } from "firebase/firestore";
-
+import Swal from "sweetalert2";
 
 export async function getDataByEmail(set, email = "anon@anon.com") {
   try {
@@ -63,11 +63,11 @@ export async function getUserData(set, name) {
 
 export async function getPostsForHome(set) {
   try {
-    let reponse = [];
+    let response = [];
     const q = query(collection(db, "posts"), orderBy("created", "desc"));
     const snapshot = await getDocs(q);
-    snapshot.forEach((doc) => reponse.push(doc.data()));
-    set(reponse);
+    snapshot.forEach((doc) => response.push(doc.data()));
+    set(response);
   } catch (error) {
     console.log(error.message);
   }
@@ -221,12 +221,12 @@ export async function addPost(pic, userData, caption) {
   if (pic === null) return;
   try {
     const id = uuidv4();
-    // upload pic to the databse
+    // upload pic to the database
     const postPicRef = ref(storage, `postPic/${id}`);
     uploadBytes(postPicRef, pic)
-      .then((spanshot) => {
+      .then((snapshot) => {
         // get url of the pic for add it to the posts collection
-        return getDownloadURL(spanshot.ref);
+        return getDownloadURL(snapshot.ref);
       })
       .then((downloadURL) => {
         setDoc(doc(db, "posts", id), {
@@ -422,3 +422,58 @@ export function getTime(time) {
     return date.toString().slice(3, 15);
   }
 }
+
+export const swalStyle = {
+  allowOutsideClick: false,
+  backdrop: false,
+  customClass: {
+    popup: "swal-popup dark-mode",
+    modal: "swal-modal",
+    actions: "swal-actions",
+    confirmButton: "swal-confirm-button",
+    cancelButton: "swal-cancel-button",
+    title: "swal-title dark-mode",
+    htmlContainer: "swal-html-container dark-mode",
+  },
+  showClass: {
+    popup: "animate__animated animate__slideInDown animate__faster",
+  },
+  hideClass: {
+    popup: "animate__animated animate__fadeOutUp animate__faster",
+  },
+};
+
+export const handleError = (text) => {
+  Swal.fire({
+    title: "Something went wrong",
+    text,
+    position: "top",
+    confirmButtonText: "Close",
+    ...swalStyle,
+  }).then((result) => {
+    if (result.isConfirmed) {
+      Swal.close();
+    }
+  });
+};
+
+export const handleSuccess = (title, refresh = false) => {
+  Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 2000,
+  })
+    .fire({
+      icon: "success",
+      title,
+    })
+    .then((result) => {
+      if (result.isConfirmed) {
+        if (refresh) {
+          window.location.reload();
+        }
+        Swal.close();
+      }
+    });
+};

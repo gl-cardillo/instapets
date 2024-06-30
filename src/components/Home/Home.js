@@ -25,7 +25,6 @@ export function Home() {
             return (
               <div key={index} className="home-post">
                 <div className="name-delete">
-                  {" "}
                   <Link to={`/profile/${post.user}`}>
                     <div className="name-profile-pic">
                       <img

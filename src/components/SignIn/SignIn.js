@@ -46,7 +46,7 @@ export function SignIn() {
           "https://firebasestorage.googleapis.com/v0/b/instapets-a12eb.appspot.com/o/profilePic%2Fdefault-profile-pic.png?alt=media&token=ae7f8cab-fa03-44d2-89a1-104c290c0ca0",
       });
 
-      navigate("/home");
+      navigate("/");
     } catch (error) {
       setError(error.message);
     }
@@ -56,7 +56,7 @@ export function SignIn() {
     <div className="starting-page">
       <div className="login-signIn-container">
         <h1 className="title"> Instapets</h1>
-        <p className="sign-up-text">Sign up to see photos of beautifull pets</p>
+        <p className="sign-up-text">Sign up to see photos of beautiful pets</p>
         <form onSubmit={handleSubmit(registerUser)}>
           <div className="label-container">
             <label>
@@ -96,7 +96,7 @@ export function SignIn() {
               <span className="label"> Password:</span>
               <input
                 type="password"
-                id="passowrd"
+                id="password"
                 {...register("password", {
                   required: true,
                   pattern: {

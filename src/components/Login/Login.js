@@ -48,7 +48,7 @@ export function Login() {
               <span className="label"> Password:</span>
               <input
                 type="password"
-                id="passowrd"
+                id="password"
                 {...register("password", { required: true })}
               />
             </label>
@@ -63,20 +63,20 @@ export function Login() {
             style={{
               textDecoration: "none",
               color: "#0095f6",
-              fontWeight: "600",
+              fontWeight: "400",
             }}
           >
             &nbsp;Sign up
           </Link>
         </p>
         <p>
-          Or continue as a guest
+          Or continue as a 
           <Link
             to="/home"
             style={{
               textDecoration: "none",
               color: "#0095f6",
-              fontWeight: "600",
+              fontWeight: "400",
             }}
           >
             &nbsp;guest&nbsp;

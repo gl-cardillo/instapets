@@ -15,6 +15,7 @@ import { UserDataContext } from "./dataContext/dataContext";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth  } from "./firebase/config";
 import { getDataByEmail, getUsers  } from "./utils/utils";
+import "animate.css";
 
 function App() {
 

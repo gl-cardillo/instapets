@@ -3,7 +3,6 @@ import { useContext, useEffect, useState } from "react";
 import { Card } from "../Card/Card";
 import { TiPlusOutline } from "react-icons/ti";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { BsX } from "react-icons/bs";
 import { UserDataContext } from "../../dataContext/dataContext";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -21,10 +20,8 @@ export function Profile() {
   const [render, setRender] = useState(false);
   const [userProfile, setUserProfile] = useState("");
   const [toShow, setToShow] = useState("posts");
-  const [showDelete, setShowDelete] = useState(false);
 
   let { profileName } = useParams();
-  let navigate = useNavigate();
 
   useEffect(() => {
     getUserData(setUserProfile, profileName);
@@ -109,42 +106,18 @@ export function Profile() {
             ) : (
               ""
             )}
-            {showDelete ? (
-              <div className="black-screen">
-                <div className="screen-container">
-                  <p>Are you sure you want to delete this account?</p>
-                  <button
-                    className="button delete"
-                    onClick={() => setShowDelete(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className="button delete"
-                    onClick={() => {
-                      RemoveUser(userData.username);
-                      navigate("/login");
-                    }}
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ) : (
-              ""
-            )}
           </div>
           <div className="post-follower">
             <p onClick={() => setToShow("posts")}>
               {userPosts.length} post{userPosts.length !== 1 && "s"}
             </p>
             <p onClick={() => setToShow("follower")}>
-              {userProfile ? (
+              {userProfile.follower ? (
                 userProfile.follower.length
               ) : (
                 <Skeleton width={10} />
               )}{" "}
-              Follower{userProfile.follower.length !== 1 && "s"}
+              Follower{userProfile.follower?.length !== 1 && "s"}
             </p>
             <p onClick={() => setToShow("following")}>
               {userProfile ? (
@@ -155,19 +128,6 @@ export function Profile() {
               Following
             </p>
           </div>
-        </div>
-        <div style={{ width: "20px" }}>
-          {userProfile.username === userData.username &&
-          userProfile.username !== "anon" ? (
-            <BsX
-              className="delete-button"
-              onClick={() => {
-                setShowDelete(true);
-              }}
-            />
-          ) : (
-            ""
-          )}
         </div>
       </div>
       <div className="post-section">
