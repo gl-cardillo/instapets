@@ -9,6 +9,8 @@ import { deletePost } from "../../utils/utils";
 import { LikeAndComment } from "../LikesAndComments/LikesAndComments";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import Swal from "sweetalert2";
+import { swalStyle, handleSuccess } from "../../utils/utils";
 
 export function Post() {
   const { userData, users } = useContext(UserDataContext);
@@ -29,27 +31,45 @@ export function Post() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [render]);
 
+  const confirmDeletePost = () => {
+    Swal.fire({
+      title: "Are you sure you want to delete this user?",
+      position: "top",
+      showCancelButton: true,
+      confirmButtonText: "Close",
+      cancelButtonText: "Delete",
+      ...swalStyle,
+    }).then((result) => {
+      if (result.isDismissed) {
+        deletePost(post.id);
+        navigate(-1);
+
+        Swal.close();
+        handleSuccess("post deleted");
+      } else {
+        Swal.close();
+      }
+    });
+  };
+
   return (
     <div className="main-page">
       {post ? (
         <div className="single-post">
           <div className="user-section-425px">
             <div className="avatar-pic">
-              <img 
+              <img
                 src={
                   users.filter((user) => user.username === post.user)[0]
                     .profilePic
-                } alt="user avatar" className="avatar" />
+                }
+                alt="user avatar"
+                className="avatar"
+              />
               <h3>{post.user}</h3>
             </div>
             {post.user === userData.username ? (
-              <BsX
-                className="delete-button"
-                onClick={() => {
-                  deletePost(post.id);
-                  navigate(-1);
-                }}
-              />
+              <BsX className="delete-button" onClick={confirmDeletePost} />
             ) : (
               ""
             )}
@@ -60,10 +80,14 @@ export function Post() {
           <div className="right-section">
             <div className="user-section-1024px">
               <div className="avatar-pic">
-                <img src={
-                  users.filter((user) => user.username === post.user)[0]
-                    .profilePic
-                } alt="user avatar" className="avatar" />
+                <img
+                  src={
+                    users.filter((user) => user.username === post.user)[0]
+                      .profilePic
+                  }
+                  alt="user avatar"
+                  className="avatar"
+                />
                 <h3>{post.user}</h3>
               </div>
               {post.user === userData.username ? (

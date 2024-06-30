@@ -12,6 +12,7 @@ export function Login() {
   const {
     register,
     handleSubmit,
+    isSubmitting,
     formState: { errors },
   } = useForm();
 
@@ -54,7 +55,9 @@ export function Login() {
             </label>
           </div>
           <p className="error">{errors.password && "Password is required"} </p>
-          <button>Log in</button>
+          <button disabled={isSubmitting}>
+            {isSubmitting ? "Loading" : "Log in"}
+          </button>
         </form>
         <p>
           Don't have an account?
@@ -70,7 +73,7 @@ export function Login() {
           </Link>
         </p>
         <p>
-          Or continue as a 
+          Or continue as a
           <Link
             to="/home"
             style={{

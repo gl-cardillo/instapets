@@ -66,9 +66,16 @@ form button {
   border-radius: 4px;
 }
 
+form button:disabled {
+  background-color: gray;
+}
+
 .signIn-button {
   margin-top: 15px;
+
 }
+
+
 
 .error {
   color: red;

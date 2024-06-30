@@ -6,6 +6,7 @@ import {
   uploadBytes,
   getDownloadURL,
   deleteObject,
+  getStorage,
 } from "firebase/storage";
 import {
   collection,
@@ -219,29 +220,28 @@ export async function addComment(postId, set, render, commentText, userData) {
 
 export async function addPost(pic, userData, caption) {
   if (pic === null) return;
-  try {
-    const id = uuidv4();
-    // upload pic to the database
-    const postPicRef = ref(storage, `postPic/${id}`);
-    uploadBytes(postPicRef, pic)
-      .then((snapshot) => {
-        // get url of the pic for add it to the posts collection
-        return getDownloadURL(snapshot.ref);
-      })
-      .then((downloadURL) => {
-        setDoc(doc(db, "posts", id), {
-          id: id,
-          user: userData.username,
-          userPic: userData.profilePic,
-          caption: caption,
-          urlPic: downloadURL,
-          likes: [],
-          created: Date.now(),
-        });
-      });
-  } catch (error) {
-    console.log(error.message);
-  }
+ try {
+   const id = uuidv4();
+   // upload pic to the database
+   const postPicRef = ref(storage, `postPic/${id}`);
+
+   // Use await to handle the upload and URL retrieval
+   const snapshot = await uploadBytes(postPicRef, pic);
+   const downloadURL = await getDownloadURL(snapshot.ref);
+
+   // Add post data to Firestore
+   await setDoc(doc(db, "posts", id), {
+     id: id,
+     user: userData.username,
+     userPic: userData.profilePic,
+     caption: caption,
+     urlPic: downloadURL,
+     likes: [],
+     created: Date.now(),
+   });
+ } catch (error) {
+   console.log(error.message);
+ }
 }
 
 export async function addRemovefollow(profileName, username, set, render) {

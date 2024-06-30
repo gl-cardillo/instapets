@@ -11,7 +11,6 @@ import {
   getUserData,
   addRemovefollow,
   changeProfilePic,
-  RemoveUser,
 } from "../../utils/utils";
 
 export function Profile() {

@@ -17,6 +17,7 @@ export function SignIn() {
     register,
     handleSubmit,
     formState: { errors },
+    isSubmitting,
   } = useForm();
   let navigate = useNavigate();
   const [error, setError] = useState("");
@@ -46,7 +47,7 @@ export function SignIn() {
           "https://firebasestorage.googleapis.com/v0/b/instapets-a12eb.appspot.com/o/profilePic%2Fdefault-profile-pic.png?alt=media&token=ae7f8cab-fa03-44d2-89a1-104c290c0ca0",
       });
 
-      navigate("/");
+      navigate("/home");
     } catch (error) {
       setError(error.message);
     }
@@ -109,7 +110,9 @@ export function SignIn() {
             </label>
           </div>
           <p className="error">{errors.password && errors.password.message}</p>
-          <button className="signIn-button">Register</button>
+          <button disabled={isSubmitting} className="signIn-button">
+            {isSubmitting ? "Loading..." : "Register"}
+          </button>
         </form>
         <p>
           Have an account?
