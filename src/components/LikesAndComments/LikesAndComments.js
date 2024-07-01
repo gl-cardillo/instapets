@@ -107,7 +107,7 @@ export function LikeAndComment({ post, render, setRender }) {
               className="show-comments-button"
               onClick={() => setShowComments(!showComments)}
             >
-              Show comments
+              {showComments ? "Hide comments" : "Show comments"}
             </p>
           ) : (
             ""
@@ -119,10 +119,17 @@ export function LikeAndComment({ post, render, setRender }) {
                 <div key={index} className="comments-posted">
                   <div className="comments-posted-pic-name">
                     <Link to={`/profile/${comment.username}`}>
-                      <img  src={users ? 
-                          users.filter((user) => user.username === comment.username)[0]
-                            .profilePic
-                       : "" } alt="avatar" className="avatar" />
+                      <img
+                        src={
+                          users
+                            ? users.filter(
+                                (user) => user.username === comment.username
+                              )[0].profilePic
+                            : ""
+                        }
+                        alt="avatar"
+                        className="avatar"
+                      />
                     </Link>
                     <div className="comments-details">
                       <Link to={`/profile/${comment.username}`}>

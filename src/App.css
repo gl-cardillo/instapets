@@ -15,8 +15,8 @@ a:hover {
 
 .main-page {
   background-color: rgb(243 243 243);
-  min-height: 86vh;
-  padding: 10px 0;
+  min-height: calc(100vh - 85px);
+  padding: 10px;
 }
 
 .footer {
