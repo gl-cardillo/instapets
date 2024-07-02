@@ -23,7 +23,6 @@ export function LikeAndComment({ post, render, setRender }) {
 
   useEffect(() => {
     getComments(setComments, post.id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [render]);
 
   return (
