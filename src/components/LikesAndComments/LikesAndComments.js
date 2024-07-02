@@ -52,26 +52,22 @@ export function LikeAndComment({ post, render, setRender }) {
           />
         </div>
         <div className="likes-comments">
-          {post.likes.length > 1 ? (
-            <p>{post.likes.length} likes</p>
-          ) : (
-            <p>{post.likes.length} like</p>
-          )}
           {post.likes.length > 0 ? (
             <div className="who-likes">
-              <p>post liked by&nbsp; </p>
+              <p>Post liked by&nbsp; </p>
               <Link className="user-who-liked" to={`/profile/${post.likes[0]}`}>
                 {post.likes[0]}
               </Link>
               {post.likes.length > 1 ? (
                 <p>
-                  &nbsp; and other{" "}
+                  &nbsp;and&nbsp;
                   <span
                     onClick={() => setShowLikes(true)}
                     className="user-who-liked"
                   >
                     {post.likes.length - 1}
-                  </span>
+                  </span>{" "}
+                  other{post.likes.length > 2 ? "s" : ""}
                 </p>
               ) : (
                 ""
@@ -83,13 +79,13 @@ export function LikeAndComment({ post, render, setRender }) {
           {showLikes ? (
             <div className="black-screen">
               <div className="screen-container">
-                {" "}
+              <div className="close-container">
                 <BsX
                   className="delete-button"
                   onClick={() => {
                     setShowLikes(false);
                   }}
-                />
+                /></div>
                 {users
                   .filter((user) => post.likes.includes(user.username))
                   .map((user, index) => {

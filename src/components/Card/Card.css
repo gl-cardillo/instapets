@@ -14,8 +14,8 @@
   display: flex;
   gap: 50px;
   padding: 10px;
-  margin: 20px;
-  border-bottom: 1px solid #b2b2b2;
+  margin: 5px;
+  border-bottom: 1px solid #e7e7e7;
   justify-content: space-around;
 }
 

@@ -128,7 +128,6 @@ export function Mainbar() {
           <Link to={"/uploadPost"}>
             <IoAddCircleOutline className="icons" />
           </Link>
-          <IoExitOutline onClick={logoutUser} className="icons" />
           <div className="relative" ref={dropdownRef}>
             <div onClick={handleProfileClick} className="cursor-pointer">
               {userData.profilePic ? (
