@@ -7,8 +7,7 @@ import { getPostsForHome, addRemoveLike, deletePost } from "../../utils/utils";
 import { LikeAndComment } from "../LikesAndComments/LikesAndComments";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import Swal from "sweetalert2";
-import { swalStyle, handleSuccess } from "../../utils/utils";
+import { confirmDelete, handleSuccess } from "../../utils/utils";
 
 export function Home() {
   const [posts, setPosts] = useState(null);
@@ -19,25 +18,12 @@ export function Home() {
     getPostsForHome(setPosts);
   }, [render]);
 
-  const confirmDeletePost = (postId) => {
-    Swal.fire({
-      title: "Are you sure you want to delete this user?",
-      position: "top",
-      showCancelButton: true,
-      confirmButtonText: "Close",
-      cancelButtonText: "Delete",
-      ...swalStyle,
-    }).then((result) => {
-      if (result.isDismissed) {
-        deletePost(postId);
-        getPostsForHome(setPosts);
-
-        Swal.close();
-        handleSuccess("post deleted");
-      } else {
-        Swal.close();
-      }
-    });
+  const confirmDeletePost = async (postId) => {
+    if (!(await confirmDelete("Are you sure you want to delete this post?")))
+      return;
+    await deletePost(postId);
+    getPostsForHome(setPosts);
+    handleSuccess("post deleted");
   };
 
   return (

@@ -1,0 +1,99 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null && request.auth.token.email != null;
+    }
+
+    function authEmail() {
+      return request.auth.token.email.lower();
+    }
+
+    // users/{username} exists and belongs to the signed-in account
+    function isUser(username) {
+      let path = /databases/$(database)/documents/users/$(username);
+      return signedIn()
+        && exists(path)
+        && get(path).data.email.lower() == authEmail();
+    }
+
+    function onlyChanges(keys) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+    }
+
+    function added(field) {
+      return request.resource.data.get(field, []).removeAll(resource.data.get(field, []));
+    }
+
+    function removed(field) {
+      return resource.data.get(field, []).removeAll(request.resource.data.get(field, []));
+    }
+
+    // the only change to list `field` is the signed-in user adding or removing
+    // their own username (how likes and follows work)
+    function togglesSelf(field) {
+      let changed = added(field).concat(removed(field));
+      return changed.size() == 1 && isUser(changed[0]);
+    }
+
+    // the only change to list `field` is the signed-in user removing their own
+    // username (account deletion cleaning up other users' `following`)
+    function removesSelf(field) {
+      return added(field).size() == 0
+        && removed(field).size() == 1
+        && isUser(removed(field)[0]);
+    }
+
+    match /users/{username} {
+      allow read: if true;
+
+      allow create: if signedIn()
+        && username.matches('^[^/]{2,15}$')
+        && request.resource.data.username == username
+        && request.resource.data.email.lower() == authEmail()
+        && request.resource.data.follower == []
+        && request.resource.data.following == []
+        && request.resource.data.likes == []
+        && request.resource.data.comments == [];
+
+      // the owner can edit their own profile but can't change who they are or
+      // invent followers
+      allow update: if signedIn()
+        && resource.data.email.lower() == authEmail()
+        && onlyChanges(['following', 'likes', 'comments', 'profilePic', 'follower'])
+        && added('follower').size() == 0;
+
+      // other users follow/unfollow, or clean up after deleting their account
+      allow update: if onlyChanges(['follower']) && togglesSelf('follower');
+      allow update: if onlyChanges(['following']) && removesSelf('following');
+
+      allow delete: if signedIn() && resource.data.email.lower() == authEmail();
+    }
+
+    match /posts/{postId} {
+      allow read: if true;
+
+      allow create: if isUser(request.resource.data.user)
+        && request.resource.data.id == postId
+        && request.resource.data.likes == [];
+
+      allow update: if onlyChanges(['likes']) && togglesSelf('likes');
+
+      allow delete: if isUser(resource.data.user);
+    }
+
+    match /comments/{commentId} {
+      allow read: if true;
+
+      allow create: if isUser(request.resource.data.username)
+        && request.resource.data.commentId == commentId
+        && exists(/databases/$(database)/documents/posts/$(request.resource.data.postId));
+
+      // the comment's author, or the post's author when deleting the post
+      allow delete: if isUser(resource.data.username)
+        || isUser(get(/databases/$(database)/documents/posts/$(resource.data.postId)).data.user);
+    }
+  }
+}
