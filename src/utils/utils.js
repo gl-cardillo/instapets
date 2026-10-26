@@ -6,7 +6,6 @@ import {
   uploadBytes,
   getDownloadURL,
   deleteObject,
-  getStorage,
 } from "firebase/storage";
 import {
   collection,
@@ -106,13 +105,7 @@ export async function RemoveUser(username) {
     //remove users posts
     const q = query(collection(db, "posts"), where("user", "==", username));
     const snapshot = await getDocs(q);
-    let postIdToRemove = [];
-    snapshot.forEach((doc) => {
-      postIdToRemove.push(doc.data().id);
-    });
-    postIdToRemove.forEach((id) => {
-      deletePost(id);
-    });
+    await Promise.all(snapshot.docs.map((doc) => deletePost(doc.data().id)));
 
     //remove users likes and follower
     const q2 = query(
@@ -137,33 +130,29 @@ export async function RemoveUser(username) {
       commentsToRemove = doc.data().comments;
     });
 
-    likesToRemove.forEach((id) => {
-      removeLikesFromPosts(id, username);
-    });
+    // everything below is authorized against the user's doc and auth account,
+    // so they must be deleted last
+    await Promise.all([
+      ...likesToRemove.map((id) => removeLikesFromPosts(id, username)),
+      ...followingToRemove.map((profileName) =>
+        removeFollow(profileName, username)
+      ),
+      ...followerToRemove.map((profileName) =>
+        removeFollow(username, profileName)
+      ),
+      ...commentsToRemove.map((id) => deleteDoc(doc(db, "comments", id))),
+    ]);
 
-    followingToRemove.forEach((profileName) => {
-      removeFollow(profileName, username);
-    });
-
-    followerToRemove.forEach((profileName) => {
-      removeFollow(username, profileName);
-    });
-
-    commentsToRemove.forEach(async (id) => {
-      await deleteDoc(doc(db, "comments", id));
-    });
+    try {
+      await deleteObject(ref(storage, `profilePic/${username}`));
+    } catch (error) {
+      // users still on the default picture have nothing to delete
+      console.log(error.message);
+    }
 
     const user = auth.currentUser;
     await deleteDoc(doc(db, "users", username));
-    deleteUser(user);
-    const profilePicRef = ref(storage, `profilePic/${username}`);
-    getDownloadURL(profilePicRef)
-      .then((url) => {
-        deleteObject(profilePicRef);
-      })
-      .catch((error) => {
-        console.log(error.message);
-      });
+    await deleteUser(user);
   } catch (error) {
     console.log(error.message);
   }
@@ -177,14 +166,14 @@ export async function removeLikesFromPosts(id, username) {
 
 export async function deletePost(id) {
   try {
-    await deleteDoc(doc(db, "posts", id));
+    // the post doc is deleted last: security rules look it up to authorize
+    // deleting its comments and picture
     const q = query(collection(db, "comments"), where("postId", "==", id));
     const snapshot = await getDocs(q);
-    snapshot.forEach((doc) => {
-      deleteDoc(doc.ref);
-    });
+    await Promise.all(snapshot.docs.map((doc) => deleteDoc(doc.ref)));
     const postPicRef = ref(storage, `postPic/${id}`);
     await deleteObject(postPicRef);
+    await deleteDoc(doc(db, "posts", id));
   } catch (error) {
     console.log(error.message);
   }
@@ -294,12 +283,9 @@ export async function addRemoveLike(id, userData, set, render) {
   try {
     const q = query(collection(db, "posts"), where("id", "==", id));
     const snapshot = await getDocs(q);
-    snapshot.forEach(async (doc) => {
-      if (doc.data().likes.includes(userData.username)) {
+    snapshot.forEach(async (postDoc) => {
+      if (postDoc.data().likes.includes(userData.username)) {
         await removeLike(id, userData);
-        await updateDoc(doc(db, `users`, userData.username), {
-          likes: arrayRemove(id),
-        });
       } else {
         // else add it to array
         await addLike(id, userData);
@@ -441,6 +427,19 @@ export const swalStyle = {
   hideClass: {
     popup: "animate__animated animate__fadeOutUp animate__faster",
   },
+};
+
+// resolves true only when the user explicitly clicks "Delete"
+export const confirmDelete = async (title) => {
+  const result = await Swal.fire({
+    title,
+    position: "top",
+    showCancelButton: true,
+    confirmButtonText: "Delete",
+    cancelButtonText: "Cancel",
+    ...swalStyle,
+  });
+  return result.isConfirmed;
 };
 
 export const handleError = (text) => {

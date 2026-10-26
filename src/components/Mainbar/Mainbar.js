@@ -8,7 +8,7 @@ import {
   blur,
   handleSearch,
   RemoveUser,
-  swalStyle,
+  confirmDelete,
   handleSuccess,
 } from "../../utils/utils";
 import Skeleton from "react-loading-skeleton";
@@ -19,7 +19,6 @@ import {
   IoSearch,
   IoAddCircleOutline,
 } from "react-icons/io5";
-import Swal from "sweetalert2";
 
 export function Mainbar() {
   let navigate = useNavigate();
@@ -58,24 +57,11 @@ export function Mainbar() {
     };
   }, [dropdownVisible]);
 
-  const confirmDeleteUser = () => {
-    Swal.fire({
-      title: "Are you sure you want to delete this user?",
-      position: "top",
-      showCancelButton: true,
-      confirmButtonText: "Close",
-      cancelButtonText: "Delete",
-      ...swalStyle,
-    }).then((result) => {
-      if (result.isDismissed) {
-        RemoveUser(userData.username);
-
-        Swal.close();
-        handleSuccess("Account deleted");
-      } else {
-        Swal.close();
-      }
-    });
+  const confirmDeleteUser = async () => {
+    if (!(await confirmDelete("Are you sure you want to delete your account?")))
+      return;
+    await RemoveUser(userData.username);
+    handleSuccess("Account deleted");
   };
 
   return (
