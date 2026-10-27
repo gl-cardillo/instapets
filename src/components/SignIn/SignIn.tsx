@@ -1,55 +1,40 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { auth, db } from "../../firebase/config";
 import { Link, useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import {
-  collection,
-  getDocs,
-  where,
-  setDoc,
-  doc,
-  query,
-} from "firebase/firestore";
+import { auth } from "../../firebase/config";
+import { useAuth } from "../../auth/AuthContext";
+import { createUserProfile, isUsernameTaken } from "../../services/users";
+
+interface SignInForm {
+  email: string;
+  name: string;
+  password: string;
+}
 
 export function SignIn() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
-    isSubmitting,
-  } = useForm();
-  let navigate = useNavigate();
+    formState: { errors, isSubmitting },
+  } = useForm<SignInForm>();
+  const navigate = useNavigate();
+  const { refreshProfile, refreshUsers } = useAuth();
   const [error, setError] = useState("");
 
-  const registerUser = async (data) => {
+  const registerUser = async (data: SignInForm) => {
     try {
-      let response = [];
-      const q = query(
-        collection(db, "users"),
-        where("username", "==", `${data.name}`)
-      );
-      const snapshot = await getDocs(q);
-      snapshot.forEach((doc) => response.push(doc.data()));
-      if (response.length > 0) {
+      if (await isUsernameTaken(data.name)) {
         setError("username already used");
         return;
       }
       await createUserWithEmailAndPassword(auth, data.email, data.password);
-      await setDoc(doc(db, "users", data.name), {
-        email: data.email,
-        username: data.name,
-        follower: [],
-        following: [],
-        likes: [],
-        comments: [],
-        profilePic:
-          "https://firebasestorage.googleapis.com/v0/b/instapets-a12eb.appspot.com/o/profilePic%2Fdefault-profile-pic.png?alt=media&token=ae7f8cab-fa03-44d2-89a1-104c290c0ca0",
-      });
-
+      await createUserProfile(data.email, data.name);
+      // the auth listener fires before the profile doc exists
+      await Promise.all([refreshProfile(), refreshUsers()]);
       navigate("/home");
     } catch (error) {
-      setError(error.message);
+      setError(error instanceof Error ? error.message : String(error));
     }
   };
 
@@ -84,12 +69,15 @@ export function SignIn() {
                   required: true,
                   minLength: 2,
                   maxLength: 15,
+                  // usernames are document ids, which can't contain "/"
+                  pattern: /^[^/]+$/,
                 })}
               />
             </label>
           </div>
           <p className="error">
-            {errors.name && "Name must between two and fifteen characters"}
+            {errors.name &&
+              "Name must be between two and fifteen characters, without /"}
           </p>
           <span className="error">{error}</span>
           <div className="label-container">
