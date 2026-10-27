@@ -46,6 +46,15 @@ service cloud.firestore {
         && isUser(removed(field)[0]);
     }
 
+    // profile pictures are small data URLs stored on the user doc
+    function validProfilePic() {
+      let pic = request.resource.data.profilePic;
+      return pic == resource.data.profilePic
+        || (pic is string
+          && pic.size() < 100000
+          && pic.split(',')[0] in ['data:image/webp;base64', 'data:image/jpeg;base64']);
+    }
+
     match /users/{username} {
       allow read: if true;
 
@@ -56,14 +65,16 @@ service cloud.firestore {
         && request.resource.data.follower == []
         && request.resource.data.following == []
         && request.resource.data.likes == []
-        && request.resource.data.comments == [];
+        && request.resource.data.comments == []
+        && request.resource.data.profilePic == '';
 
       // the owner can edit their own profile but can't change who they are or
       // invent followers
       allow update: if signedIn()
         && resource.data.email.lower() == authEmail()
         && onlyChanges(['following', 'likes', 'comments', 'profilePic', 'follower'])
-        && added('follower').size() == 0;
+        && added('follower').size() == 0
+        && validProfilePic();
 
       // other users follow/unfollow, or clean up after deleting their account
       allow update: if onlyChanges(['follower']) && togglesSelf('follower');
@@ -77,7 +88,8 @@ service cloud.firestore {
 
       allow create: if isUser(request.resource.data.user)
         && request.resource.data.id == postId
-        && request.resource.data.likes == [];
+        && request.resource.data.likes == []
+        && request.resource.data.urlPic == '';
 
       allow update: if onlyChanges(['likes']) && togglesSelf('likes');
 
@@ -94,6 +106,21 @@ service cloud.firestore {
       // the comment's author, or the post's author when deleting the post
       allow delete: if isUser(resource.data.username)
         || isUser(get(/databases/$(database)/documents/posts/$(resource.data.postId)).data.user);
+    }
+
+    // a post's picture, as a data URL (Firebase Storage needs the paid plan)
+    match /images/{postId} {
+      allow read: if true;
+
+      // only together with its post, in the same batch
+      allow create: if isUser(request.resource.data.owner)
+        && request.resource.data.keys().hasOnly(['owner', 'src'])
+        && request.resource.data.src is string
+        && request.resource.data.src.size() < 800000
+        && getAfter(/databases/$(database)/documents/posts/$(postId)).data.user
+          == request.resource.data.owner;
+
+      allow delete: if isUser(resource.data.owner);
     }
   }
 }

@@ -1,0 +1,15 @@
+{
+  "indexes": [],
+  "fieldOverrides": [
+    {
+      "collectionGroup": "images",
+      "fieldPath": "src",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "users",
+      "fieldPath": "profilePic",
+      "indexes": []
+    }
+  ]
+}
