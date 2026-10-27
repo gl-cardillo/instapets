@@ -2,6 +2,16 @@
 
 # dependencies
 /node_modules
+
+# build output
+/dist
+/build
+*.tsbuildinfo
+
+# Firebase emulator logs
+*-debug.log
+
+# local env files
 .env
-
-
+.env.*
+!.env.example
