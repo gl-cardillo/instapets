@@ -28,3 +28,16 @@ I used React and React Router and firebase for this project.
 ## Link
 ---
 Check the [demo]( https://gl-cardillo.github.io/instapets/#/login) 
+
+## Development
+---
+
+1. `npm install`
+2. Copy `.env.example` to `.env` and fill in the Firebase web app config
+3. `npm run dev` and open http://localhost:5173/instapets/
+
+Other scripts: `npm run build`, `npm run lint`, `npm run typecheck`, `npm run format`.
+`npm run deploy` builds and publishes `dist/` to the `gh-pages` branch.
+Security rules live in `firestore.rules` (`firebase deploy --only firestore`).
+Pictures are stored in Firestore (the `images` collection and `users.profilePic`),
+because Firebase Storage requires the paid Blaze plan.
