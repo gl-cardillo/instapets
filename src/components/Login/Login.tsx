@@ -4,24 +4,29 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase/config";
+import logo from "../../img/logo-insta.png";
+
+interface LoginForm {
+  email: string;
+  password: string;
+}
 
 export function Login() {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   const [error, setError] = useState("");
 
   const {
     register,
     handleSubmit,
-    isSubmitting,
-    formState: { errors },
-  } = useForm();
+    formState: { errors, isSubmitting },
+  } = useForm<LoginForm>();
 
-  const loginUser = async (data) => {
+  const loginUser = async (data: LoginForm) => {
     try {
       await signInWithEmailAndPassword(auth, data.email, data.password);
       navigate("/home");
     } catch (error) {
-      console.log(error.message);
+      console.error(error);
       setError("Email or password incorrect");
     }
   };
@@ -29,7 +34,7 @@ export function Login() {
   return (
     <div className="starting-page">
       <div className="login-signIn-container">
-        <img src={require("../../img/logo-insta.png")} alt="logo" />
+        <img src={logo} alt="logo" />
         <h1 className="title">Instapets</h1>
         <form onSubmit={handleSubmit(loginUser)}>
           <p className="login-error">{error}</p>
