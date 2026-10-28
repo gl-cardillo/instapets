@@ -12,7 +12,11 @@ import {
   where,
   writeBatch,
 } from "firebase/firestore";
-import { deleteUser } from "firebase/auth";
+import {
+  EmailAuthProvider,
+  deleteUser,
+  reauthenticateWithCredential,
+} from "firebase/auth";
 import { auth, db } from "../firebase/config";
 import type { UserProfile } from "../types";
 import { compressImage } from "../utils/image";
@@ -123,8 +127,19 @@ export async function changeProfilePic(
 }
 
 // Deletes the signed-in user's posts, likes, follows, comments, profile and
-// login.
-export async function deleteAccount(username: string): Promise<void> {
+// login. Firebase only deletes logins that signed in recently, so the
+// password is checked again first; that way nothing is deleted if it's wrong.
+export async function deleteAccount(
+  username: string,
+  password: string,
+): Promise<void> {
+  const user = auth.currentUser;
+  if (!user?.email) throw new Error("Not signed in");
+  await reauthenticateWithCredential(
+    user,
+    EmailAuthProvider.credential(user.email, password),
+  );
+
   const profile = await fetchUser(username);
   if (!profile) throw new Error(`User ${username} not found`);
 
@@ -144,8 +159,6 @@ export async function deleteAccount(username: string): Promise<void> {
 
   // everything above is authorized against the profile and login, so they
   // go last
-  const user = auth.currentUser;
-  if (!user) throw new Error("Not signed in");
   await deleteDoc(doc(usersCol, username));
   forgetUser(username);
   await deleteUser(user);
