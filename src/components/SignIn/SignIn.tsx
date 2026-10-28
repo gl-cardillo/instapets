@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+} from "firebase/auth";
 import { auth } from "../../firebase/config";
 import { useAuth } from "../../auth/AuthContext";
 import { createUserProfile, isUsernameTaken } from "../../services/users";
@@ -28,10 +31,20 @@ export function SignIn() {
         setError("username already used");
         return;
       }
-      await createUserWithEmailAndPassword(auth, data.email, data.password);
+      const { user } = await createUserWithEmailAndPassword(
+        auth,
+        data.email,
+        data.password,
+      );
       await createUserProfile(data.email, data.name);
       // the auth listener fires before the profile doc exists
       await Promise.all([refreshProfile(), refreshUsers()]);
+      try {
+        await sendEmailVerification(user);
+      } catch (error) {
+        // the banner on every page offers to resend it
+        console.error(error);
+      }
       navigate("/home");
     } catch (error) {
       setError(error instanceof Error ? error.message : String(error));

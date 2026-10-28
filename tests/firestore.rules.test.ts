@@ -33,9 +33,12 @@ const user = (username: string, extra = {}) => ({
   ...extra,
 });
 
-const as = (username: string): Firestore =>
+const as = (username: string, emailVerified = true): Firestore =>
   env
-    .authenticatedContext(`${username}-uid`, { email: `${username}@example.com` })
+    .authenticatedContext(`${username}-uid`, {
+      email: `${username}@example.com`,
+      email_verified: emailVerified,
+    })
     .firestore() as unknown as Firestore;
 const guest = (): Firestore => env.unauthenticatedContext().firestore() as unknown as Firestore;
 
@@ -88,6 +91,12 @@ describe("reading", () => {
 describe("users", () => {
   it("lets you create your own profile", async () => {
     await assertSucceeds(setDoc(doc(as("carol"), "users/carol"), user("carol")));
+  });
+
+  it("lets you create your profile before verifying your email", async () => {
+    await assertSucceeds(
+      setDoc(doc(as("carol", false), "users/carol"), user("carol")),
+    );
   });
 
   it("rejects profiles for someone else's email or with followers", async () => {
@@ -243,6 +252,41 @@ describe("comments", () => {
   it("lets the author delete their comment, but not others", async () => {
     await assertFails(deleteDoc(doc(as("carol"), "comments/c1")));
     await assertSucceeds(deleteDoc(doc(as("bob"), "comments/c1")));
+  });
+});
+
+describe("unverified email", () => {
+  it("rejects posting, liking, commenting, following and profile edits", async () => {
+    const db = as("bob", false);
+    const post = writeBatch(db);
+    post.set(doc(db, "images/p2"), { owner: "bob", src: pic });
+    post.set(doc(db, "posts/p2"), {
+      id: "p2",
+      user: "bob",
+      userPic: "",
+      caption: "",
+      urlPic: "",
+      likes: [],
+      created: 3,
+    });
+    await assertFails(post.commit());
+    await assertFails(updateDoc(doc(db, "posts/p1"), { likes: arrayUnion("bob") }));
+    await assertFails(
+      setDoc(doc(db, "comments/c2"), {
+        commentId: "c2",
+        postId: "p1",
+        text: "wow",
+        username: "bob",
+        userPic: "",
+        created: 4,
+      }),
+    );
+    await assertFails(updateDoc(doc(db, "users/alice"), { follower: arrayUnion("bob") }));
+    await assertFails(updateDoc(doc(db, "users/bob"), { profilePic: pic }));
+  });
+
+  it("still lets you delete your account", async () => {
+    await assertSucceeds(deleteDoc(doc(as("bob", false), "users/bob")));
   });
 });
 

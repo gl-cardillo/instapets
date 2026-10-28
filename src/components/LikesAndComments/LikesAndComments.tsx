@@ -1,8 +1,8 @@
 import "./LikesAndComments.css";
 import { useCallback, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { BsSuitHeart, BsSuitHeartFill, BsChat, BsX } from "react-icons/bs";
-import { useAuth, useProfilePic } from "../../auth/AuthContext";
+import { useAuth, useCanWrite, useProfilePic } from "../../auth/AuthContext";
 import { useLikeToggle } from "../../hooks/useLikeToggle";
 import { useLoader } from "../../hooks/useLoader";
 import { addComment, deleteComment, getComments } from "../../services/comments";
@@ -20,7 +20,7 @@ interface Props {
 export function LikeAndComment({ post, onPostChange }: Props) {
   const { profile, users } = useAuth();
   const profilePicOf = useProfilePic();
-  const navigate = useNavigate();
+  const canWrite = useCanWrite();
   const toggleLike = useLikeToggle(onPostChange);
   const { data: comments = [], reload: loadComments } = useLoader(
     useCallback(() => getComments(post.id), [post.id]),
@@ -31,14 +31,15 @@ export function LikeAndComment({ post, onPostChange }: Props) {
   const [showLikes, setShowLikes] = useState(false);
 
   const toggleAddComments = () => {
-    if (!profile) navigate("/login");
-    else setShowAddComments(!showAddComments);
+    if (canWrite()) setShowAddComments(!showAddComments);
   };
 
   const submitComment = async () => {
-    if (!profile || commentText.trim() === "") return;
+    if (commentText.trim() === "") return;
+    const me = canWrite();
+    if (!me) return;
     try {
-      await addComment(post.id, commentText, profile);
+      await addComment(post.id, commentText, me);
       setCommentText("");
       setShowComments(true);
       await loadComments();

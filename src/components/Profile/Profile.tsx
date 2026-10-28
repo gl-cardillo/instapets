@@ -4,11 +4,11 @@ import { Link, useParams } from "react-router-dom";
 import { TiPlusOutline } from "react-icons/ti";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { useAuth } from "../../auth/AuthContext";
+import { useAuth, useCanWrite } from "../../auth/AuthContext";
 import { useLoader } from "../../hooks/useLoader";
 import { getPostsByUser } from "../../services/posts";
 import { changeProfilePic, getUser, toggleFollow } from "../../services/users";
-import { handleError, reportError } from "../../utils/alerts";
+import { reportError } from "../../utils/alerts";
 import { Avatar } from "../Avatar/Avatar";
 import { Card } from "../Card/Card";
 import { PostImage } from "../PostImage/PostImage";
@@ -21,6 +21,7 @@ export function Profile() {
 
 function ProfilePage({ profileName }: { profileName: string }) {
   const { profile, users, refreshProfile, refreshUsers } = useAuth();
+  const canWrite = useCanWrite();
   const { data, reload: load } = useLoader(
     useCallback(
       () => Promise.all([getUser(profileName), getPostsByUser(profileName)]),
@@ -37,11 +38,7 @@ function ProfilePage({ profileName }: { profileName: string }) {
   const isOwnProfile = profile?.username === profileName;
 
   const onPicChosen = async (file: File | undefined) => {
-    if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      handleError("Please choose an image");
-      return;
-    }
+    if (!file || !canWrite()) return;
     try {
       await changeProfilePic(file, profileName);
       await Promise.all([load(), refreshProfile(), refreshUsers()]);
@@ -51,12 +48,13 @@ function ProfilePage({ profileName }: { profileName: string }) {
   };
 
   const onFollowClick = async () => {
-    if (!profile || !userProfile) return;
+    const me = canWrite();
+    if (!me || !userProfile) return;
     try {
       await toggleFollow(
         profileName,
-        profile.username,
-        userProfile.follower.includes(profile.username),
+        me.username,
+        userProfile.follower.includes(me.username),
       );
       await Promise.all([load(), refreshProfile()]);
     } catch (error) {
