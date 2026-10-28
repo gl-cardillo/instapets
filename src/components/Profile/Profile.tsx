@@ -10,7 +10,7 @@ import { getPostsByUser } from "../../services/posts";
 import { changeProfilePic, getUser, toggleFollow } from "../../services/users";
 import { reportError } from "../../utils/alerts";
 import { Avatar } from "../Avatar/Avatar";
-import { Card } from "../Card/Card";
+import { UserCards } from "../Card/UserCards";
 import { PostImage } from "../PostImage/PostImage";
 
 export function Profile() {
@@ -20,7 +20,7 @@ export function Profile() {
 }
 
 function ProfilePage({ profileName }: { profileName: string }) {
-  const { profile, users, refreshProfile, refreshUsers } = useAuth();
+  const { profile, refreshProfile } = useAuth();
   const canWrite = useCanWrite();
   const { data, reload: load } = useLoader(
     useCallback(
@@ -41,7 +41,7 @@ function ProfilePage({ profileName }: { profileName: string }) {
     if (!file || !canWrite()) return;
     try {
       await changeProfilePic(file, profileName);
-      await Promise.all([load(), refreshProfile(), refreshUsers()]);
+      await Promise.all([load(), refreshProfile()]);
     } catch (error) {
       reportError(error);
     }
@@ -69,11 +69,6 @@ function ProfilePage({ profileName }: { profileName: string }) {
       </div>
     );
   }
-
-  const cardsFor = (usernames: string[]) =>
-    users
-      .filter((user) => usernames.includes(user.username))
-      .map((user) => <Card user={user} key={user.username} />);
 
   return (
     <div className="main-page">
@@ -162,7 +157,7 @@ function ProfilePage({ profileName }: { profileName: string }) {
         <div className="foll-section">
           <h4>Follower</h4>
           {userProfile.follower.length > 0 ? (
-            cardsFor(userProfile.follower)
+<UserCards usernames={userProfile.follower} />
           ) : (
             <p>No follower </p>
           )}
@@ -172,7 +167,7 @@ function ProfilePage({ profileName }: { profileName: string }) {
         <div className="foll-section">
           <h4>Following</h4>
           {userProfile.following.length > 0 ? (
-            cardsFor(userProfile.following)
+<UserCards usernames={userProfile.following} />
           ) : (
             <h5>No following :(</h5>
           )}

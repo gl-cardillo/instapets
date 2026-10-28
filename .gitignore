@@ -11,6 +11,11 @@
 # Firebase emulator logs
 *-debug.log
 
+# Firebase admin keys (full access to the project; keep them out of git)
+*firebase-adminsdk*.json
+*service-account*.json
+*serviceAccount*.json
+
 # local env files
 .env
 .env.*

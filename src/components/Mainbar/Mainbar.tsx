@@ -7,22 +7,38 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { IoHomeOutline, IoSearch, IoAddCircleOutline } from "react-icons/io5";
 import { auth } from "../../firebase/config";
 import { useAuth } from "../../auth/AuthContext";
-import { deleteAccount } from "../../services/users";
+import { deleteAccount, searchUsers } from "../../services/users";
+import type { UserProfile } from "../../types";
 import { confirmDelete, handleSuccess, reportError } from "../../utils/alerts";
 import { Avatar } from "../Avatar/Avatar";
 import { VerifyEmailBanner } from "../VerifyEmailBanner/VerifyEmailBanner";
 
 export function Mainbar() {
   const navigate = useNavigate();
-  const { profile, loading, users, refreshUsers, emailVerified } = useAuth();
+  const { profile, loading, emailVerified } = useAuth();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [searchText, setSearchText] = useState("");
+  const [foundUsers, setFoundUsers] = useState<UserProfile[]>([]);
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
-  const search = searchText.toLowerCase().trim();
-  const searchResults = search
-    ? users.filter((user) => user.username.toLowerCase().includes(search))
-    : [];
+  // search once typing pauses, rather than on every key
+  useEffect(() => {
+    const text = searchText.trim();
+    if (!text) return;
+    let current = true;
+    const timer = setTimeout(() => {
+      searchUsers(text, 8)
+        .then((users) => {
+          if (current) setFoundUsers(users);
+        })
+        .catch(console.error);
+    }, 300);
+    return () => {
+      current = false;
+      clearTimeout(timer);
+    };
+  }, [searchText]);
+  const searchResults = searchText.trim() ? foundUsers : [];
 
   const logoutUser = async () => {
     await signOut(auth);
@@ -51,7 +67,6 @@ export function Mainbar() {
       await deleteAccount(profile.username);
       handleSuccess("Account deleted");
       navigate("/login");
-      await refreshUsers();
     } catch (error) {
       reportError(error);
     }

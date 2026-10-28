@@ -2,15 +2,15 @@ import "./LikesAndComments.css";
 import { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 import { BsSuitHeart, BsSuitHeartFill, BsChat, BsX } from "react-icons/bs";
-import { useAuth, useCanWrite, useProfilePic } from "../../auth/AuthContext";
+import { useAuth, useCanWrite } from "../../auth/AuthContext";
 import { useLikeToggle } from "../../hooks/useLikeToggle";
 import { useLoader } from "../../hooks/useLoader";
 import { addComment, deleteComment, getComments } from "../../services/comments";
 import type { Post } from "../../types";
 import { reportError } from "../../utils/alerts";
 import { getTime } from "../../utils/time";
-import { Avatar } from "../Avatar/Avatar";
-import { Card } from "../Card/Card";
+import { Avatar, UserAvatar } from "../Avatar/Avatar";
+import { UserCards } from "../Card/UserCards";
 
 interface Props {
   post: Post;
@@ -18,8 +18,7 @@ interface Props {
 }
 
 export function LikeAndComment({ post, onPostChange }: Props) {
-  const { profile, users } = useAuth();
-  const profilePicOf = useProfilePic();
+  const { profile } = useAuth();
   const canWrite = useCanWrite();
   const toggleLike = useLikeToggle(onPostChange);
   const { data: comments = [], reload: loadComments } = useLoader(
@@ -108,11 +107,7 @@ export function LikeAndComment({ post, onPostChange }: Props) {
                     onClick={() => setShowLikes(false)}
                   />
                 </div>
-                {users
-                  .filter((user) => post.likes.includes(user.username))
-                  .map((user) => (
-                    <Card user={user} key={user.username} />
-                  ))}
+                <UserCards usernames={post.likes} />
               </div>
             </div>
           )}
@@ -133,8 +128,9 @@ export function LikeAndComment({ post, onPostChange }: Props) {
               <div key={comment.commentId} className="comments-posted">
                 <div className="comments-posted-pic-name">
                   <Link to={`/profile/${comment.username}`}>
-                    <Avatar
-                      src={profilePicOf(comment.username, comment.userPic)}
+                    <UserAvatar
+                      username={comment.username}
+                      fallback={comment.userPic}
                     />
                   </Link>
                   <div className="comments-details">

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useUser } from "../../hooks/useUser";
 import defaultAvatar from "../../img/default-avatar.svg";
 
 interface Props {
@@ -20,4 +21,18 @@ export function Avatar({ src, alt = "avatar", className = "avatar" }: Props) {
       onError={() => setFailedSrc(src)}
     />
   );
+}
+
+interface UserAvatarProps {
+  username: string;
+  // older posts and comments store the author's picture; used until the
+  // profile loads, or if it's gone
+  fallback?: string;
+  alt?: string;
+}
+
+// a user's current profile picture
+export function UserAvatar({ username, fallback = "", alt }: UserAvatarProps) {
+  const user = useUser(username);
+  return <Avatar src={user?.profilePic || fallback} alt={alt} />;
 }

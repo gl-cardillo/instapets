@@ -4,17 +4,16 @@ import { useParams, useNavigate } from "react-router-dom";
 import { BsX } from "react-icons/bs";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { useAuth, useProfilePic } from "../../auth/AuthContext";
+import { useAuth } from "../../auth/AuthContext";
 import { useLoader } from "../../hooks/useLoader";
 import { deletePost, getPost } from "../../services/posts";
 import { confirmDelete, handleSuccess, reportError } from "../../utils/alerts";
-import { Avatar } from "../Avatar/Avatar";
+import { UserAvatar } from "../Avatar/Avatar";
 import { LikeAndComment } from "../LikesAndComments/LikesAndComments";
 import { PostImage } from "../PostImage/PostImage";
 
 export function Post() {
   const { profile } = useAuth();
-  const profilePicOf = useProfilePic();
   const navigate = useNavigate();
   const { postId = "" } = useParams();
   // undefined while loading, null if it doesn't exist
@@ -60,7 +59,11 @@ export function Post() {
   const header = (
     <>
       <div className="avatar-pic">
-        <Avatar src={profilePicOf(post.user, post.userPic)} alt="user avatar" />
+        <UserAvatar
+          username={post.user}
+          fallback={post.userPic}
+          alt="user avatar"
+        />
         <h3>{post.user}</h3>
       </div>
       {post.user === profile?.username && (

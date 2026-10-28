@@ -25,6 +25,7 @@ let env: RulesTestEnvironment;
 const user = (username: string, extra = {}) => ({
   email: `${username}@example.com`,
   username,
+  usernameLower: username.toLowerCase(),
   follower: [],
   following: [],
   likes: [],
@@ -99,10 +100,13 @@ describe("users", () => {
     );
   });
 
-  it("rejects profiles for someone else's email or with followers", async () => {
+  it("rejects profiles for someone else's email, with followers, or a wrong search name", async () => {
     await assertFails(setDoc(doc(as("carol"), "users/dave"), user("dave")));
     await assertFails(
       setDoc(doc(as("carol"), "users/carol"), user("carol", { follower: ["bob"] })),
+    );
+    await assertFails(
+      setDoc(doc(as("carol"), "users/carol"), user("carol", { usernameLower: "bob" })),
     );
   });
 

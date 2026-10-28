@@ -22,7 +22,7 @@ export function SignIn() {
     formState: { errors, isSubmitting },
   } = useForm<SignInForm>();
   const navigate = useNavigate();
-  const { refreshProfile, refreshUsers } = useAuth();
+  const { refreshProfile } = useAuth();
   const [error, setError] = useState("");
 
   const registerUser = async (data: SignInForm) => {
@@ -38,7 +38,7 @@ export function SignIn() {
       );
       await createUserProfile(data.email, data.name);
       // the auth listener fires before the profile doc exists
-      await Promise.all([refreshProfile(), refreshUsers()]);
+      await refreshProfile();
       try {
         await sendEmailVerification(user);
       } catch (error) {
