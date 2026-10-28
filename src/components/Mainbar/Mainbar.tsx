@@ -6,10 +6,16 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { IoHomeOutline, IoSearch, IoAddCircleOutline } from "react-icons/io5";
 import { auth } from "../../firebase/config";
+import { FirebaseError } from "firebase/app";
 import { useAuth } from "../../auth/AuthContext";
 import { deleteAccount, searchUsers } from "../../services/users";
 import type { UserProfile } from "../../types";
-import { confirmDelete, handleSuccess, reportError } from "../../utils/alerts";
+import {
+  askPassword,
+  handleError,
+  handleSuccess,
+  reportError,
+} from "../../utils/alerts";
 import { Avatar } from "../Avatar/Avatar";
 import { VerifyEmailBanner } from "../VerifyEmailBanner/VerifyEmailBanner";
 
@@ -61,14 +67,24 @@ export function Mainbar() {
 
   const confirmDeleteUser = async () => {
     if (!profile) return;
-    if (!(await confirmDelete("Are you sure you want to delete your account?")))
-      return;
+    const password = await askPassword(
+      "Delete your account and everything you posted? Enter your password to confirm.",
+      "Delete",
+    );
+    if (password === null) return;
     try {
-      await deleteAccount(profile.username);
+      await deleteAccount(profile.username, password);
       handleSuccess("Account deleted");
       navigate("/login");
     } catch (error) {
-      reportError(error);
+      if (
+        error instanceof FirebaseError &&
+        error.code === "auth/invalid-credential"
+      ) {
+        handleError("Wrong password, nothing was deleted");
+      } else {
+        reportError(error);
+      }
     }
   };
 

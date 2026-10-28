@@ -32,6 +32,25 @@ export async function confirmDelete(title: string): Promise<boolean> {
   return result.isConfirmed;
 }
 
+// resolves to the password typed, or null if cancelled
+export async function askPassword(
+  title: string,
+  confirmButtonText: string,
+): Promise<string | null> {
+  const result = await Swal.fire({
+    ...swalStyle,
+    title,
+    position: "top",
+    input: "password",
+    inputPlaceholder: "Password",
+    inputValidator: (value) => (value ? null : "Please enter your password"),
+    showCancelButton: true,
+    confirmButtonText,
+    cancelButtonText: "Cancel",
+  });
+  return result.isConfirmed ? (result.value as string) : null;
+}
+
 export function handleError(text: string): void {
   Swal.fire({
     ...swalStyle,
