@@ -1,21 +1,17 @@
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../auth/AuthContext";
+import { useCanWrite } from "../auth/AuthContext";
 import { toggleLike } from "../services/posts";
 import type { Post } from "../types";
 import { reportError } from "../utils/alerts";
 
-// returns a like/unlike handler; guests are sent to the login page
+// returns a like/unlike handler
 export function useLikeToggle(onPostChange: (post: Post) => void) {
-  const { profile } = useAuth();
-  const navigate = useNavigate();
+  const canWrite = useCanWrite();
 
   return async (post: Post) => {
-    if (!profile) {
-      navigate("/login");
-      return;
-    }
+    const me = canWrite();
+    if (!me) return;
     try {
-      onPostChange(await toggleLike(post, profile.username));
+      onPostChange(await toggleLike(post, me.username));
     } catch (error) {
       reportError(error);
     }

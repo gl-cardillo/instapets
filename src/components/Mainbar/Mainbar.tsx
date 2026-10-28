@@ -10,10 +10,11 @@ import { useAuth } from "../../auth/AuthContext";
 import { deleteAccount } from "../../services/users";
 import { confirmDelete, handleSuccess, reportError } from "../../utils/alerts";
 import { Avatar } from "../Avatar/Avatar";
+import { VerifyEmailBanner } from "../VerifyEmailBanner/VerifyEmailBanner";
 
 export function Mainbar() {
   const navigate = useNavigate();
-  const { profile, loading, users, refreshUsers } = useAuth();
+  const { profile, loading, users, refreshUsers, emailVerified } = useAuth();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [searchText, setSearchText] = useState("");
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -141,6 +142,7 @@ export function Mainbar() {
           </div>
         </div>
       </div>
+      {profile && !emailVerified && <VerifyEmailBanner />}
       <Outlet />
     </div>
   );

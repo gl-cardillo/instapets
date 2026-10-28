@@ -38,6 +38,10 @@ Check the [demo]( https://gl-cardillo.github.io/instapets/#/login)
 
 Other scripts: `npm run build`, `npm run lint`, `npm run typecheck`, `npm run format`.
 `npm run deploy` builds and publishes `dist/` to the `gh-pages` branch.
+`npm test` runs the security rules and migration tests in the Firestore
+emulator (needs Java 11+).
+
 Security rules live in `firestore.rules` (`firebase deploy --only firestore`).
 Pictures are stored in Firestore (the `images` collection and `users.profilePic`),
-because Firebase Storage requires the paid Blaze plan.
+because Firebase Storage requires the paid Blaze plan. The project runs on the
+free Spark plan

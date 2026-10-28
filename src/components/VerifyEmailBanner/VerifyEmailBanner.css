@@ -1,0 +1,17 @@
+.verify-email-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+  background-color: #fff8e1;
+  border-bottom: 1px solid #f0d78c;
+  text-align: center;
+  font-size: 14px;
+}
+
+.verify-email-banner > div {
+  display: flex;
+  gap: 10px;
+}

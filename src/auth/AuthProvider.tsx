@@ -10,6 +10,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<UserProfile[]>([]);
+  const [emailVerified, setEmailVerified] = useState(false);
   // only the latest profile load is applied, so a slow load started at
   // sign-up (before the profile doc exists) can't overwrite a later one
   const latestLoad = useRef(0);
@@ -29,6 +30,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUsers(await getAllUsers());
   }, []);
 
+  const refreshEmailVerified = useCallback(async () => {
+    const user = auth.currentUser;
+    if (!user) return false;
+    await user.reload();
+    // security rules read email_verified from the ID token, so get a new one
+    await user.getIdToken(true);
+    setEmailVerified(user.emailVerified);
+    return user.emailVerified;
+  }, []);
+
   useEffect(() => {
     getAllUsers().then(setUsers).catch(console.error);
   }, []);
@@ -37,6 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     () =>
       onAuthStateChanged(auth, async (user) => {
         setAuthUser(user);
+        setEmailVerified(user?.emailVerified ?? false);
         try {
           await loadProfile(user);
         } catch (error) {
@@ -50,7 +62,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ authUser, profile, loading, users, refreshProfile, refreshUsers }}
+      value={{
+        authUser,
+        profile,
+        loading,
+        users,
+        emailVerified,
+        refreshProfile,
+        refreshUsers,
+        refreshEmailVerified,
+      }}
     >
       {children}
     </AuthContext.Provider>

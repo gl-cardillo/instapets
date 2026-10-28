@@ -1,7 +1,7 @@
 import "./UploadPost.css";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../auth/AuthContext";
+import { useAuth, useCanWrite } from "../../auth/AuthContext";
 import { addPost } from "../../services/posts";
 import { handleError, reportError } from "../../utils/alerts";
 import addPicPlaceholder from "../../img/add-pic.png";
@@ -9,6 +9,7 @@ import { Avatar } from "../Avatar/Avatar";
 
 export function UploadPost() {
   const { profile } = useAuth();
+  const canWrite = useCanWrite();
   const navigate = useNavigate();
   const [pic, setPic] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -41,9 +42,11 @@ export function UploadPost() {
       handleError("Choose a picture first");
       return;
     }
+    const me = canWrite();
+    if (!me) return;
     setPosting(true);
     try {
-      await addPost(pic, profile, caption);
+      await addPost(pic, me, caption);
       navigate(`/profile/${profile.username}`);
     } catch (error) {
       reportError(error);
