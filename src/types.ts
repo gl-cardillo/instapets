@@ -4,6 +4,8 @@
 export interface UserProfile {
   email: string;
   username: string;
+  // for case-insensitive search
+  usernameLower: string;
   follower: string[];
   following: string[];
   // ids of posts this user liked

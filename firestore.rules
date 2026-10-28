@@ -11,10 +11,16 @@ service cloud.firestore {
       return request.auth.token.email.lower();
     }
 
-    // users/{username} exists and belongs to the signed-in account
+    // posting, liking, commenting and following need a verified email
+    function verified() {
+      return request.auth.token.email_verified == true;
+    }
+
+    // users/{username} exists and belongs to the signed-in, verified account
     function isUser(username) {
       let path = /databases/$(database)/documents/users/$(username);
       return signedIn()
+        && verified()
         && exists(path)
         && get(path).data.email.lower() == authEmail();
     }
@@ -61,6 +67,7 @@ service cloud.firestore {
       allow create: if signedIn()
         && username.matches('^[^/]{2,15}$')
         && request.resource.data.username == username
+        && request.resource.data.usernameLower == username.lower()
         && request.resource.data.email.lower() == authEmail()
         && request.resource.data.follower == []
         && request.resource.data.following == []
@@ -71,6 +78,7 @@ service cloud.firestore {
       // the owner can edit their own profile but can't change who they are or
       // invent followers
       allow update: if signedIn()
+        && verified()
         && resource.data.email.lower() == authEmail()
         && onlyChanges(['following', 'likes', 'comments', 'profilePic', 'follower'])
         && added('follower').size() == 0
@@ -80,6 +88,7 @@ service cloud.firestore {
       allow update: if onlyChanges(['follower']) && togglesSelf('follower');
       allow update: if onlyChanges(['following']) && removesSelf('following');
 
+      // unverified users can still delete their account
       allow delete: if signedIn() && resource.data.email.lower() == authEmail();
     }
 

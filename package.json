@@ -23,7 +23,7 @@
     "typecheck": "tsc -b",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "test:rules": "npx -y firebase-tools@14 emulators:exec --only firestore --project demo-instapets \"vitest run tests\"",
+    "test": "npx -y firebase-tools@14 emulators:exec --only firestore --project demo-instapets \"vitest run tests\"",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
   },
@@ -37,6 +37,7 @@
     "eslint": "^10.13.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.7",
+    "firebase-admin": "^13.10.0",
     "gh-pages": "^6.1.1",
     "globals": "^17.13.0",
     "prettier": "^3.9.10",

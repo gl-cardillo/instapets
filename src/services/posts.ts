@@ -4,8 +4,10 @@ import {
   doc,
   getDoc,
   getDocs,
+  limit,
   orderBy,
   query,
+  startAfter,
   where,
   writeBatch,
 } from "firebase/firestore";
@@ -15,9 +17,30 @@ import { compressImage } from "../utils/image";
 import { commentsCol, imagesCol, postsCol, usersCol } from "./collections";
 import { forgetPostImage } from "./images";
 
-export async function getFeed(): Promise<Post[]> {
-  const snapshot = await getDocs(query(postsCol, orderBy("created", "desc")));
-  return snapshot.docs.map((d) => d.data());
+export interface FeedPage {
+  posts: Post[];
+  // pass to getFeed for the next page; null when there are no more
+  next: number | null;
+}
+
+// newest first, `pageSize` at a time
+export async function getFeed(
+  after: number | null = null,
+  pageSize = 10,
+): Promise<FeedPage> {
+  const snapshot = await getDocs(
+    query(
+      postsCol,
+      orderBy("created", "desc"),
+      ...(after === null ? [] : [startAfter(after)]),
+      limit(pageSize),
+    ),
+  );
+  const posts = snapshot.docs.map((d) => d.data());
+  return {
+    posts,
+    next: posts.length === pageSize ? posts[posts.length - 1].created : null,
+  };
 }
 
 export async function getPostsByUser(username: string): Promise<Post[]> {

@@ -5,6 +5,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  limit,
   query,
   setDoc,
   updateDoc,
@@ -18,14 +19,52 @@ import { compressImage } from "../utils/image";
 import { commentsCol, postsCol, usersCol } from "./collections";
 import { deletePost } from "./posts";
 
-export async function getAllUsers(): Promise<UserProfile[]> {
-  const snapshot = await getDocs(usersCol);
-  return snapshot.docs.map((d) => d.data());
-}
-
-export async function getUser(username: string): Promise<UserProfile | null> {
+async function fetchUser(username: string): Promise<UserProfile | null> {
   const snapshot = await getDoc(doc(usersCol, username));
   return snapshot.exists() ? snapshot.data() : null;
+}
+
+// Profiles are read at most once per visit, since avatars and names show up
+// all over the page. Call forgetUser after changing one.
+const cache = new Map<string, Promise<UserProfile | null>>();
+
+export function getUser(username: string): Promise<UserProfile | null> {
+  let user = cache.get(username);
+  if (!user) {
+    user = fetchUser(username);
+    // don't cache failures, so they're retried
+    user.catch(() => cache.delete(username));
+    cache.set(username, user);
+  }
+  return user;
+}
+
+export function forgetUser(...usernames: string[]): void {
+  usernames.forEach((username) => cache.delete(username));
+}
+
+// the existing ones among `usernames`, in the same order
+export async function getUsers(usernames: string[]): Promise<UserProfile[]> {
+  const users = await Promise.all([...new Set(usernames)].map(getUser));
+  return users.filter((user) => user !== null);
+}
+
+// users whose name starts with `text`, ignoring case
+export async function searchUsers(
+  text: string,
+  max: number,
+): Promise<UserProfile[]> {
+  const prefix = text.toLowerCase().trim();
+  if (!prefix) return [];
+  const snapshot = await getDocs(
+    query(
+      usersCol,
+      where("usernameLower", ">=", prefix),
+      where("usernameLower", "<=", prefix + ""),
+      limit(max),
+    ),
+  );
+  return snapshot.docs.map((d) => d.data());
 }
 
 export async function getUserByEmail(
@@ -36,7 +75,7 @@ export async function getUserByEmail(
 }
 
 export async function isUsernameTaken(username: string): Promise<boolean> {
-  return (await getDoc(doc(usersCol, username))).exists();
+  return (await fetchUser(username)) !== null;
 }
 
 export async function createUserProfile(
@@ -47,12 +86,14 @@ export async function createUserProfile(
     // Firebase Auth lowercases emails, and profiles are looked up by it
     email: email.toLowerCase(),
     username,
+    usernameLower: username.toLowerCase(),
     follower: [],
     following: [],
     likes: [],
     comments: [],
     profilePic: "",
   });
+  forgetUser(username);
 }
 
 // `username` follows or unfollows `profileName`
@@ -69,6 +110,7 @@ export async function toggleFollow(
     follower: isFollowing ? arrayRemove(username) : arrayUnion(username),
   });
   await batch.commit();
+  forgetUser(profileName, username);
 }
 
 export async function changeProfilePic(
@@ -77,12 +119,13 @@ export async function changeProfilePic(
 ): Promise<void> {
   const profilePic = await compressImage(file, 256, 60_000);
   await updateDoc(doc(usersCol, username), { profilePic });
+  forgetUser(username);
 }
 
 // Deletes the signed-in user's posts, likes, follows, comments, profile and
 // login.
 export async function deleteAccount(username: string): Promise<void> {
-  const profile = await getUser(username);
+  const profile = await fetchUser(username);
   if (!profile) throw new Error(`User ${username} not found`);
 
   const posts = await getDocs(query(postsCol, where("user", "==", username)));
@@ -104,5 +147,6 @@ export async function deleteAccount(username: string): Promise<void> {
   const user = auth.currentUser;
   if (!user) throw new Error("Not signed in");
   await deleteDoc(doc(usersCol, username));
+  forgetUser(username);
   await deleteUser(user);
 }
