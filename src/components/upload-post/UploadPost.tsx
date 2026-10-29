@@ -1,6 +1,6 @@
 import "./UploadPost.css";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useAuth, useCanWrite } from "../../auth/AuthContext";
 import { addPost } from "../../services/posts";
 import { handleError, reportError } from "../../utils/alerts";

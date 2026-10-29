@@ -1,6 +1,6 @@
 import "./App.css";
 import "animate.css";
-import { HashRouter, Navigate, Routes, Route } from "react-router-dom";
+import { HashRouter, Navigate, Routes, Route } from "react-router";
 import { SkeletonTheme } from "react-loading-skeleton";
 import { Login } from "./components/Login/Login";
 import { SignIn } from "./components/SignIn/SignIn";
