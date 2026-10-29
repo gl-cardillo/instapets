@@ -1,5 +1,5 @@
 import "./Card.css";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import type { UserProfile } from "../../types";
 import { Avatar } from "../Avatar/Avatar";
 

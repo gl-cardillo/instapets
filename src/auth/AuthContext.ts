@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import type { User } from "firebase/auth";
 import type { UserProfile } from "../types";
 import { handleError } from "../utils/alerts";

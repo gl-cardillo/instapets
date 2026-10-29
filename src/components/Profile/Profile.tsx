@@ -1,6 +1,6 @@
 import "./Profile.css";
 import { useCallback, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router";
 import { TiPlusOutline } from "react-icons/ti";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";

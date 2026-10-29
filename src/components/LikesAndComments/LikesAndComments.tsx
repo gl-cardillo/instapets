@@ -1,6 +1,6 @@
 import "./LikesAndComments.css";
 import { useCallback, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { BsSuitHeart, BsSuitHeartFill, BsChat, BsX } from "react-icons/bs";
 import { useAuth, useCanWrite } from "../../auth/AuthContext";
 import { useLikeToggle } from "../../hooks/useLikeToggle";
