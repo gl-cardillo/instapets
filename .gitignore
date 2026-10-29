@@ -11,6 +11,9 @@
 # Firebase emulator logs
 *-debug.log
 
+# Vitest run reports
+/.vitest
+
 # Firebase admin keys (full access to the project; keep them out of git)
 *firebase-adminsdk*.json
 *service-account*.json
