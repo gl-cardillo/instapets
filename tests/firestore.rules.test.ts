@@ -108,6 +108,9 @@ describe("users", () => {
     await assertFails(
       setDoc(doc(as("carol"), "users/carol"), user("carol", { usernameLower: "bob" })),
     );
+    await assertFails(
+      setDoc(doc(as("carol"), "users/carol"), user("carol", { junk: "x".repeat(500_000) })),
+    );
   });
 
   it("rejects guests editing profiles", async () => {
@@ -154,7 +157,12 @@ describe("users", () => {
 });
 
 describe("posts and pictures", () => {
-  const newPost = (db: Firestore, owner: string, author = owner) => {
+  const newPost = (
+    db: Firestore,
+    owner: string,
+    author = owner,
+    fields: Record<string, unknown> = {},
+  ) => {
     const batch = writeBatch(db);
     batch.set(doc(db, "images/p2"), { owner, src: pic });
     batch.set(doc(db, "posts/p2"), {
@@ -164,13 +172,29 @@ describe("posts and pictures", () => {
       caption: "",
       urlPic: "",
       likes: [],
-      created: 3,
+      created: Date.now(),
+      ...fields,
     });
     return batch.commit();
   };
 
   it("lets you post a picture", async () => {
     await assertSucceeds(newPost(as("bob"), "bob"));
+  });
+
+  it("allows captions up to 2200 characters", async () => {
+    await assertSucceeds(
+      newPost(as("bob"), "bob", "bob", { caption: "c".repeat(2200) }),
+    );
+  });
+
+  it("rejects long captions, extra fields and backdated or future posts", async () => {
+    const bob = as("bob");
+    await assertFails(newPost(bob, "bob", "bob", { caption: "c".repeat(2201) }));
+    await assertFails(newPost(bob, "bob", "bob", { junk: "x".repeat(500_000) }));
+    await assertFails(newPost(bob, "bob", "bob", { created: Date.now() + 3_600_000 }));
+    await assertFails(newPost(bob, "bob", "bob", { created: 1 }));
+    await assertFails(newPost(bob, "bob", "bob", { userPic: "https://evil.example" }));
   });
 
   it("rejects posting as someone else", async () => {
@@ -190,7 +214,7 @@ describe("posts and pictures", () => {
       caption: "",
       urlPic: "",
       likes: [],
-      created: 3,
+      created: Date.now(),
     });
     await assertFails(batch.commit());
   });
@@ -234,10 +258,28 @@ describe("comments", () => {
       text: "wow",
       username: "bob",
       userPic: "",
-      created: 4,
+      created: Date.now(),
     });
     batch.update(doc(db, "users/bob"), { comments: arrayUnion("c2") });
     await assertSucceeds(batch.commit());
+  });
+
+  it("rejects empty, long or padded comments", async () => {
+    const comment = (fields: Record<string, unknown>) =>
+      setDoc(doc(as("bob"), "comments/c2"), {
+        commentId: "c2",
+        postId: "p1",
+        text: "wow",
+        username: "bob",
+        userPic: "",
+        created: Date.now(),
+        ...fields,
+      });
+    await assertSucceeds(comment({ text: "c".repeat(1000) }));
+    await assertFails(comment({ text: "" }));
+    await assertFails(comment({ text: "c".repeat(1001) }));
+    await assertFails(comment({ junk: true }));
+    await assertFails(comment({ created: Date.now() + 3_600_000 }));
   });
 
   it("rejects commenting as someone else", async () => {
@@ -248,7 +290,7 @@ describe("comments", () => {
         text: "wow",
         username: "alice",
         userPic: "",
-        created: 4,
+        created: Date.now(),
       }),
     );
   });
@@ -271,7 +313,7 @@ describe("unverified email", () => {
       caption: "",
       urlPic: "",
       likes: [],
-      created: 3,
+      created: Date.now(),
     });
     await assertFails(post.commit());
     await assertFails(updateDoc(doc(db, "posts/p1"), { likes: arrayUnion("bob") }));
@@ -282,7 +324,7 @@ describe("unverified email", () => {
         text: "wow",
         username: "bob",
         userPic: "",
-        created: 4,
+        created: Date.now(),
       }),
     );
     await assertFails(updateDoc(doc(db, "users/alice"), { follower: arrayUnion("bob") }));

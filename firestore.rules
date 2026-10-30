@@ -25,6 +25,18 @@ service cloud.firestore {
         && get(path).data.email.lower() == authEmail();
     }
 
+    // a new document has exactly these fields: none missing, none extra
+    function hasExactly(keys) {
+      return request.resource.data.keys().hasAll(keys)
+        && request.resource.data.keys().hasOnly(keys);
+    }
+
+    // a client timestamp (ms) close to the server's clock, so posts can't be
+    // dated in the future to stay at the top of the feed
+    function isNow(time) {
+      return time is int && math.abs(time - request.time.toMillis()) < 600000;
+    }
+
     function onlyChanges(keys) {
       return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
     }
@@ -65,6 +77,8 @@ service cloud.firestore {
       allow read: if true;
 
       allow create: if signedIn()
+        && hasExactly(['email', 'username', 'usernameLower', 'follower',
+          'following', 'likes', 'comments', 'profilePic'])
         && username.matches('^[^/]{2,15}$')
         && request.resource.data.username == username
         && request.resource.data.usernameLower == username.lower()
@@ -96,9 +110,14 @@ service cloud.firestore {
       allow read: if true;
 
       allow create: if isUser(request.resource.data.user)
+        && hasExactly(['id', 'user', 'userPic', 'caption', 'urlPic', 'likes', 'created'])
         && request.resource.data.id == postId
         && request.resource.data.likes == []
-        && request.resource.data.urlPic == '';
+        && request.resource.data.urlPic == ''
+        && request.resource.data.userPic == ''
+        && request.resource.data.caption is string
+        && request.resource.data.caption.size() <= 2200
+        && isNow(request.resource.data.created);
 
       allow update: if onlyChanges(['likes']) && togglesSelf('likes');
 
@@ -109,7 +128,13 @@ service cloud.firestore {
       allow read: if true;
 
       allow create: if isUser(request.resource.data.username)
+        && hasExactly(['commentId', 'postId', 'text', 'username', 'userPic', 'created'])
         && request.resource.data.commentId == commentId
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() <= 1000
+        && request.resource.data.userPic == ''
+        && isNow(request.resource.data.created)
         && exists(/databases/$(database)/documents/posts/$(request.resource.data.postId));
 
       // the comment's author, or the post's author when deleting the post
@@ -123,7 +148,7 @@ service cloud.firestore {
 
       // only together with its post, in the same batch
       allow create: if isUser(request.resource.data.owner)
-        && request.resource.data.keys().hasOnly(['owner', 'src'])
+        && hasExactly(['owner', 'src'])
         && request.resource.data.src is string
         && request.resource.data.src.size() < 800000
         && getAfter(/databases/$(database)/documents/posts/$(postId)).data.user
