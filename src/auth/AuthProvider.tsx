@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { onAuthStateChanged, type User } from "firebase/auth";
 import { auth } from "../firebase/config";
 import { forgetUser, getUserByEmail } from "../services/users";

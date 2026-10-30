@@ -29,7 +29,10 @@ describe("routing", () => {
   it("shows a not found page for unknown URLs, with the top bar", () => {
     renderAt("#/no/such/page");
     expect(screen.getByText("Page not found")).toBeInTheDocument();
-    expect(screen.getByText("Back to the feed")).toHaveAttribute("href", "#/home");
+    expect(screen.getByText("Back to the feed")).toHaveAttribute(
+      "href",
+      "#/home",
+    );
     expect(screen.getByPlaceholderText("Search pets...")).toBeInTheDocument();
   });
 });

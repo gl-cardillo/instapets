@@ -7,8 +7,7 @@ export function Card({ user }: { user: UserProfile }) {
   return (
     <Link to={`/profile/${user.username}`}>
       <div className="card-user">
-        <Avatar src={user.profilePic} />{" "}
-        <p>{user.username}</p>
+        <Avatar src={user.profilePic} /> <p>{user.username}</p>
       </div>
     </Link>
   );

@@ -24,11 +24,13 @@ describe("useLoader", () => {
   it("ignores a load that finishes after a newer one started", async () => {
     const first = deferred<string>();
     const second = deferred<string>();
-    const loaders = { first: () => first.promise, second: () => second.promise };
-    const { result, rerender } = renderHook(
-      ({ load }) => useLoader(load),
-      { initialProps: { load: loaders.first } },
-    );
+    const loaders = {
+      first: () => first.promise,
+      second: () => second.promise,
+    };
+    const { result, rerender } = renderHook(({ load }) => useLoader(load), {
+      initialProps: { load: loaders.first },
+    });
     rerender({ load: loaders.second });
     await act(async () => second.resolve("new"));
     await act(async () => first.resolve("stale"));

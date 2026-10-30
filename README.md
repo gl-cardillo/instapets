@@ -3,13 +3,16 @@
 <br/>
 
 ## Description:
+
 ---
+
 This project is something similiar to instagram (with less functionalities of course) but for pets.
 I used React and React Router and firebase for this project.
 
 <br/>
 
 ## Functionalities:
+
 ---
 
 - Create a profile.
@@ -26,10 +29,13 @@ I used React and React Router and firebase for this project.
 - Delete users.
 
 ## Link
+
 ---
-Check the [demo]( https://gl-cardillo.github.io/instapets/#/login) 
+
+Check the [demo](https://gl-cardillo.github.io/instapets/#/login)
 
 ## Development
+
 ---
 
 1. `npm install`
