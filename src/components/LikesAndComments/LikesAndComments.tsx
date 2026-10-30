@@ -6,6 +6,7 @@ import { useAuth, useCanWrite } from "../../auth/AuthContext";
 import { useLikeToggle } from "../../hooks/useLikeToggle";
 import { useLoader } from "../../hooks/useLoader";
 import { addComment, deleteComment, getComments } from "../../services/comments";
+import { MAX_COMMENT_LENGTH } from "../../limits";
 import type { Post } from "../../types";
 import { reportError } from "../../utils/alerts";
 import { getTime } from "../../utils/time";
@@ -164,6 +165,7 @@ export function LikeAndComment({ post, onPostChange }: Props) {
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
             placeholder="Write a comment..."
+            maxLength={MAX_COMMENT_LENGTH}
             className="textarea-comment"
           />
           <button className="button" onClick={submitComment}>

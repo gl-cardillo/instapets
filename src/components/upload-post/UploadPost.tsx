@@ -2,6 +2,7 @@ import "./UploadPost.css";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth, useCanWrite } from "../../auth/AuthContext";
+import { MAX_CAPTION_LENGTH } from "../../limits";
 import { addPost } from "../../services/posts";
 import { handleError, reportError } from "../../utils/alerts";
 import addPicPlaceholder from "../../img/add-pic.png";
@@ -83,6 +84,7 @@ export function UploadPost() {
         <textarea
           onChange={(e) => setCaption(e.target.value)}
           placeholder="Write a caption..."
+          maxLength={MAX_CAPTION_LENGTH}
         />
         <div className="buttons-post">
           <button className="button" onClick={() => navigate(-1)}>
