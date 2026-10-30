@@ -47,6 +47,8 @@ Other scripts: `npm run build`, `npm run lint`, `npm run typecheck`, `npm run fo
 `npm test` runs the unit tests (components and helpers, in jsdom).
 `npm run test:rules` runs the security rules tests in the Firestore emulator
 (needs Java 11+).
+GitHub Actions runs all of these on every push to `main` and on pull requests
+(`.github/workflows/ci.yml`). Deploying stays manual.
 
 Security rules live in `firestore.rules` (`firebase deploy --only firestore`).
 Pictures are stored in Firestore (the `images` collection and `users.profilePic`),
