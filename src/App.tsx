@@ -11,6 +11,7 @@ import { Post } from "./components/Post/Post";
 import { Footer } from "./components/Footer/Footer";
 import { UploadPost } from "./components/upload-post/UploadPost";
 import { SearchPage } from "./components/SearchPage/SearchPage";
+import { NotFound } from "./components/NotFound/NotFound";
 import { RequireAuth } from "./auth/RequireAuth";
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
             />
             <Route path="/post/:postId" element={<Post />} />
             <Route path="/searchPage" element={<SearchPage />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
         <Footer />

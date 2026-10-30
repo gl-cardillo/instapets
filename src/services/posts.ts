@@ -43,9 +43,13 @@ export async function getFeed(
   };
 }
 
+// newest first
 export async function getPostsByUser(username: string): Promise<Post[]> {
+  // sorted here rather than with orderBy, which would need a composite index
   const snapshot = await getDocs(query(postsCol, where("user", "==", username)));
-  return snapshot.docs.map((d) => d.data());
+  return snapshot.docs
+    .map((d) => d.data())
+    .sort((a, b) => b.created - a.created);
 }
 
 export async function getPost(id: string): Promise<Post | null> {
