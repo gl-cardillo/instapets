@@ -5,7 +5,11 @@ import { BsSuitHeart, BsSuitHeartFill, BsChat, BsX } from "react-icons/bs";
 import { useAuth, useCanWrite } from "../../auth/AuthContext";
 import { useLikeToggle } from "../../hooks/useLikeToggle";
 import { useLoader } from "../../hooks/useLoader";
-import { addComment, deleteComment, getComments } from "../../services/comments";
+import {
+  addComment,
+  deleteComment,
+  getComments,
+} from "../../services/comments";
 import { MAX_COMMENT_LENGTH } from "../../limits";
 import type { Post } from "../../types";
 import { reportError } from "../../utils/alerts";

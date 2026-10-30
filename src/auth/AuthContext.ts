@@ -38,7 +38,7 @@ export function useCanWrite() {
     }
     if (!emailVerified) {
       handleError(
-        "Please verify your email first: click the link we sent you, then press \"I've verified\".",
+        'Please verify your email first: click the link we sent you, then press "I\'ve verified".',
       );
       return null;
     }

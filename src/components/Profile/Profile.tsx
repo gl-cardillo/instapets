@@ -157,7 +157,7 @@ function ProfilePage({ profileName }: { profileName: string }) {
         <div className="foll-section">
           <h4>Follower</h4>
           {userProfile.follower.length > 0 ? (
-<UserCards usernames={userProfile.follower} />
+            <UserCards usernames={userProfile.follower} />
           ) : (
             <p>No follower </p>
           )}
@@ -167,7 +167,7 @@ function ProfilePage({ profileName }: { profileName: string }) {
         <div className="foll-section">
           <h4>Following</h4>
           {userProfile.following.length > 0 ? (
-<UserCards usernames={userProfile.following} />
+            <UserCards usernames={userProfile.following} />
           ) : (
             <h5>No following :(</h5>
           )}

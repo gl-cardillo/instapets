@@ -4,7 +4,9 @@ import { Avatar, UserAvatar } from "./Avatar";
 import defaultAvatar from "../../img/default-avatar.svg";
 import type { UserProfile } from "../../types";
 
-const user = vi.hoisted(() => ({ current: undefined as UserProfile | null | undefined }));
+const user = vi.hoisted(() => ({
+  current: undefined as UserProfile | null | undefined,
+}));
 vi.mock("../../hooks/useUser", () => ({ useUser: () => user.current }));
 
 const pic = "data:image/webp;base64,AAAA";
@@ -37,7 +39,9 @@ describe("Avatar", () => {
 describe("UserAvatar", () => {
   it("shows the user's current picture", () => {
     user.current = { profilePic: pic } as UserProfile;
-    render(<UserAvatar username="alice" fallback="https://old.example/a.png" />);
+    render(
+      <UserAvatar username="alice" fallback="https://old.example/a.png" />,
+    );
     expect(screen.getByRole("img")).toHaveAttribute("src", pic);
   });
 

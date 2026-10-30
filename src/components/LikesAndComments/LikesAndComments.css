@@ -47,7 +47,8 @@
   padding: 5px;
 }
 
-.add-comment img, .comments-posted img {
+.add-comment img,
+.comments-posted img {
   width: 30px;
   height: 30px;
   border-radius: 50px;
@@ -117,7 +118,7 @@ textarea {
   .comments-details {
     max-width: none;
   }
-  .right-section>.l-c-section {
+  .right-section > .l-c-section {
     height: 410px;
     display: flex;
     flex-direction: column;
@@ -126,7 +127,7 @@ textarea {
 }
 
 @media only screen and (min-width: 1440px) {
-  .right-section>.l-c-section {
+  .right-section > .l-c-section {
     height: 490px;
   }
 

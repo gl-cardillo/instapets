@@ -41,7 +41,8 @@ const as = (username: string, emailVerified = true): Firestore =>
       email_verified: emailVerified,
     })
     .firestore() as unknown as Firestore;
-const guest = (): Firestore => env.unauthenticatedContext().firestore() as unknown as Firestore;
+const guest = (): Firestore =>
+  env.unauthenticatedContext().firestore() as unknown as Firestore;
 
 const pic = "data:image/webp;base64,UklGRhYAAABXRUJQVlA4";
 
@@ -83,7 +84,12 @@ beforeEach(async () => {
 
 describe("reading", () => {
   it("lets guests read everything", async () => {
-    for (const path of ["users/alice", "posts/p1", "images/p1", "comments/c1"]) {
+    for (const path of [
+      "users/alice",
+      "posts/p1",
+      "images/p1",
+      "comments/c1",
+    ]) {
       await assertSucceeds(getDoc(doc(guest(), path)));
     }
   });
@@ -91,7 +97,9 @@ describe("reading", () => {
 
 describe("users", () => {
   it("lets you create your own profile", async () => {
-    await assertSucceeds(setDoc(doc(as("carol"), "users/carol"), user("carol")));
+    await assertSucceeds(
+      setDoc(doc(as("carol"), "users/carol"), user("carol")),
+    );
   });
 
   it("lets you create your profile before verifying your email", async () => {
@@ -103,24 +111,39 @@ describe("users", () => {
   it("rejects profiles for someone else's email, with followers, or a wrong search name", async () => {
     await assertFails(setDoc(doc(as("carol"), "users/dave"), user("dave")));
     await assertFails(
-      setDoc(doc(as("carol"), "users/carol"), user("carol", { follower: ["bob"] })),
+      setDoc(
+        doc(as("carol"), "users/carol"),
+        user("carol", { follower: ["bob"] }),
+      ),
     );
     await assertFails(
-      setDoc(doc(as("carol"), "users/carol"), user("carol", { usernameLower: "bob" })),
+      setDoc(
+        doc(as("carol"), "users/carol"),
+        user("carol", { usernameLower: "bob" }),
+      ),
     );
     await assertFails(
-      setDoc(doc(as("carol"), "users/carol"), user("carol", { junk: "x".repeat(500_000) })),
+      setDoc(
+        doc(as("carol"), "users/carol"),
+        user("carol", { junk: "x".repeat(500_000) }),
+      ),
     );
   });
 
   it("rejects guests editing profiles", async () => {
-    await assertFails(updateDoc(doc(guest(), "users/alice"), { profilePic: pic }));
+    await assertFails(
+      updateDoc(doc(guest(), "users/alice"), { profilePic: pic }),
+    );
   });
 
   it("lets you set a data URL profile picture, but not a link", async () => {
-    await assertSucceeds(updateDoc(doc(as("alice"), "users/alice"), { profilePic: pic }));
+    await assertSucceeds(
+      updateDoc(doc(as("alice"), "users/alice"), { profilePic: pic }),
+    );
     await assertFails(
-      updateDoc(doc(as("alice"), "users/alice"), { profilePic: "https://evil.example/x.png" }),
+      updateDoc(doc(as("alice"), "users/alice"), {
+        profilePic: "https://evil.example/x.png",
+      }),
     );
     await assertFails(
       updateDoc(doc(as("alice"), "users/alice"), {
@@ -130,7 +153,9 @@ describe("users", () => {
   });
 
   it("rejects editing someone else's profile", async () => {
-    await assertFails(updateDoc(doc(as("bob"), "users/alice"), { profilePic: pic }));
+    await assertFails(
+      updateDoc(doc(as("bob"), "users/alice"), { profilePic: pic }),
+    );
   });
 
   it("lets you follow and unfollow", async () => {
@@ -148,10 +173,14 @@ describe("users", () => {
 
   it("rejects adding someone else as a follower", async () => {
     await assertFails(
-      updateDoc(doc(as("bob"), "users/alice"), { follower: arrayUnion("carol") }),
+      updateDoc(doc(as("bob"), "users/alice"), {
+        follower: arrayUnion("carol"),
+      }),
     );
     await assertFails(
-      updateDoc(doc(as("alice"), "users/alice"), { follower: arrayUnion("bob") }),
+      updateDoc(doc(as("alice"), "users/alice"), {
+        follower: arrayUnion("bob"),
+      }),
     );
   });
 });
@@ -190,11 +219,19 @@ describe("posts and pictures", () => {
 
   it("rejects long captions, extra fields and backdated or future posts", async () => {
     const bob = as("bob");
-    await assertFails(newPost(bob, "bob", "bob", { caption: "c".repeat(2201) }));
-    await assertFails(newPost(bob, "bob", "bob", { junk: "x".repeat(500_000) }));
-    await assertFails(newPost(bob, "bob", "bob", { created: Date.now() + 3_600_000 }));
+    await assertFails(
+      newPost(bob, "bob", "bob", { caption: "c".repeat(2201) }),
+    );
+    await assertFails(
+      newPost(bob, "bob", "bob", { junk: "x".repeat(500_000) }),
+    );
+    await assertFails(
+      newPost(bob, "bob", "bob", { created: Date.now() + 3_600_000 }),
+    );
     await assertFails(newPost(bob, "bob", "bob", { created: 1 }));
-    await assertFails(newPost(bob, "bob", "bob", { userPic: "https://evil.example" }));
+    await assertFails(
+      newPost(bob, "bob", "bob", { userPic: "https://evil.example" }),
+    );
   });
 
   it("rejects posting as someone else", async () => {
@@ -203,7 +240,9 @@ describe("posts and pictures", () => {
   });
 
   it("rejects a picture without a post, or an oversized one", async () => {
-    await assertFails(setDoc(doc(as("bob"), "images/p3"), { owner: "bob", src: pic }));
+    await assertFails(
+      setDoc(doc(as("bob"), "images/p3"), { owner: "bob", src: pic }),
+    );
     const db = as("bob");
     const batch = writeBatch(db);
     batch.set(doc(db, "images/p2"), { owner: "bob", src: "x".repeat(800_000) });
@@ -225,12 +264,18 @@ describe("posts and pictures", () => {
     like.update(doc(db, "posts/p1"), { likes: arrayUnion("bob") });
     like.update(doc(db, "users/bob"), { likes: arrayUnion("p1") });
     await assertSucceeds(like.commit());
-    await assertSucceeds(updateDoc(doc(db, "posts/p1"), { likes: arrayRemove("bob") }));
+    await assertSucceeds(
+      updateDoc(doc(db, "posts/p1"), { likes: arrayRemove("bob") }),
+    );
   });
 
   it("rejects liking on someone else's behalf or editing captions", async () => {
-    await assertFails(updateDoc(doc(as("bob"), "posts/p1"), { likes: arrayUnion("carol") }));
-    await assertFails(updateDoc(doc(as("bob"), "posts/p1"), { caption: "hacked" }));
+    await assertFails(
+      updateDoc(doc(as("bob"), "posts/p1"), { likes: arrayUnion("carol") }),
+    );
+    await assertFails(
+      updateDoc(doc(as("bob"), "posts/p1"), { caption: "hacked" }),
+    );
   });
 
   it("lets the author delete a post with its comments and picture", async () => {
@@ -316,7 +361,9 @@ describe("unverified email", () => {
       created: Date.now(),
     });
     await assertFails(post.commit());
-    await assertFails(updateDoc(doc(db, "posts/p1"), { likes: arrayUnion("bob") }));
+    await assertFails(
+      updateDoc(doc(db, "posts/p1"), { likes: arrayUnion("bob") }),
+    );
     await assertFails(
       setDoc(doc(db, "comments/c2"), {
         commentId: "c2",
@@ -327,7 +374,9 @@ describe("unverified email", () => {
         created: Date.now(),
       }),
     );
-    await assertFails(updateDoc(doc(db, "users/alice"), { follower: arrayUnion("bob") }));
+    await assertFails(
+      updateDoc(doc(db, "users/alice"), { follower: arrayUnion("bob") }),
+    );
     await assertFails(updateDoc(doc(db, "users/bob"), { profilePic: pic }));
   });
 
@@ -339,10 +388,15 @@ describe("unverified email", () => {
 describe("account deletion", () => {
   it("lets a deleted user remove themselves from others' following", async () => {
     await env.withSecurityRulesDisabled((context) =>
-      setDoc(doc(context.firestore(), "users/alice"), user("alice", { following: ["bob"] })),
+      setDoc(
+        doc(context.firestore(), "users/alice"),
+        user("alice", { following: ["bob"] }),
+      ),
     );
     await assertSucceeds(
-      updateDoc(doc(as("bob"), "users/alice"), { following: arrayRemove("bob") }),
+      updateDoc(doc(as("bob"), "users/alice"), {
+        following: arrayRemove("bob"),
+      }),
     );
   });
 });
