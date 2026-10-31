@@ -8,6 +8,8 @@ import {
 import { auth } from "../../firebase/config";
 import { useAuth } from "../../auth/AuthContext";
 import { createUserProfile, isUsernameTaken } from "../../services/users";
+import { Button } from "../ui/Button";
+import { TextField } from "../ui/TextField";
 
 interface SignInForm {
   email: string;
@@ -56,76 +58,64 @@ export function SignIn() {
       <div className="login-signIn-container">
         <h1 className="title"> Instapets</h1>
         <p className="sign-up-text">Sign up to see photos of beautiful pets</p>
-        <form onSubmit={handleSubmit(registerUser)}>
-          <div className="label-container">
-            <label>
-              <span className="label"> Email:</span>
-              <input
-                type="email"
-                id="email"
-                {...register("email", {
-                  required: true,
-                  minLength: 9,
-                  maxLength: 35,
-                })}
-              />
-            </label>
-          </div>
-          <p className="error"> {errors.email && "Email is required"}</p>
-          <div className="label-container">
-            <label>
-              <span className="label"> Pet username:</span>
-              <input
-                type="text"
-                id="name"
-                {...register("name", {
-                  required: true,
-                  minLength: 2,
-                  maxLength: 15,
-                  // usernames are document ids, which can't contain "/"
-                  pattern: /^[^/]+$/,
-                })}
-              />
-            </label>
-          </div>
-          <p className="error">
-            {errors.name &&
-              "Name must be between two and fifteen characters, without /"}
-          </p>
-          <span className="error">{error}</span>
-          <div className="label-container">
-            <label>
-              <span className="label"> Password:</span>
-              <input
-                type="password"
-                id="password"
-                {...register("password", {
-                  required: true,
-                  pattern: {
-                    value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#%&*]{8,}$/,
-                    message:
-                      "The password must be minimum eight characters, at least one letter, one number, and may include !@#%&*",
-                  },
-                })}
-              />
-            </label>
-          </div>
-          <p className="error">{errors.password && errors.password.message}</p>
-          <button disabled={isSubmitting} className="signIn-button">
+        <form
+          onSubmit={handleSubmit(registerUser)}
+          className="flex w-full flex-col gap-3"
+        >
+          {error && (
+            <p role="alert" className="text-sm text-danger">
+              {error}
+            </p>
+          )}
+          <TextField
+            label="Email"
+            type="email"
+            autoComplete="email"
+            error={errors.email && "Email is required"}
+            {...register("email", {
+              required: true,
+              minLength: 9,
+              maxLength: 35,
+            })}
+          />
+          <TextField
+            label="Pet username"
+            type="text"
+            autoComplete="username"
+            error={
+              errors.name &&
+              "Name must be between two and fifteen characters, without /"
+            }
+            {...register("name", {
+              required: true,
+              minLength: 2,
+              maxLength: 15,
+              // usernames are document ids, which can't contain "/"
+              pattern: /^[^/]+$/,
+            })}
+          />
+          <TextField
+            label="Password"
+            type="password"
+            autoComplete="new-password"
+            error={errors.password?.message}
+            {...register("password", {
+              required: "Password is required",
+              pattern: {
+                value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#%&*]{8,}$/,
+                message:
+                  "The password must be minimum eight characters, at least one letter, one number, and may include !@#%&*",
+              },
+            })}
+          />
+          <Button type="submit" disabled={isSubmitting} className="w-full">
             {isSubmitting ? "Loading..." : "Register"}
-          </button>
+          </Button>
         </form>
-        <p>
-          Have an account?
-          <Link
-            to="/login"
-            style={{
-              textDecoration: "none",
-              color: "#0095f6",
-              fontWeight: "600",
-            }}
-          >
-            &nbsp;Log in
+        <p className="text-sm">
+          Have an account?{" "}
+          <Link to="/login" className="font-bold text-primary">
+            Log in
           </Link>
         </p>
       </div>
