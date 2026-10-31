@@ -12,6 +12,7 @@ import { reportError } from "../../utils/alerts";
 import { Avatar } from "../Avatar/Avatar";
 import { UserCards } from "../Card/UserCards";
 import { PostImage } from "../PostImage/PostImage";
+import { Button } from "../ui/Button";
 
 export function Profile() {
   const { profileName = "" } = useParams();
@@ -105,7 +106,7 @@ function ProfilePage({ profileName }: { profileName: string }) {
           <div className="name-follow">
             <h3>{userProfile?.username || <Skeleton width={300} />}</h3>
             {profile && !isOwnProfile && (
-              <button className="follow button" onClick={onFollowClick}>
+              <Button size="sm" onClick={onFollowClick}>
                 {userProfile ? (
                   userProfile.follower.includes(profile.username) ? (
                     "Unfollow"
@@ -115,7 +116,7 @@ function ProfilePage({ profileName }: { profileName: string }) {
                 ) : (
                   <Skeleton />
                 )}
-              </button>
+              </Button>
             )}
           </div>
           <div className="post-follower">

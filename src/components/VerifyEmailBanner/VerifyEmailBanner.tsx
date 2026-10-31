@@ -4,6 +4,7 @@ import { sendEmailVerification } from "firebase/auth";
 import { auth } from "../../firebase/config";
 import { useAuth } from "../../auth/AuthContext";
 import { handleError, handleSuccess, reportError } from "../../utils/alerts";
+import { Button } from "../ui/Button";
 
 // asks signed-in users with an unverified email to verify it
 export function VerifyEmailBanner() {
@@ -41,12 +42,12 @@ export function VerifyEmailBanner() {
         (and spam) for the link.
       </p>
       <div>
-        <button className="button" onClick={resend} disabled={busy}>
+        <Button variant="secondary" size="sm" onClick={resend} disabled={busy}>
           Resend email
-        </button>
-        <button className="button" onClick={check} disabled={busy}>
+        </Button>
+        <Button size="sm" onClick={check} disabled={busy}>
           I've verified
-        </button>
+        </Button>
       </div>
     </div>
   );

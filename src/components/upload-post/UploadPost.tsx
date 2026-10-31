@@ -7,6 +7,7 @@ import { addPost } from "../../services/posts";
 import { handleError, reportError } from "../../utils/alerts";
 import addPicPlaceholder from "../../img/add-pic.png";
 import { Avatar } from "../Avatar/Avatar";
+import { Button } from "../ui/Button";
 
 export function UploadPost() {
   const { profile } = useAuth();
@@ -87,12 +88,12 @@ export function UploadPost() {
           maxLength={MAX_CAPTION_LENGTH}
         />
         <div className="buttons-post">
-          <button className="button" onClick={() => navigate(-1)}>
+          <Button variant="secondary" onClick={() => navigate(-1)}>
             Cancel
-          </button>
-          <button className="button" onClick={submitPost} disabled={posting}>
+          </Button>
+          <Button onClick={submitPost} disabled={posting}>
             {posting ? "Posting..." : "Post"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

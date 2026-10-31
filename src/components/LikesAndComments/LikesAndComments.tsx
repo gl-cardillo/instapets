@@ -16,6 +16,7 @@ import { reportError } from "../../utils/alerts";
 import { getTime } from "../../utils/time";
 import { Avatar, UserAvatar } from "../Avatar/Avatar";
 import { UserCards } from "../Card/UserCards";
+import { Button } from "../ui/Button";
 
 interface Props {
   post: Post;
@@ -72,7 +73,7 @@ export function LikeAndComment({ post, onPostChange }: Props) {
             <BsSuitHeartFill
               className="l-c-button"
               onClick={() => toggleLike(post)}
-              style={{ color: "red" }}
+              style={{ color: "var(--color-like)" }}
             />
           ) : (
             <BsSuitHeart
@@ -172,9 +173,9 @@ export function LikeAndComment({ post, onPostChange }: Props) {
             maxLength={MAX_COMMENT_LENGTH}
             className="textarea-comment"
           />
-          <button className="button" onClick={submitComment}>
+          <Button size="sm" onClick={submitComment}>
             Add
-          </button>
+          </Button>
         </div>
       )}
     </div>
