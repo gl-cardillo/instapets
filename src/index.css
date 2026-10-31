@@ -1,0 +1,50 @@
+/* Tailwind, with its global reset (Preflight) left out for now: it would
+   restyle the pages still using the old per-component CSS files. Add
+   `@import "tailwindcss/preflight.css" layer(base);` once those are gone.
+
+   Tailwind's styles are in cascade layers, so the old unlayered CSS wins any
+   clash. When moving an element to Tailwind, remove its old CSS rules. */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+/* Design tokens: use these names (bg-surface, text-muted, border-line, ...)
+   rather than Tailwind's raw palette, so the look changes in one place. */
+@theme {
+  /* the default palette would offer colours outside the design */
+  --color-*: initial;
+
+  --color-white: #fff;
+  --color-black: #000;
+  --color-transparent: transparent;
+
+  /* backgrounds */
+  --color-page: rgb(243 243 243);
+  --color-surface: #fff;
+  --color-surface-hover: #f7fafc;
+
+  /* text */
+  --color-ink: #000;
+  --color-muted: #8e8e8e;
+
+  /* lines and dividers */
+  --color-line: #dfdfdf;
+
+  /* actions */
+  --color-primary: #0095f6;
+  --color-on-primary: #fff;
+  --color-like: #f00;
+  --color-danger: #f00;
+
+  /* notices */
+  --color-notice: #fff8e1;
+  --color-notice-line: #f0d78c;
+
+  --font-sans: "Roboto", sans-serif;
+  --font-logo: "Cookie", cursive;
+
+  --radius-card: 8px;
+  --radius-pill: 9999px;
+
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
