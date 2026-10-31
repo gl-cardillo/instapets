@@ -17,6 +17,7 @@ import {
   reportError,
 } from "../../utils/alerts";
 import { Avatar } from "../Avatar/Avatar";
+import { ThemeToggle } from "../ThemeToggle/ThemeToggle";
 import { VerifyEmailBanner } from "../VerifyEmailBanner/VerifyEmailBanner";
 
 export function Mainbar() {
@@ -138,6 +139,7 @@ export function Mainbar() {
           <Link to={"/uploadPost"}>
             <IoAddCircleOutline className="icons" />
           </Link>
+          <ThemeToggle />
           <div className="relative" ref={dropdownRef}>
             <div
               onClick={() => setDropdownVisible(!dropdownVisible)}
