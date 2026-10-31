@@ -19,8 +19,7 @@
         var saved = null;
         try {
           saved = localStorage.getItem("theme");
-        } catch (e) {
-        }
+        } catch (e) {}
         var dark = saved
           ? saved === "dark"
           : matchMedia("(prefers-color-scheme: dark)").matches;
