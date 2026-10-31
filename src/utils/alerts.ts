@@ -2,15 +2,6 @@ import Swal, { type SweetAlertOptions } from "sweetalert2";
 
 export const swalStyle: SweetAlertOptions = {
   allowOutsideClick: false,
-  backdrop: false,
-  customClass: {
-    popup: "swal-popup dark-mode",
-    actions: "swal-actions",
-    confirmButton: "swal-confirm-button",
-    cancelButton: "swal-cancel-button",
-    title: "swal-title dark-mode",
-    htmlContainer: "swal-html-container dark-mode",
-  },
   showClass: {
     popup: "animate__animated animate__slideInDown animate__faster",
   },

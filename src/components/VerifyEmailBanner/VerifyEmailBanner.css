@@ -5,8 +5,8 @@
   justify-content: center;
   gap: 10px;
   padding: 10px;
-  background-color: #fff8e1;
-  border-bottom: 1px solid #f0d78c;
+  background-color: var(--color-notice);
+  border-bottom: 1px solid var(--color-notice-line);
   text-align: center;
   font-size: 14px;
 }

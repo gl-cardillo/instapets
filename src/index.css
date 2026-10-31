@@ -1,17 +1,12 @@
-/* Tailwind, with its global reset (Preflight) left out for now: it would
-   restyle the pages still using the old per-component CSS files. Add
-   `@import "tailwindcss/preflight.css" layer(base);` once those are gone.
 
-   Tailwind's styles are in cascade layers, so the old unlayered CSS wins any
-   clash. When moving an element to Tailwind, remove its old CSS rules. */
 @layer theme, base, components, utilities;
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities);
 
-/* Design tokens: use these names (bg-surface, text-muted, border-line, ...)
-   rather than Tailwind's raw palette, so the look changes in one place. */
-@theme {
-  /* the default palette would offer colours outside the design */
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme static {
   --color-*: initial;
 
   --color-white: #fff;
@@ -19,32 +14,117 @@
   --color-transparent: transparent;
 
   /* backgrounds */
-  --color-page: rgb(243 243 243);
+  --color-page: #faf6f0;
   --color-surface: #fff;
-  --color-surface-hover: #f7fafc;
+  --color-surface-hover: #f5efe6;
 
   /* text */
-  --color-ink: #000;
-  --color-muted: #8e8e8e;
+  --color-ink: #2a2118;
+  --color-muted: #6f6255;
 
   /* lines and dividers */
-  --color-line: #dfdfdf;
+  --color-line: #e8dfd2;
 
   /* actions */
-  --color-primary: #0095f6;
+  --color-primary: #c2410c;
+  --color-primary-hover: #9a3412;
   --color-on-primary: #fff;
-  --color-like: #f00;
-  --color-danger: #f00;
+  --color-like: #e11d48;
+  --color-danger: #dc2626;
 
   /* notices */
-  --color-notice: #fff8e1;
-  --color-notice-line: #f0d78c;
+  --color-notice: #fff4dc;
+  --color-notice-line: #f2d48f;
 
-  --font-sans: "Roboto", sans-serif;
+  --font-sans: "Nunito", system-ui, sans-serif;
   --font-logo: "Cookie", cursive;
 
-  --radius-card: 8px;
+  --radius-card: 16px;
+  --radius-control: 10px;
   --radius-pill: 9999px;
 
   --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+@layer theme {
+  [data-theme="dark"] {
+    color-scheme: dark;
+
+    --color-page: #15110d;
+    --color-surface: #1f1a15;
+    --color-surface-hover: #2a241d;
+
+    --color-ink: #f6efe6;
+    --color-muted: #b3a596;
+
+    --color-line: #3a3128;
+
+    --color-primary: #fb923c;
+    --color-primary-hover: #fdba74;
+    --color-on-primary: #2a1505;
+    --color-like: #fb7185;
+    --color-danger: #f87171;
+
+    --color-notice: #33270f;
+    --color-notice-line: #6b5320;
+
+    --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.5);
+  }
+}
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    font-family: var(--font-sans);
+  }
+
+  body {
+    background-color: var(--color-page);
+    color: var(--color-ink);
+  }
+
+  button,
+  input,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+
+  input,
+  textarea {
+    background-color: transparent;
+  }
+
+  textarea {
+    resize: none;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  a:hover {
+    cursor: pointer;
+  }
+}
+
+/* SweetAlert dialogs and toasts. Unlayered and doubled up to beat the
+   variables SweetAlert sets on :root. */
+:root:root {
+  --swal2-background: var(--color-surface);
+  --swal2-color: var(--color-ink);
+  --swal2-border-radius: var(--radius-card);
+  --swal2-input-border: 1px solid var(--color-line);
+  --swal2-input-background: transparent;
+  --swal2-confirm-button-background-color: var(--color-primary);
+  --swal2-confirm-button-color: var(--color-on-primary);
+  --swal2-confirm-button-border-radius: var(--radius-control);
+  --swal2-cancel-button-background-color: var(--color-surface-hover);
+  --swal2-cancel-button-color: var(--color-ink);
+  --swal2-cancel-button-border-radius: var(--radius-control);
 }

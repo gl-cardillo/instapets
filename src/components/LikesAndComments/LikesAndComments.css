@@ -43,7 +43,7 @@
 .add-comment {
   display: flex;
   flex-direction: row;
-  border-top: 1px solid #cfcfcf;
+  border-top: 1px solid var(--color-line);
   padding: 5px;
 }
 
@@ -92,20 +92,6 @@
   outline: 0;
   border: 0;
   padding-left: 10px;
-}
-
-.comment-button {
-  background-color: #0095f6;
-  padding: 5px 10px;
-  border: 0;
-  color: white;
-  font-weight: 500;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-textarea {
-  resize: none;
 }
 
 @media only screen and (min-width: 425px) {

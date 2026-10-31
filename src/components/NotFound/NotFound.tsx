@@ -6,7 +6,7 @@ export function NotFound() {
       <h3>Page not found</h3>
       <p>
         There's nothing here.{" "}
-        <Link to="/home" style={{ color: "#0095f6" }}>
+        <Link to="/home" className="font-bold text-primary">
           Back to the feed
         </Link>
       </p>

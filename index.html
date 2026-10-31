@@ -6,7 +6,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cookie&family=Dancing+Script:wght@700&family=Lato:ital,wght@1,300;1,400;1,700&family=Open+Sans:ital,wght@1,300;1,400;1,500;1,600;1,700&family=Roboto:ital,wght@1,300;1,400;1,500;1,700;1,900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cookie&family=Nunito:wght@400;600;700;800&display=swap"
       rel="stylesheet"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -14,6 +14,19 @@
     <meta name="description" content="Instapets: share photos of your pets" />
     <link rel="apple-touch-icon" href="/logo-insta.png" />
     <title>Instapets</title>
+    <script>
+      (function () {
+        var saved = null;
+        try {
+          saved = localStorage.getItem("theme");
+        } catch (e) {
+        }
+        var dark = saved
+          ? saved === "dark"
+          : matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.dataset.theme = dark ? "dark" : "light";
+      })();
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
