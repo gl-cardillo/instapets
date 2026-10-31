@@ -16,7 +16,10 @@ import { RequireAuth } from "./auth/RequireAuth";
 
 function App() {
   return (
-    <SkeletonTheme baseColor="#9b9b9b" highlightColor="#979797">
+    <SkeletonTheme
+      baseColor="var(--color-line)"
+      highlightColor="var(--color-surface-hover)"
+    >
       <HashRouter>
         <Routes>
           <Route path="/login" element={<Login />} />

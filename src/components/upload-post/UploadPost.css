@@ -3,9 +3,9 @@
   margin: auto;
   display: flex;
   flex-direction: column;
-  border: 1px solid #cfcfcf;
+  border: 1px solid var(--color-line);
   margin-top: 50px;
-  background-color: white;
+  background-color: var(--color-surface);
   border-radius: 4px;
 }
 
@@ -15,7 +15,7 @@
   display: flex;
   align-items: center;
   gap: 30px;
-  background-color: white;
+  background-color: var(--color-surface);
 }
 
 .profile-pic-upload-post img {
@@ -39,7 +39,7 @@
   gap: 30px;
   padding: 10px;
   justify-content: space-around;
-  border-top: 1px solid #cfcfcf;
+  border-top: 1px solid var(--color-line);
 }
 
 .pic-upload-post > input {
@@ -56,8 +56,8 @@
 .pic-upload-post {
   height: 400px;
   width: 100%;
-  border-top: 1px solid #cfcfcf;
-  border-bottom: 1px solid #cfcfcf;
+  border-top: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--color-line);
   display: flex;
   justify-content: center;
   align-items: center;
