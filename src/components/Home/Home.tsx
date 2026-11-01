@@ -1,26 +1,19 @@
-import "./Home.css";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
-import { BsX } from "react-icons/bs";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { useAuth } from "../../auth/AuthContext";
-import { useLikeToggle } from "../../hooks/useLikeToggle";
 import { useLoader } from "../../hooks/useLoader";
 import { deletePost, getFeed } from "../../services/posts";
 import type { Post } from "../../types";
 import { confirmDelete, handleSuccess, reportError } from "../../utils/alerts";
-import { UserAvatar } from "../Avatar/Avatar";
-import { LikeAndComment } from "../LikesAndComments/LikesAndComments";
-import { PostImage } from "../PostImage/PostImage";
+import { PostCard } from "./PostCard";
 
 export function Home() {
   const { data: feed, setData: setFeed } = useLoader(
     useCallback(() => getFeed(), []),
   );
-  const { profile } = useAuth();
   const [loadingMore, setLoadingMore] = useState(false);
-  // more posts are loaded when this scrolls into view
+  // more posts load when this scrolls into view
   const endRef = useRef<HTMLDivElement>(null);
 
   const updatePost = (updated: Post) =>
@@ -33,7 +26,6 @@ export function Home() {
           ),
         },
     );
-  const toggleLike = useLikeToggle(updatePost);
 
   const next = feed?.next ?? null;
   useEffect(() => {
@@ -80,39 +72,29 @@ export function Home() {
   };
 
   return (
-    <div className="main-page">
-      <div className="home-section">
-        {feed ? (
-          feed.posts.map((post) => (
-            <div key={post.id} className="home-post">
-              <div className="name-delete">
-                <Link to={`/profile/${post.user}`}>
-                  <div className="name-profile-pic">
-                    <UserAvatar username={post.user} fallback={post.userPic} />
-                    <p>{post.user}</p>
-                  </div>{" "}
-                </Link>
-                {post.user === profile?.username && (
-                  <BsX
-                    className="delete-button"
-                    onClick={() => confirmDeletePost(post.id)}
-                  />
-                )}
-              </div>
-              <PostImage
-                post={post}
-                className="home-post-pic"
-                onDoubleClick={() => toggleLike(post)}
-              />
-              <LikeAndComment post={post} onPostChange={updatePost} />
-            </div>
-          ))
-        ) : (
-          <Skeleton width={600} height={500} count={5} />
-        )}
-        <div ref={endRef} />
-        {loadingMore && <Skeleton width={600} height={500} />}
-      </div>
+    <div className="mx-auto box-border flex w-full max-w-xl flex-col gap-4 p-4">
+      {!feed && <Skeleton height={420} count={2} className="mb-4" />}
+      {feed?.posts.length === 0 && (
+        <div className="rounded-card border border-line bg-surface p-8 text-center">
+          <p className="font-bold">No pets here yet</p>
+          <p className="mt-1 text-sm text-muted">
+            Be the first to{" "}
+            <Link to="/uploadPost" className="font-bold text-primary">
+              share a picture
+            </Link>
+          </p>
+        </div>
+      )}
+      {feed?.posts.map((post) => (
+        <PostCard
+          key={post.id}
+          post={post}
+          onPostChange={updatePost}
+          onDelete={confirmDeletePost}
+        />
+      ))}
+      <div ref={endRef} />
+      {loadingMore && <Skeleton height={420} />}
     </div>
   );
 }
