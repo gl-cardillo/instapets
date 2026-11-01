@@ -21,27 +21,29 @@ function App() {
       highlightColor="var(--color-surface-hover)"
     >
       <HashRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signIn" element={<SignIn />} />
-          <Route path="/" element={<Mainbar />}>
-            <Route index element={<Navigate to="/home" replace />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/profile/:profileName" element={<Profile />} />
-            <Route
-              path="/uploadPost"
-              element={
-                <RequireAuth>
-                  <UploadPost />
-                </RequireAuth>
-              }
-            />
-            <Route path="/post/:postId" element={<Post />} />
-            <Route path="/searchPage" element={<SearchPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Route>
-        </Routes>
-        <Footer />
+        <div className="flex min-h-dvh flex-col">
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signIn" element={<SignIn />} />
+            <Route path="/" element={<Mainbar />}>
+              <Route index element={<Navigate to="/home" replace />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/profile/:profileName" element={<Profile />} />
+              <Route
+                path="/uploadPost"
+                element={
+                  <RequireAuth>
+                    <UploadPost />
+                  </RequireAuth>
+                }
+              />
+              <Route path="/post/:postId" element={<Post />} />
+              <Route path="/searchPage" element={<SearchPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          </Routes>
+          <Footer />
+        </div>
       </HashRouter>
     </SkeletonTheme>
   );

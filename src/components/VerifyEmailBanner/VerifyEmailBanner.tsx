@@ -1,4 +1,3 @@
-import "./VerifyEmailBanner.css";
 import { useState } from "react";
 import { sendEmailVerification } from "firebase/auth";
 import { auth } from "../../firebase/config";
@@ -36,12 +35,12 @@ export function VerifyEmailBanner() {
     });
 
   return (
-    <div className="verify-email-banner">
+    <div className="flex flex-wrap items-center justify-center gap-3 border-b border-notice-line bg-notice p-3 text-center text-sm">
       <p>
         Verify your email to post, like, comment and follow. Check your inbox
         (and spam) for the link.
       </p>
-      <div>
+      <div className="flex gap-2">
         <Button variant="secondary" size="sm" onClick={resend} disabled={busy}>
           Resend email
         </Button>

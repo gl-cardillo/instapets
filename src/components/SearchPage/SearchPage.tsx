@@ -1,25 +1,32 @@
-import { useCallback } from "react";
 import { useSearchParams } from "react-router";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { useLoader } from "../../hooks/useLoader";
-import { searchUsers } from "../../services/users";
+import { useUserSearch } from "../../hooks/useUserSearch";
 import { Card } from "../Card/Card";
+import { TextField } from "../ui/TextField";
 
 export function SearchPage() {
-  const [params] = useSearchParams();
+  const [params, setParams] = useSearchParams();
   const search = params.get("q") ?? "";
-  const { data: searchResult } = useLoader(
-    useCallback(() => searchUsers(search, 50), [search]),
-  );
+  const { users, loading } = useUserSearch(search, 50);
 
   return (
-    <div className="search-section">
-      <h4>Users found: </h4>
-      {searchResult ? (
-        searchResult.map((user) => <Card user={user} key={user.username} />)
-      ) : (
+    <div className="mx-auto box-border flex w-full max-w-md flex-col gap-4 p-4">
+      {/* the header's search box is hidden on phones */}
+      <TextField
+        label="Search pets"
+        type="search"
+        value={search}
+        onChange={(e) => setParams({ q: e.target.value }, { replace: true })}
+        className="md:hidden"
+      />
+      {search.trim() && (
+        <h2 className="text-center text-lg font-bold">Users found</h2>
+      )}
+      {loading ? (
         <Skeleton count={3} />
+      ) : (
+        users.map((user) => <Card user={user} key={user.username} />)
       )}
     </div>
   );
