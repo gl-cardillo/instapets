@@ -18,9 +18,9 @@ export function ThemeToggle() {
       onClick={toggle}
     >
       {theme === "dark" ? (
-        <IoSunnyOutline className="icons" />
+        <IoSunnyOutline className="size-6" />
       ) : (
-        <IoMoonOutline className="icons" />
+        <IoMoonOutline className="size-6" />
       )}
     </IconButton>
   );

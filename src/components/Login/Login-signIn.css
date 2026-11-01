@@ -1,6 +1,5 @@
 .starting-page {
-  min-height: 100vh;
-  background-color: var(--color-page);
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
