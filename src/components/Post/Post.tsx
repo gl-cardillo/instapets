@@ -11,6 +11,7 @@ import { confirmDelete, handleSuccess, reportError } from "../../utils/alerts";
 import { UserAvatar } from "../Avatar/Avatar";
 import { LikeAndComment } from "../LikesAndComments/LikesAndComments";
 import { PostImage } from "../PostImage/PostImage";
+import { IconButton } from "../ui/IconButton";
 
 export function Post() {
   const { profile } = useAuth();
@@ -67,7 +68,9 @@ export function Post() {
         <h3>{post.user}</h3>
       </div>
       {post.user === profile?.username && (
-        <BsX className="delete-button" onClick={confirmDeletePost} />
+        <IconButton label="Delete post" onClick={confirmDeletePost}>
+          <BsX className="size-6" />
+        </IconButton>
       )}
     </>
   );

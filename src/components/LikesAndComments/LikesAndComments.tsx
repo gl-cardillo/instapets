@@ -1,5 +1,10 @@
 import "./LikesAndComments.css";
-import { useCallback, useState } from "react";
+import {
+  useCallback,
+  useState,
+  type FormEvent,
+  type KeyboardEvent,
+} from "react";
 import { Link } from "react-router";
 import { BsSuitHeart, BsSuitHeartFill, BsChat, BsX } from "react-icons/bs";
 import { useAuth, useCanWrite } from "../../auth/AuthContext";
@@ -17,11 +22,16 @@ import { getTime } from "../../utils/time";
 import { Avatar, UserAvatar } from "../Avatar/Avatar";
 import { UserCards } from "../Card/UserCards";
 import { Button } from "../ui/Button";
+import { IconButton } from "../ui/IconButton";
+import { Modal } from "../ui/Modal";
 
 interface Props {
   post: Post;
   onPostChange: (post: Post) => void;
 }
+
+const TEXT_BUTTON =
+  "cursor-pointer border-0 bg-transparent p-0 hover:text-primary";
 
 export function LikeAndComment({ post, onPostChange }: Props) {
   const { profile } = useAuth();
@@ -34,12 +44,14 @@ export function LikeAndComment({ post, onPostChange }: Props) {
   const [showComments, setShowComments] = useState(false);
   const [showAddComments, setShowAddComments] = useState(false);
   const [showLikes, setShowLikes] = useState(false);
+  const closeLikes = useCallback(() => setShowLikes(false), []);
 
   const toggleAddComments = () => {
     if (canWrite()) setShowAddComments(!showAddComments);
   };
 
-  const submitComment = async () => {
+  const submitComment = async (e?: FormEvent) => {
+    e?.preventDefault();
     if (commentText.trim() === "") return;
     const me = canWrite();
     if (!me) return;
@@ -50,6 +62,14 @@ export function LikeAndComment({ post, onPostChange }: Props) {
       await loadComments();
     } catch (error) {
       reportError(error);
+    }
+  };
+
+  // enter sends, shift+enter adds a line
+  const onCommentKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      submitComment();
     }
   };
 
@@ -64,119 +84,131 @@ export function LikeAndComment({ post, onPostChange }: Props) {
   };
 
   const liked = profile !== null && post.likes.includes(profile.username);
+  const othersWhoLiked = post.likes.length - 1;
 
   return (
     <div className="l-c-section">
-      <div>
-        <div className="heart-chat">
-          {liked ? (
-            <BsSuitHeartFill
-              className="l-c-button"
-              onClick={() => toggleLike(post)}
-              style={{ color: "var(--color-like)" }}
-            />
-          ) : (
-            <BsSuitHeart
-              className="l-c-button"
-              onClick={() => toggleLike(post)}
-            />
-          )}
-          <BsChat className="l-c-button" onClick={toggleAddComments} />
+      <div className="flex flex-col gap-2 p-3">
+        <div className="flex gap-4">
+          <IconButton
+            label={liked ? "Unlike" : "Like"}
+            aria-pressed={liked}
+            onClick={() => toggleLike(post)}
+          >
+            {liked ? (
+              <BsSuitHeartFill className="size-6 text-like" />
+            ) : (
+              <BsSuitHeart className="size-6" />
+            )}
+          </IconButton>
+          <IconButton label="Comment" onClick={toggleAddComments}>
+            <BsChat className="size-6" />
+          </IconButton>
         </div>
-        <div className="likes-comments">
-          {post.likes.length > 0 && (
-            <div className="who-likes">
-              <p>Post liked by&nbsp; </p>
-              <Link className="user-who-liked" to={`/profile/${post.likes[0]}`}>
-                {post.likes[0]}
-              </Link>
-              {post.likes.length > 1 && (
-                <p>
-                  &nbsp;and&nbsp;
-                  <span
-                    onClick={() => setShowLikes(true)}
-                    className="user-who-liked"
-                  >
-                    {post.likes.length - 1}
-                  </span>{" "}
-                  other{post.likes.length > 2 ? "s" : ""}
-                </p>
-              )}
-            </div>
-          )}
-          {showLikes && (
-            <div className="black-screen">
-              <div className="screen-container">
-                <div className="close-container">
-                  <BsX
-                    className="delete-button"
-                    onClick={() => setShowLikes(false)}
+        {post.likes.length > 0 && (
+          <p className="text-sm">
+            Liked by{" "}
+            <Link to={`/profile/${post.likes[0]}`} className="font-bold">
+              {post.likes[0]}
+            </Link>
+            {othersWhoLiked > 0 && (
+              <>
+                {" and "}
+                <button
+                  type="button"
+                  onClick={() => setShowLikes(true)}
+                  className={`${TEXT_BUTTON} font-bold`}
+                >
+                  {othersWhoLiked} other{othersWhoLiked > 1 ? "s" : ""}
+                </button>
+              </>
+            )}
+          </p>
+        )}
+        {showLikes && (
+          <Modal title="Liked by" onClose={closeLikes}>
+            <UserCards usernames={post.likes} />
+          </Modal>
+        )}
+        {post.caption && (
+          <p className="text-sm break-words whitespace-pre-wrap">
+            <Link to={`/profile/${post.user}`} className="font-bold">
+              {post.user}
+            </Link>{" "}
+            {post.caption}
+          </p>
+        )}
+        <p className="text-xs text-muted">{getTime(post.created)}</p>
+        {comments.length > 0 && (
+          <button
+            type="button"
+            aria-expanded={showComments}
+            onClick={() => setShowComments(!showComments)}
+            className={`${TEXT_BUTTON} self-start text-sm text-muted`}
+          >
+            {showComments
+              ? "Hide comments"
+              : `View ${comments.length} comment${comments.length > 1 ? "s" : ""}`}
+          </button>
+        )}
+        {showComments && comments.length > 0 && (
+          <ul className="flex max-h-72 list-none flex-col gap-3 overflow-y-auto">
+            {comments.map((comment) => (
+              <li key={comment.commentId} className="flex items-start gap-2">
+                <Link to={`/profile/${comment.username}`} className="flex">
+                  <UserAvatar
+                    username={comment.username}
+                    fallback={comment.userPic}
+                    className="avatar size-8"
                   />
-                </div>
-                <UserCards usernames={post.likes} />
-              </div>
-            </div>
-          )}
-          <p>{post.caption}</p>
-          <p className="time-posted">{getTime(post.created)}</p>
-          {comments.length > 0 && (
-            <p
-              className="show-comments-button"
-              onClick={() => setShowComments(!showComments)}
-            >
-              {showComments ? "Hide comments" : "Show comments"}
-            </p>
-          )}
-        </div>
-        <div className="comments-section">
-          {showComments &&
-            comments.map((comment) => (
-              <div key={comment.commentId} className="comments-posted">
-                <div className="comments-posted-pic-name">
-                  <Link to={`/profile/${comment.username}`}>
-                    <UserAvatar
-                      username={comment.username}
-                      fallback={comment.userPic}
-                    />
-                  </Link>
-                  <div className="comments-details">
-                    <Link to={`/profile/${comment.username}`}>
-                      <p className="username-comment">{comment.username}</p>
-                    </Link>
-                    <p className="comment-text">{comment.text}</p>
-                  </div>
-                </div>
-                <div style={{ display: "flex" }}>
-                  <p style={{ marginLeft: "auto" }} className="time-posted">
+                </Link>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm break-words whitespace-pre-wrap">
+                    <Link
+                      to={`/profile/${comment.username}`}
+                      className="font-bold"
+                    >
+                      {comment.username}
+                    </Link>{" "}
+                    {comment.text}
+                  </p>
+                  <p className="text-xs text-muted">
                     {getTime(comment.created)}
                   </p>
-                  <div style={{ width: "20px" }}>
-                    {comment.username === profile?.username && (
-                      <BsX
-                        className="delete-button"
-                        onClick={() => removeComment(comment.commentId)}
-                      />
-                    )}
-                  </div>
                 </div>
-              </div>
+                {comment.username === profile?.username && (
+                  <IconButton
+                    label="Delete comment"
+                    onClick={() => removeComment(comment.commentId)}
+                  >
+                    <BsX className="size-5" />
+                  </IconButton>
+                )}
+              </li>
             ))}
-        </div>
+          </ul>
+        )}
       </div>
       {showAddComments && profile && (
-        <div className="add-comment">
-          <Avatar src={profile.profilePic} />
+        <form
+          onSubmit={submitComment}
+          className="flex items-center gap-2 border-t border-line p-3"
+        >
+          <Avatar src={profile.profilePic} className="avatar size-8 shrink-0" />
           <textarea
+            aria-label="Write a comment"
+            rows={1}
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
+            onKeyDown={onCommentKeyDown}
             placeholder="Write a comment..."
             maxLength={MAX_COMMENT_LENGTH}
-            className="textarea-comment"
+            className="box-border min-w-0 flex-1 rounded-control border border-line bg-page px-3 py-2 text-sm outline-none transition-colors focus:border-primary"
           />
-          <Button size="sm" onClick={submitComment}>
+          <Button type="submit" size="sm" disabled={!commentText.trim()}>
             Add
           </Button>
-        </div>
+        </form>
       )}
     </div>
   );

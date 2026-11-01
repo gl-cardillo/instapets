@@ -29,10 +29,22 @@ interface UserAvatarProps {
   // profile loads, or if it's gone
   fallback?: string;
   alt?: string;
+  className?: string;
 }
 
 // a user's current profile picture
-export function UserAvatar({ username, fallback = "", alt }: UserAvatarProps) {
+export function UserAvatar({
+  username,
+  fallback = "",
+  alt,
+  className,
+}: UserAvatarProps) {
   const user = useUser(username);
-  return <Avatar src={user?.profilePic || fallback} alt={alt} />;
+  return (
+    <Avatar
+      src={user?.profilePic || fallback}
+      alt={alt}
+      className={className}
+    />
+  );
 }
