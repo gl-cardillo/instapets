@@ -1,11 +1,10 @@
-import "./UploadPost.css";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { IoImageOutline } from "react-icons/io5";
 import { useAuth, useCanWrite } from "../../auth/AuthContext";
 import { MAX_CAPTION_LENGTH } from "../../limits";
 import { addPost } from "../../services/posts";
 import { handleError, reportError } from "../../utils/alerts";
-import addPicPlaceholder from "../../img/add-pic.png";
 import { Avatar } from "../Avatar/Avatar";
 import { Button } from "../ui/Button";
 
@@ -18,7 +17,7 @@ export function UploadPost() {
   const [caption, setCaption] = useState("");
   const [posting, setPosting] = useState(false);
 
-  // free the previous preview's memory when it changes or on leaving
+  // free the previous preview's memory
   useEffect(
     () => () => {
       if (preview) URL.revokeObjectURL(preview);
@@ -40,12 +39,8 @@ export function UploadPost() {
   };
 
   const submitPost = async () => {
-    if (!pic) {
-      handleError("Choose a picture first");
-      return;
-    }
     const me = canWrite();
-    if (!me) return;
+    if (!me || !pic) return;
     setPosting(true);
     try {
       await addPost(pic, me, caption);
@@ -57,41 +52,47 @@ export function UploadPost() {
   };
 
   return (
-    <div className="main-page">
-      <div className="upload-post-section">
-        <div className="profile-pic-upload-post">
+    <div className="mx-auto box-border w-full max-w-md p-4">
+      <div className="flex flex-col overflow-hidden rounded-card border border-line bg-surface shadow-card">
+        <div className="flex items-center gap-3 p-3">
           <Avatar src={profile.profilePic} alt="profile" />
-          <h3>{profile.username}</h3>
+          <span className="truncate font-bold">{profile.username}</span>
         </div>
-        <div className="pic-upload-post">
-          <label htmlFor="file-input">
-            {preview ? (
-              <img src={preview} alt="profile" className="add-pic" />
-            ) : (
-              <img
-                src={addPicPlaceholder}
-                className="add-pic-placeholder"
-                alt="add"
-              />
-            )}
-          </label>
+        <label className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 bg-surface-hover text-muted hover:text-primary has-focus-visible:outline-2 has-focus-visible:-outline-offset-2 has-focus-visible:outline-primary">
+          {preview ? (
+            <img
+              src={preview}
+              alt="preview of your post"
+              className="size-full object-contain"
+            />
+          ) : (
+            <>
+              <IoImageOutline className="size-12" />
+              <span className="text-sm font-bold">Choose a picture</span>
+            </>
+          )}
           <input
             type="file"
-            id="file-input"
+            aria-label="Choose a picture"
             accept="image/*"
             onChange={(e) => onPicChosen(e.target.files?.[0])}
+            className="sr-only"
           />
-        </div>
+        </label>
         <textarea
+          aria-label="Caption"
+          rows={3}
+          value={caption}
           onChange={(e) => setCaption(e.target.value)}
           placeholder="Write a caption..."
           maxLength={MAX_CAPTION_LENGTH}
+          className="box-border w-full border-0 p-3 text-sm outline-none"
         />
-        <div className="buttons-post">
+        <div className="flex justify-end gap-2 border-t border-line p-3">
           <Button variant="secondary" onClick={() => navigate(-1)}>
             Cancel
           </Button>
-          <Button onClick={submitPost} disabled={posting}>
+          <Button onClick={submitPost} disabled={posting || !pic}>
             {posting ? "Posting..." : "Post"}
           </Button>
         </div>

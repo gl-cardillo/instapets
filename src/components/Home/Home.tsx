@@ -6,6 +6,7 @@ import { useLoader } from "../../hooks/useLoader";
 import { deletePost, getFeed } from "../../services/posts";
 import type { Post } from "../../types";
 import { confirmDelete, handleSuccess, reportError } from "../../utils/alerts";
+import { Notice } from "../ui/Notice";
 import { PostCard } from "./PostCard";
 
 export function Home() {
@@ -75,15 +76,12 @@ export function Home() {
     <div className="mx-auto box-border flex w-full max-w-xl flex-col gap-4 p-4">
       {!feed && <Skeleton height={420} count={2} className="mb-4" />}
       {feed?.posts.length === 0 && (
-        <div className="rounded-card border border-line bg-surface p-8 text-center">
-          <p className="font-bold">No pets here yet</p>
-          <p className="mt-1 text-sm text-muted">
-            Be the first to{" "}
-            <Link to="/uploadPost" className="font-bold text-primary">
-              share a picture
-            </Link>
-          </p>
-        </div>
+        <Notice title="No pets here yet">
+          Be the first to{" "}
+          <Link to="/uploadPost" className="font-bold text-primary">
+            share a picture
+          </Link>
+        </Notice>
       )}
       {feed?.posts.map((post) => (
         <PostCard

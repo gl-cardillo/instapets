@@ -6,18 +6,18 @@ interface Props {
   // "" for the default picture
   src: string;
   alt?: string;
+  // sets the size
   className?: string;
 }
 
-// A profile picture. Shows the default when there's none or it fails to
-// load, as the Firebase Storage pictures of older users do.
-export function Avatar({ src, alt = "avatar", className = "avatar" }: Props) {
+// a profile picture, or the default if there's none or it fails to load
+export function Avatar({ src, alt = "avatar", className = "size-10" }: Props) {
   const [failedSrc, setFailedSrc] = useState<string>();
   return (
     <img
       src={src && src !== failedSrc ? src : defaultAvatar}
       alt={alt}
-      className={className}
+      className={`rounded-pill bg-surface-hover object-cover ${className}`}
       onError={() => setFailedSrc(src)}
     />
   );
@@ -25,8 +25,7 @@ export function Avatar({ src, alt = "avatar", className = "avatar" }: Props) {
 
 interface UserAvatarProps {
   username: string;
-  // older posts and comments store the author's picture; used until the
-  // profile loads, or if it's gone
+  // picture stored on older posts and comments
   fallback?: string;
   alt?: string;
   className?: string;

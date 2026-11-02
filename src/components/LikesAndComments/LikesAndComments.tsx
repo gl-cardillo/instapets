@@ -1,4 +1,3 @@
-import "./LikesAndComments.css";
 import {
   useCallback,
   useState,
@@ -87,7 +86,7 @@ export function LikeAndComment({ post, onPostChange }: Props) {
   const othersWhoLiked = post.likes.length - 1;
 
   return (
-    <div className="l-c-section">
+    <div>
       <div className="flex flex-col gap-2 p-3">
         <div className="flex gap-4">
           <IconButton
@@ -159,7 +158,7 @@ export function LikeAndComment({ post, onPostChange }: Props) {
                   <UserAvatar
                     username={comment.username}
                     fallback={comment.userPic}
-                    className="avatar size-8"
+                    className="size-8"
                   />
                 </Link>
                 <div className="min-w-0 flex-1">
@@ -194,7 +193,7 @@ export function LikeAndComment({ post, onPostChange }: Props) {
           onSubmit={submitComment}
           className="flex items-center gap-2 border-t border-line p-3"
         >
-          <Avatar src={profile.profilePic} className="avatar size-8 shrink-0" />
+          <Avatar src={profile.profilePic} className="size-8 shrink-0" />
           <textarea
             aria-label="Write a comment"
             rows={1}

@@ -38,7 +38,7 @@ export function PostImage({ post, className, onDoubleClick }: Props) {
     <img
       src={src}
       alt="post"
-      className={className}
+      className={`bg-surface-hover ${className ?? ""}`}
       onDoubleClick={onDoubleClick}
       onError={() => setFailed(true)}
     />

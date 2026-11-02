@@ -1,6 +1,5 @@
-import "./Post.css";
 import { useCallback } from "react";
-import { useParams, useNavigate } from "react-router";
+import { Link, useParams, useNavigate } from "react-router";
 import { BsX } from "react-icons/bs";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -12,6 +11,9 @@ import { UserAvatar } from "../Avatar/Avatar";
 import { LikeAndComment } from "../LikesAndComments/LikesAndComments";
 import { PostImage } from "../PostImage/PostImage";
 import { IconButton } from "../ui/IconButton";
+import { Notice } from "../ui/Notice";
+
+const PAGE = "mx-auto box-border w-full max-w-5xl p-4";
 
 export function Post() {
   const { profile } = useAuth();
@@ -37,56 +39,50 @@ export function Post() {
 
   if (post === null) {
     return (
-      <div className="main-page">
-        <p>This post doesn't exist anymore.</p>
+      <div className={PAGE}>
+        <Notice title="This post doesn't exist anymore" />
       </div>
     );
   }
 
   if (post === undefined) {
     return (
-      <div className="main-page">
-        <div>
-          <Skeleton height={400} style={{ margin: "10px 0" }} />
-          <p>
-            <Skeleton count={3} />
-          </p>
-        </div>
+      <div className={PAGE}>
+        <Skeleton height={400} />
       </div>
     );
   }
 
-  // shown above the picture on small screens and beside it on large ones
-  const header = (
-    <>
-      <div className="avatar-pic">
-        <UserAvatar
-          username={post.user}
-          fallback={post.userPic}
-          alt="user avatar"
-        />
-        <h3>{post.user}</h3>
-      </div>
-      {post.user === profile?.username && (
-        <IconButton label="Delete post" onClick={confirmDeletePost}>
-          <BsX className="size-6" />
-        </IconButton>
-      )}
-    </>
-  );
-
   return (
-    <div className="main-page">
-      <div className="single-post">
-        <div className="user-section-425px">{header}</div>
-        <div className="left-section">
-          <PostImage post={post} />
+    <div className={PAGE}>
+      {/* header above the picture on phones, beside it on large screens */}
+      <article className="grid overflow-hidden rounded-card border border-line bg-surface shadow-card lg:max-h-[85dvh] lg:grid-cols-[3fr_2fr] lg:grid-rows-[auto_1fr]">
+        <div className="flex items-center justify-between gap-3 border-line p-3 lg:col-start-2 lg:border-b">
+          <Link
+            to={`/profile/${post.user}`}
+            className="flex min-w-0 items-center gap-3"
+          >
+            <UserAvatar
+              username={post.user}
+              fallback={post.userPic}
+              alt="user avatar"
+            />
+            <span className="truncate font-bold">{post.user}</span>
+          </Link>
+          {post.user === profile?.username && (
+            <IconButton label="Delete post" onClick={confirmDeletePost}>
+              <BsX className="size-6" />
+            </IconButton>
+          )}
         </div>
-        <div className="right-section">
-          <div className="user-section-1024px">{header}</div>
+        <PostImage
+          post={post}
+          className="block h-full max-h-[85dvh] w-full object-contain lg:col-start-1 lg:row-span-2 lg:row-start-1"
+        />
+        <div className="min-h-0 overflow-y-auto lg:col-start-2">
           <LikeAndComment post={post} onPostChange={setPost} />
         </div>
-      </div>
+      </article>
     </div>
   );
 }

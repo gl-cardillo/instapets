@@ -54,10 +54,12 @@ export function SignIn() {
   };
 
   return (
-    <div className="starting-page">
-      <div className="login-signIn-container">
-        <h1 className="title"> Instapets</h1>
-        <p className="sign-up-text">Sign up to see photos of beautiful pets</p>
+    <div className="flex flex-1 items-center justify-center p-4">
+      <div className="box-border flex w-full max-w-sm flex-col items-center gap-5 rounded-card bg-surface p-6 shadow-card">
+        <h1 className="font-logo text-5xl font-bold">Instapets</h1>
+        <p className="text-center text-sm text-muted">
+          Sign up to see photos of beautiful pets
+        </p>
         <form
           onSubmit={handleSubmit(registerUser)}
           className="flex w-full flex-col gap-3"
