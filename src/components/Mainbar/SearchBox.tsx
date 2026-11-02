@@ -56,7 +56,7 @@ export function SearchBox({ className = "" }: { className?: string }) {
               onClick={() => setText("")}
               className="flex items-center gap-3 px-4 py-2 font-bold text-ink hover:bg-surface-hover"
             >
-              <Avatar src={user.profilePic} className="avatar size-8" />
+              <Avatar src={user.profilePic} className="size-8" />
               {user.username}
             </Link>
           ))}

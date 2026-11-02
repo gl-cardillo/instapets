@@ -1,4 +1,3 @@
-import "./App.css";
 import "animate.css";
 import { HashRouter, Navigate, Routes, Route } from "react-router";
 import { SkeletonTheme } from "react-loading-skeleton";

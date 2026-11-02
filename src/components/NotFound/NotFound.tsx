@@ -1,15 +1,15 @@
 import { Link } from "react-router";
+import { Notice } from "../ui/Notice";
 
 export function NotFound() {
   return (
-    <div className="main-page">
-      <h3>Page not found</h3>
-      <p>
+    <div className="mx-auto box-border w-full max-w-xl p-4">
+      <Notice title="Page not found">
         There's nothing here.{" "}
         <Link to="/home" className="font-bold text-primary">
           Back to the feed
         </Link>
-      </p>
+      </Notice>
     </div>
   );
 }

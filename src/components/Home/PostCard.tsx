@@ -28,7 +28,7 @@ export function PostCard({ post, onPostChange, onDelete }: Props) {
           <UserAvatar
             username={post.user}
             fallback={post.userPic}
-            className="avatar size-10"
+            className="size-10"
           />
           <span className="truncate font-bold">{post.user}</span>
         </Link>

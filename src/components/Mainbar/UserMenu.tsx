@@ -92,7 +92,7 @@ export function UserMenu() {
         onClick={() => setOpen(!open)}
         className="flex cursor-pointer rounded-pill border-0 bg-transparent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
       >
-        <Avatar src={profile.profilePic} className="avatar size-8" />
+        <Avatar src={profile.profilePic} className="size-8" />
       </button>
       {open && (
         <div className="absolute right-0 z-30 mt-2 w-44 overflow-hidden rounded-card border border-line bg-surface py-1 shadow-card">
