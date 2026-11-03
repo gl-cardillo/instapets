@@ -2,7 +2,7 @@ import { useId, type InputHTMLAttributes, type Ref } from "react";
 
 interface Props extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
-  // shown under the field; omit when there's nothing to report
+  // shown under the field
   error?: string;
   ref?: Ref<HTMLInputElement>;
 }
@@ -16,7 +16,7 @@ export function TextField({ label, error, className = "", ...props }: Props) {
         <input
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? errorId : undefined}
-          className="box-border w-full rounded-control border border-line bg-surface px-3 py-2 text-ink outline-none transition-colors focus:border-primary aria-invalid:border-danger"
+          className="w-full rounded-control border border-line bg-surface px-3 py-2 text-ink outline-none transition-colors focus:border-primary aria-invalid:border-danger"
           {...props}
         />
       </label>

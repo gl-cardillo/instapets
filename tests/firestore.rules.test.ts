@@ -1,5 +1,4 @@
-// Security rules tests. Run with `npm run test:rules` (needs Java for the
-// Firestore emulator).
+// rules tests: npm run test:rules (needs Java)
 import { readFileSync } from "node:fs";
 import {
   assertFails,

@@ -9,8 +9,7 @@ export function SearchBox({ className = "" }: { className?: string }) {
   const [text, setText] = useState("");
   const { users } = useUserSearch(text, 8);
 
-  // keeps the input focused when clicking a result, so the click lands
-  // before the blur clears the results
+  // stops the blur clearing results before the click
   const keepFocus = (e: MouseEvent) => e.preventDefault();
 
   const submit = (e: FormEvent) => {
@@ -36,13 +35,13 @@ export function SearchBox({ className = "" }: { className?: string }) {
         onKeyDown={(e) => {
           if (e.key === "Escape") setText("");
         }}
-        className="box-border w-full rounded-pill border border-line bg-page py-2 pr-10 pl-4 text-ink outline-none transition-colors focus:border-primary"
+        className="w-full rounded-pill border border-line bg-page py-2 pr-10 pl-4 text-ink outline-none transition-colors focus:border-primary"
       />
       <button
         type="submit"
         aria-label="Search"
         onMouseDown={keepFocus}
-        className="absolute top-1/2 right-3 flex -translate-y-1/2 cursor-pointer border-0 bg-transparent text-muted hover:text-primary"
+        className="absolute top-1/2 right-3 flex -translate-y-1/2 cursor-pointer text-muted hover:text-primary"
       >
         <IoSearch className="size-5" />
       </button>

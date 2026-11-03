@@ -2,8 +2,7 @@ import { BsGithub } from "react-icons/bs";
 
 export function Footer() {
   return (
-    // the margin keeps it clear of the bottom tab bar on phones
-    <footer className="mb-14 flex items-center justify-center gap-2 border-t border-line bg-surface p-2 text-sm text-muted md:mb-0">
+    <footer className="flex items-center justify-center gap-2 border-t border-line bg-surface p-2 text-sm text-muted">
       <a
         href="https://github.com/gl-cardillo"
         target="_blank"

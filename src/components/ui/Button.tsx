@@ -6,9 +6,9 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const VARIANTS = {
-  primary: "border-0 bg-primary text-on-primary hover:bg-primary-hover",
+  primary: "bg-primary text-on-primary hover:bg-primary-hover",
   secondary: "border border-line bg-surface text-ink hover:bg-surface-hover",
-  ghost: "border-0 bg-transparent text-ink hover:bg-surface-hover",
+  ghost: "text-ink hover:bg-surface-hover",
 };
 
 const SIZES = {

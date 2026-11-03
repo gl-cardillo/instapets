@@ -6,14 +6,14 @@ import { handleError } from "../utils/alerts";
 
 export interface AuthState {
   authUser: User | null;
-  // null for guests, and until the first auth check finishes
+  // null for guests and while loading
   profile: UserProfile | null;
-  // true until the first auth check finishes
+  // true until the first auth check
   loading: boolean;
   // posting, liking, commenting and following need a verified email
   emailVerified: boolean;
   refreshProfile: () => Promise<void>;
-  // re-checks after the user clicks the link in the verification email
+  // re-checks after the email link is clicked
   refreshEmailVerified: () => Promise<boolean>;
 }
 
@@ -25,9 +25,7 @@ export function useAuth(): AuthState {
   return context;
 }
 
-// Returns a check to run before writing anything. It returns the signed-in
-// profile, or null after sending guests to the login page or telling
-// unverified users to verify their email first.
+// returns the profile, or null after redirecting guests or warning the unverified
 export function useCanWrite() {
   const { profile, emailVerified } = useAuth();
   const navigate = useNavigate();

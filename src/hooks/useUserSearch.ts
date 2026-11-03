@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { searchUsers } from "../services/users";
 import type { UserProfile } from "../types";
 
-// Users whose name starts with `text`, searched once typing pauses rather
-// than on every key. While a search runs, `users` keeps the previous results.
+// debounced prefix search; keeps old results while loading
 export function useUserSearch(text: string, max: number) {
   const query = text.trim();
   const [found, setFound] = useState<{ query: string; users: UserProfile[] }>();

@@ -16,7 +16,7 @@ service cloud.firestore {
       return request.auth.token.email_verified == true;
     }
 
-    // users/{username} exists and belongs to the signed-in, verified account
+    // users/{username} belongs to the signed-in, verified user
     function isUser(username) {
       let path = /databases/$(database)/documents/users/$(username);
       return signedIn()
@@ -25,14 +25,13 @@ service cloud.firestore {
         && get(path).data.email.lower() == authEmail();
     }
 
-    // a new document has exactly these fields: none missing, none extra
+    // a new doc has exactly these fields
     function hasExactly(keys) {
       return request.resource.data.keys().hasAll(keys)
         && request.resource.data.keys().hasOnly(keys);
     }
 
-    // a client timestamp (ms) close to the server's clock, so posts can't be
-    // dated in the future to stay at the top of the feed
+    // client time near server time, so posts can't jump the feed
     function isNow(time) {
       return time is int && math.abs(time - request.time.toMillis()) < 600000;
     }
@@ -49,15 +48,13 @@ service cloud.firestore {
       return resource.data.get(field, []).removeAll(request.resource.data.get(field, []));
     }
 
-    // the only change to list `field` is the signed-in user adding or removing
-    // their own username (how likes and follows work)
+    // the only change is the user adding or removing themselves
     function togglesSelf(field) {
       let changed = added(field).concat(removed(field));
       return changed.size() == 1 && isUser(changed[0]);
     }
 
-    // the only change to list `field` is the signed-in user removing their own
-    // username (account deletion cleaning up other users' `following`)
+    // the only change is the user removing themselves
     function removesSelf(field) {
       return added(field).size() == 0
         && removed(field).size() == 1
@@ -89,8 +86,7 @@ service cloud.firestore {
         && request.resource.data.comments == []
         && request.resource.data.profilePic == '';
 
-      // the owner can edit their own profile but can't change who they are or
-      // invent followers
+      // owners edit their profile, not their identity or followers
       allow update: if signedIn()
         && verified()
         && resource.data.email.lower() == authEmail()
@@ -98,7 +94,7 @@ service cloud.firestore {
         && added('follower').size() == 0
         && validProfilePic();
 
-      // other users follow/unfollow, or clean up after deleting their account
+      // others follow, unfollow or clean up after deleting
       allow update: if onlyChanges(['follower']) && togglesSelf('follower');
       allow update: if onlyChanges(['following']) && removesSelf('following');
 
@@ -137,12 +133,12 @@ service cloud.firestore {
         && isNow(request.resource.data.created)
         && exists(/databases/$(database)/documents/posts/$(request.resource.data.postId));
 
-      // the comment's author, or the post's author when deleting the post
+      // the comment's or the post's author
       allow delete: if isUser(resource.data.username)
         || isUser(get(/databases/$(database)/documents/posts/$(resource.data.postId)).data.user);
     }
 
-    // a post's picture, as a data URL (Firebase Storage needs the paid plan)
+    // a post's picture as a data URL
     match /images/{postId} {
       allow read: if true;
 

@@ -28,8 +28,7 @@ async function fetchUser(username: string): Promise<UserProfile | null> {
   return snapshot.exists() ? snapshot.data() : null;
 }
 
-// Profiles are read at most once per visit, since avatars and names show up
-// all over the page. Call forgetUser after changing one.
+// cached per visit; call forgetUser after a change
 const cache = new Map<string, Promise<UserProfile | null>>();
 
 export function getUser(username: string): Promise<UserProfile | null> {
@@ -87,7 +86,7 @@ export async function createUserProfile(
   username: string,
 ): Promise<void> {
   await setDoc(doc(usersCol, username), {
-    // Firebase Auth lowercases emails, and profiles are looked up by it
+    // auth lowercases emails, and profiles are found by them
     email: email.toLowerCase(),
     username,
     usernameLower: username.toLowerCase(),
@@ -126,9 +125,7 @@ export async function changeProfilePic(
   forgetUser(username);
 }
 
-// Deletes the signed-in user's posts, likes, follows, comments, profile and
-// login. Firebase only deletes logins that signed in recently, so the
-// password is checked again first; that way nothing is deleted if it's wrong.
+// deletes everything, checking the password first so a typo deletes nothing
 export async function deleteAccount(
   username: string,
   password: string,
@@ -146,8 +143,7 @@ export async function deleteAccount(
   const posts = await getDocs(query(postsCol, where("user", "==", username)));
   await Promise.all(posts.docs.map((d) => deletePost(d.id)));
 
-  // best effort: some of these may point at posts or comments that are
-  // already gone
+  // best effort: some may already be gone
   await Promise.allSettled([
     ...profile.likes.map((postId) =>
       updateDoc(doc(postsCol, postId), { likes: arrayRemove(username) }),
@@ -157,8 +153,7 @@ export async function deleteAccount(
     ...profile.comments.map((id) => deleteDoc(doc(commentsCol, id))),
   ]);
 
-  // everything above is authorized against the profile and login, so they
-  // go last
+  // rules check the profile and login, so they go last
   await deleteDoc(doc(usersCol, username));
   forgetUser(username);
   await deleteUser(user);

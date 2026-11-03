@@ -16,12 +16,13 @@ import {
 import { Avatar } from "../Avatar/Avatar";
 
 const ITEM =
-  "box-border block w-full cursor-pointer border-0 bg-transparent px-4 py-2 text-left text-sm font-semibold hover:bg-surface-hover";
+  "block w-full cursor-pointer px-4 py-2 text-left text-sm font-semibold hover:bg-surface-hover";
 
 export function UserMenu() {
   const navigate = useNavigate();
   const { profile, loading } = useAuth();
   const menuRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -30,7 +31,9 @@ export function UserMenu() {
       if (!menuRef.current?.contains(event.target as Node)) setOpen(false);
     };
     const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key !== "Escape") return;
+      setOpen(false);
+      buttonRef.current?.focus();
     };
     document.addEventListener("mousedown", closeOnClickOutside);
     document.addEventListener("keydown", closeOnEscape);
@@ -86,11 +89,12 @@ export function UserMenu() {
   return (
     <div className="relative" ref={menuRef}>
       <button
+        ref={buttonRef}
         type="button"
         aria-label="Account menu"
         aria-expanded={open}
         onClick={() => setOpen(!open)}
-        className="flex cursor-pointer rounded-pill border-0 bg-transparent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        className="flex cursor-pointer rounded-pill focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
       >
         <Avatar src={profile.profilePic} className="size-8" />
       </button>

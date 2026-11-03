@@ -25,7 +25,7 @@ export function UploadPost() {
     [preview],
   );
 
-  // RequireAuth only renders this page for signed-in users
+  // only signed-in users get here
   if (!profile) return null;
 
   const onPicChosen = (file: File | undefined) => {
@@ -52,10 +52,11 @@ export function UploadPost() {
   };
 
   return (
-    <div className="mx-auto box-border w-full max-w-md p-4">
+    <div className="mx-auto w-full max-w-md p-4">
+      <h2 className="sr-only">New post</h2>
       <div className="flex flex-col overflow-hidden rounded-card border border-line bg-surface shadow-card">
         <div className="flex items-center gap-3 p-3">
-          <Avatar src={profile.profilePic} alt="profile" />
+          <Avatar src={profile.profilePic} />
           <span className="truncate font-bold">{profile.username}</span>
         </div>
         <label className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 bg-surface-hover text-muted hover:text-primary has-focus-visible:outline-2 has-focus-visible:-outline-offset-2 has-focus-visible:outline-primary">
@@ -86,7 +87,7 @@ export function UploadPost() {
           onChange={(e) => setCaption(e.target.value)}
           placeholder="Write a caption..."
           maxLength={MAX_CAPTION_LENGTH}
-          className="box-border w-full border-0 p-3 text-sm outline-none"
+          className="w-full p-3 text-sm outline-none"
         />
         <div className="flex justify-end gap-2 border-t border-line p-3">
           <Button variant="secondary" onClick={() => navigate(-1)}>

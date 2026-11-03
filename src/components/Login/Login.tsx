@@ -34,8 +34,8 @@ export function Login() {
 
   return (
     <div className="flex flex-1 items-center justify-center p-4">
-      <div className="box-border flex w-full max-w-sm flex-col items-center gap-5 rounded-card bg-surface p-6 shadow-card">
-        <img src={logo} alt="logo" className="w-24" />
+      <div className="flex w-full max-w-sm flex-col items-center gap-5 rounded-card bg-surface p-6 shadow-card">
+        <img src={logo} alt="" className="w-24" />
         <h1 className="font-logo text-5xl font-bold">Instapets</h1>
         <form
           onSubmit={handleSubmit(loginUser)}

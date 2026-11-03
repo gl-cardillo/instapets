@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import App from "./App";
 import { AuthContext, type AuthState } from "./auth/AuthContext";
 
-// the pages below the top bar never load in these tests, so no Firebase calls
+// no Firebase calls in these tests
 vi.mock("./firebase/config", () => ({ auth: {}, db: {} }));
 vi.mock("./services/collections", () => ({}));
 

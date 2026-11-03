@@ -17,7 +17,7 @@ export default mergeConfig(
           },
         },
         {
-          // security rules, against the Firestore emulator (npm run test:rules)
+          // security rules, in the emulator
           extends: true,
           test: {
             name: "rules",

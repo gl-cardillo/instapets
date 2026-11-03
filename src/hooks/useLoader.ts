@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { reportError } from "../utils/alerts";
 
-// Runs `load` on mount and whenever it changes (wrap it in useCallback).
-// `data` is undefined until the first load finishes; `reload` re-runs it,
-// e.g. after a change. Results from a superseded load are dropped.
+// loads when `load` changes (use useCallback) and ignores stale results
 export function useLoader<T>(load: () => Promise<T>) {
   const [data, setData] = useState<T>();
 

@@ -11,7 +11,7 @@ interface Props {
 }
 
 // a profile picture, or the default if there's none or it fails to load
-export function Avatar({ src, alt = "avatar", className = "size-10" }: Props) {
+export function Avatar({ src, alt = "", className = "size-10" }: Props) {
   const [failedSrc, setFailedSrc] = useState<string>();
   return (
     <img

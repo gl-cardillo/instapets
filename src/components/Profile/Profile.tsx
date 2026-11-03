@@ -14,7 +14,7 @@ import { PostImage } from "../PostImage/PostImage";
 import { Button } from "../ui/Button";
 import { Notice } from "../ui/Notice";
 
-const PAGE = "mx-auto box-border flex w-full max-w-3xl flex-col gap-6 p-4";
+const PAGE = "mx-auto flex w-full max-w-3xl flex-col gap-6 p-4";
 const AVATAR = "size-20 md:size-28";
 
 type Tab = "posts" | "follower" | "following";
@@ -32,7 +32,7 @@ function Stat({ label, count, active, onClick }: StatProps) {
       type="button"
       aria-pressed={active}
       onClick={onClick}
-      className={`cursor-pointer border-0 border-b-2 bg-transparent p-0 pb-1 text-sm hover:text-primary md:text-base ${
+      className={`cursor-pointer border-b-2 pb-1 text-sm hover:text-primary md:text-base ${
         active ? "border-primary text-ink" : "border-transparent text-muted"
       }`}
     >
@@ -46,7 +46,7 @@ function Stat({ label, count, active, onClick }: StatProps) {
 
 export function Profile() {
   const { profileName = "" } = useParams();
-  // remount per profile so state from the previous one never shows
+  // remount per profile so no old state shows
   return <ProfilePage key={profileName} profileName={profileName} />;
 }
 
@@ -119,7 +119,6 @@ function ProfilePage({ profileName }: { profileName: string }) {
           >
             <Avatar
               src={userProfile.profilePic}
-              alt="profile"
               className={`block ${AVATAR}`}
             />
             <span className="absolute right-0 bottom-0 flex rounded-pill bg-primary p-1 text-on-primary">
@@ -137,7 +136,6 @@ function ProfilePage({ profileName }: { profileName: string }) {
         ) : (
           <Avatar
             src={userProfile.profilePic}
-            alt="profile"
             className={`shrink-0 ${AVATAR}`}
           />
         )}
