@@ -13,7 +13,7 @@ import { PostImage } from "../PostImage/PostImage";
 import { IconButton } from "../ui/IconButton";
 import { Notice } from "../ui/Notice";
 
-const PAGE = "mx-auto box-border w-full max-w-5xl p-4";
+const PAGE = "mx-auto w-full max-w-5xl p-4";
 
 export function Post() {
   const { profile } = useAuth();
@@ -55,18 +55,15 @@ export function Post() {
 
   return (
     <div className={PAGE}>
-      {/* header above the picture on phones, beside it on large screens */}
+      <h2 className="sr-only">Post by {post.user}</h2>
+      {/* header on top on phones, beside the picture on desktop */}
       <article className="grid overflow-hidden rounded-card border border-line bg-surface shadow-card lg:max-h-[85dvh] lg:grid-cols-[3fr_2fr] lg:grid-rows-[auto_1fr]">
         <div className="flex items-center justify-between gap-3 border-line p-3 lg:col-start-2 lg:border-b">
           <Link
             to={`/profile/${post.user}`}
             className="flex min-w-0 items-center gap-3"
           >
-            <UserAvatar
-              username={post.user}
-              fallback={post.userPic}
-              alt="user avatar"
-            />
+            <UserAvatar username={post.user} fallback={post.userPic} />
             <span className="truncate font-bold">{post.user}</span>
           </Link>
           {post.user === profile?.username && (

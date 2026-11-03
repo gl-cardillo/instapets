@@ -14,7 +14,7 @@ const post = (extra: Partial<Post> = {}) =>
 const pic = "data:image/webp;base64,AAAA";
 
 describe("PostImage", () => {
-  // braces matter: a function returned from beforeEach runs as a cleanup hook
+  // braces: a returned function would run as cleanup
   beforeEach(() => {
     vi.mocked(getPostImage).mockReset();
   });

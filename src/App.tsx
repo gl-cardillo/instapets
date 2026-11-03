@@ -20,7 +20,8 @@ function App() {
       highlightColor="var(--color-surface-hover)"
     >
       <HashRouter>
-        <div className="flex min-h-dvh flex-col">
+        {/* room for the phone tab bar, only on pages that have it */}
+        <div className="flex min-h-dvh flex-col max-md:has-[>nav]:pb-14">
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/signIn" element={<SignIn />} />

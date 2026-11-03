@@ -6,7 +6,7 @@ import {
 import { db } from "../firebase/config";
 import type { Post, PostComment, PostImage, UserProfile } from "../types";
 
-// documents are stored exactly as typed, so the converter only adds typing
+// the converter only adds typing
 function converter<T extends DocumentData>() {
   return {
     toFirestore: (data: T) => data,

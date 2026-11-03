@@ -15,13 +15,11 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-// App Check proves requests come from this site rather than a bot script.
-// Optional: set VITE_RECAPTCHA_SITE_KEY to turn it on (see README).
+// optional bot protection, on when VITE_RECAPTCHA_SITE_KEY is set
 const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 if (recaptchaSiteKey) {
   if (import.meta.env.DEV) {
-    // localhost can't pass reCAPTCHA; this logs a debug token to the browser
-    // console instead, which must be registered in the Firebase console
+    // localhost can't pass reCAPTCHA, so use a debug token
     self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
   }
   initializeAppCheck(app, {
@@ -31,5 +29,5 @@ if (recaptchaSiteKey) {
 }
 
 export const auth = getAuth(app);
-// pictures live in Firestore too: Firebase Storage needs the paid plan
+// pictures live in Firestore: Storage needs the paid plan
 export const db = getFirestore(app);

@@ -29,8 +29,7 @@ interface Props {
   onPostChange: (post: Post) => void;
 }
 
-const TEXT_BUTTON =
-  "cursor-pointer border-0 bg-transparent p-0 hover:text-primary";
+const TEXT_BUTTON = "cursor-pointer hover:text-primary";
 
 export function LikeAndComment({ post, onPostChange }: Props) {
   const { profile } = useAuth();
@@ -151,7 +150,7 @@ export function LikeAndComment({ post, onPostChange }: Props) {
           </button>
         )}
         {showComments && comments.length > 0 && (
-          <ul className="flex max-h-72 list-none flex-col gap-3 overflow-y-auto">
+          <ul className="flex max-h-72 flex-col gap-3 overflow-y-auto">
             {comments.map((comment) => (
               <li key={comment.commentId} className="flex items-start gap-2">
                 <Link to={`/profile/${comment.username}`} className="flex">
@@ -202,7 +201,7 @@ export function LikeAndComment({ post, onPostChange }: Props) {
             onKeyDown={onCommentKeyDown}
             placeholder="Write a comment..."
             maxLength={MAX_COMMENT_LENGTH}
-            className="box-border min-w-0 flex-1 rounded-control border border-line bg-page px-3 py-2 text-sm outline-none transition-colors focus:border-primary"
+            className="min-w-0 flex-1 rounded-control border border-line bg-page px-3 py-2 text-sm outline-none transition-colors focus:border-primary"
           />
           <Button type="submit" size="sm" disabled={!commentText.trim()}>
             Add

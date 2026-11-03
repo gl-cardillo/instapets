@@ -11,7 +11,7 @@ export function SearchPage() {
   const { users, loading } = useUserSearch(search, 50);
 
   return (
-    <div className="mx-auto box-border flex w-full max-w-md flex-col gap-4 p-4">
+    <div className="mx-auto flex w-full max-w-md flex-col gap-4 p-4">
       {/* the header's search box is hidden on phones */}
       <TextField
         label="Search pets"

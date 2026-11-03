@@ -73,7 +73,8 @@ export function Home() {
   };
 
   return (
-    <div className="mx-auto box-border flex w-full max-w-xl flex-col gap-4 p-4">
+    <div className="mx-auto flex w-full max-w-xl flex-col gap-4 p-4">
+      <h2 className="sr-only">Feed</h2>
       {!feed && <Skeleton height={420} count={2} className="mb-4" />}
       {feed?.posts.length === 0 && (
         <Notice title="No pets here yet">

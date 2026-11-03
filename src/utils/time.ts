@@ -1,4 +1,4 @@
-// "now", "5 minutes ago", ... and the date for anything older than 4 weeks
+// "5 minutes ago" style, or a date after 4 weeks
 export function getTime(time: number): string {
   const seconds = (Date.now() - time) / 1000;
   const ago = (amount: number, unit: string) => {

@@ -13,7 +13,7 @@ import { commentsCol, usersCol } from "./collections";
 
 // oldest first
 export async function getComments(postId: string): Promise<PostComment[]> {
-  // sorted here rather than with orderBy, which would need a composite index
+  // sorted here; orderBy would need a composite index
   const snapshot = await getDocs(
     query(commentsCol, where("postId", "==", postId)),
   );

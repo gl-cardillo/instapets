@@ -1,9 +1,44 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ThemeToggle } from "../ThemeToggle/ThemeToggle";
 import { Button } from "./Button";
 import { IconButton } from "./IconButton";
+import { Modal } from "./Modal";
 import { TextField } from "./TextField";
+
+describe("Modal", () => {
+  afterEach(() => {
+    document.body.replaceChildren();
+  });
+
+  const renderModal = () => {
+    const opener = document.createElement("button");
+    document.body.append(opener);
+    opener.focus();
+    const view = render(
+      <Modal title="Liked by" onClose={vi.fn()}>
+        <a href="/profile/bob">bob</a>
+      </Modal>,
+    );
+    return { opener, view };
+  };
+
+  it("focuses close, keeps Tab inside, and returns focus on close", () => {
+    const { opener, view } = renderModal();
+    const close = screen.getByRole("button", { name: "Close" });
+    const link = screen.getByRole("link", { name: "bob" });
+    expect(close).toHaveFocus();
+
+    link.focus();
+    fireEvent.keyDown(document, { key: "Tab" });
+    expect(close).toHaveFocus();
+    fireEvent.keyDown(document, { key: "Tab", shiftKey: true });
+    expect(link).toHaveFocus();
+
+    view.unmount();
+    expect(opener).toHaveFocus();
+  });
+});
 
 describe("Button", () => {
   it("doesn't submit forms unless asked to", () => {

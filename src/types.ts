@@ -1,4 +1,4 @@
-// Shapes of the Firestore documents
+// firestore document shapes
 
 // users/{username}
 export interface UserProfile {
@@ -12,8 +12,7 @@ export interface UserProfile {
   likes: string[];
   // ids of comments this user wrote
   comments: string[];
-  // a small data URL, "" for the default picture, or (older users) a
-  // Firebase Storage URL that no longer loads
+  // data URL, "" for the default, or a dead Storage URL
   profilePic: string;
 }
 
@@ -25,8 +24,7 @@ export interface Post {
   // older posts: the author's picture when posted; "" on newer ones
   userPic: string;
   caption: string;
-  // older posts: a Firebase Storage URL that no longer loads; "" on newer
-  // ones, whose picture is in images/{id}
+  // dead Storage URL on old posts; "" on new ones (picture in images/{id})
   urlPic: string;
   // usernames
   likes: string[];
@@ -44,8 +42,7 @@ export interface PostComment {
   created: number;
 }
 
-// images/{postId}: a post's picture, kept out of the post doc so that
-// loading posts stays cheap
+// images/{postId}: kept apart so loading posts stays cheap
 export interface PostImage {
   // the post author's username
   owner: string;

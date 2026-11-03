@@ -35,9 +35,9 @@ export function Mainbar() {
   return (
     <>
       <header className="sticky top-0 z-20 border-b border-line bg-surface">
-        <div className="mx-auto box-border flex h-14 max-w-5xl items-center justify-between gap-4 px-4">
+        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-4 px-4">
           <Link to="/home">
-            <h1 className="font-logo text-4xl leading-none text-ink">
+            <h1 className="font-logo text-4xl leading-none font-bold text-ink">
               Instapets
             </h1>
           </Link>

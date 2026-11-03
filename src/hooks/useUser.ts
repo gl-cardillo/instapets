@@ -9,7 +9,7 @@ export function useUser(username: string) {
 
 // the existing ones among `usernames`; undefined while loading
 export function useUsers(usernames: string[]) {
-  // depend on the names, not the array, which is often a new one each render
+  // depend on the names, not a new array each render
   const key = usernames.join("\n");
   return useLoader(
     useCallback(() => getUsers(key ? key.split("\n") : []), [key]),

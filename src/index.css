@@ -1,5 +1,6 @@
 @layer theme, base, components, utilities;
 @import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
 @import "tailwindcss/utilities.css" layer(utilities);
 
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
@@ -71,11 +72,6 @@
 }
 
 @layer base {
-  * {
-    margin: 0;
-    padding: 0;
-  }
-
   html {
     font-family: var(--font-sans);
   }
@@ -85,29 +81,12 @@
     color: var(--color-ink);
   }
 
-  button,
-  input,
-  textarea {
-    font: inherit;
-    color: inherit;
-  }
-
-  input,
-  textarea {
-    background-color: transparent;
-  }
-
   textarea {
     resize: none;
   }
 
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  a:hover {
-    cursor: pointer;
+  :focus-visible {
+    outline-color: var(--color-primary);
   }
 
   input:-webkit-autofill,
@@ -118,8 +97,7 @@
   }
 }
 
-/* SweetAlert dialogs and toasts. Unlayered and doubled up to beat the
-   variables SweetAlert sets on :root. */
+/* dialogs; doubled to beat sweetalert's :root vars */
 :root:root {
   --swal2-background: var(--color-surface);
   --swal2-color: var(--color-ink);

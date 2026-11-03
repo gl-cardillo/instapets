@@ -9,8 +9,7 @@ export default defineConfig({
   build: {
     rolldownOptions: {
       output: {
-        // Libraries change far less often than the app, so they get their
-        // own files that browsers keep cached across deploys.
+        // libraries get their own files, cached across deploys
         codeSplitting: {
           groups: [
             { name: "firebase", test: /node_modules[\\/]@?firebase/ },
@@ -23,8 +22,7 @@ export default defineConfig({
         },
       },
     },
-    // Firebase alone is ~580 kB minified (~175 kB gzipped); it can't be
-    // trimmed further, since Firestore and Auth are needed on every page
+    // firebase is ~175 kB gzipped and needed on every page
     chunkSizeWarningLimit: 700,
   },
 });

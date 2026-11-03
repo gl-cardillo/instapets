@@ -30,7 +30,7 @@ function Tab({
   );
 }
 
-// the main navigation on phones, in place of the links in the header
+// main navigation on phones
 export function BottomNav() {
   const { profile } = useAuth();
 

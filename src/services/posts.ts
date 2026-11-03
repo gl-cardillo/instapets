@@ -19,7 +19,7 @@ import { forgetPostImage } from "./images";
 
 export interface FeedPage {
   posts: Post[];
-  // pass to getFeed for the next page; null when there are no more
+  // next page cursor, null at the end
   next: number | null;
 }
 
@@ -45,7 +45,7 @@ export async function getFeed(
 
 // newest first
 export async function getPostsByUser(username: string): Promise<Post[]> {
-  // sorted here rather than with orderBy, which would need a composite index
+  // sorted here; orderBy would need a composite index
   const snapshot = await getDocs(
     query(postsCol, where("user", "==", username)),
   );
@@ -85,11 +85,10 @@ export async function deletePost(id: string): Promise<void> {
     getDocs(query(commentsCol, where("postId", "==", id))),
     getDoc(doc(imagesCol, id)),
   ]);
-  // the post doc is deleted last: security rules look it up to authorize
-  // deleting its comments
+  // post goes last: rules check it before deleting comments
   const batch = writeBatch(db);
   comments.docs.forEach((d) => batch.delete(d.ref));
-  // older posts have no image doc, and rules reject deleting a missing one
+  // old posts have no image doc
   if (image.exists()) batch.delete(image.ref);
   batch.delete(doc(postsCol, id));
   await batch.commit();

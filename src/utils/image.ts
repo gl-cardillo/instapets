@@ -1,6 +1,4 @@
-// Resizes a picture to fit within maxSize×maxSize and encodes it as a data
-// URL no longer than maxLength characters, lowering the quality as needed.
-// Pictures are stored in Firestore, whose documents are capped at 1 MB.
+// shrinks a picture to a data URL under maxLength (Firestore docs cap at 1 MB)
 export async function compressImage(
   file: File,
   maxSize: number,
@@ -18,7 +16,7 @@ export async function compressImage(
   canvas.getContext("2d")!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
   bitmap.close();
 
-  // browsers that can't encode WebP return a (huge) PNG instead
+  // browsers without WebP encoding return a PNG
   const type = canvas.toDataURL("image/webp").startsWith("data:image/webp")
     ? "image/webp"
     : "image/jpeg";

@@ -11,8 +11,7 @@ interface Props {
   onDoubleClick?: () => void;
 }
 
-// A post's picture, loaded from Firestore. Older posts point at Firebase
-// Storage, which no longer serves them, so they show a placeholder.
+// a post's picture, or a placeholder for old Storage ones
 export function PostImage({ post, className, onDoubleClick }: Props) {
   // undefined while loading, null if there's no picture
   const { data: stored } = useLoader(
@@ -37,7 +36,7 @@ export function PostImage({ post, className, onDoubleClick }: Props) {
   return (
     <img
       src={src}
-      alt="post"
+      alt={post.caption || `Picture posted by ${post.user}`}
       className={`bg-surface-hover ${className ?? ""}`}
       onDoubleClick={onDoubleClick}
       onError={() => setFailed(true)}
