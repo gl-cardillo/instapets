@@ -9,7 +9,7 @@ import { deletePost, getPost } from "../../services/posts";
 import { confirmDelete, handleSuccess, reportError } from "../../utils/alerts";
 import { UserAvatar } from "../Avatar/Avatar";
 import { LikeAndComment } from "../LikesAndComments/LikesAndComments";
-import { PostImage } from "../PostImage/PostImage";
+import { LikeableImage } from "../PostImage/LikeableImage";
 import { IconButton } from "../ui/IconButton";
 import { Notice } from "../ui/Notice";
 
@@ -72,9 +72,11 @@ export function Post() {
             </IconButton>
           )}
         </div>
-        <PostImage
+        <LikeableImage
           post={post}
-          className="block h-full max-h-[85dvh] w-full object-contain lg:col-start-1 lg:row-span-2 lg:row-start-1"
+          onPostChange={setPost}
+          className="lg:col-start-1 lg:row-span-2 lg:row-start-1"
+          imageClassName="block h-full max-h-[85dvh] w-full object-contain"
         />
         <div className="min-h-0 overflow-y-auto lg:col-start-2">
           <LikeAndComment post={post} onPostChange={setPost} />
