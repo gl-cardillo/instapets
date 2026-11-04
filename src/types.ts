@@ -14,6 +14,8 @@ export interface UserProfile {
   comments: string[];
   // data URL, "" for the default, or a dead Storage URL
   profilePic: string;
+  // missing on older users
+  bio?: string;
 }
 
 // posts/{id}

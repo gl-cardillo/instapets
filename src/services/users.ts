@@ -95,7 +95,13 @@ export async function createUserProfile(
     likes: [],
     comments: [],
     profilePic: "",
+    bio: "",
   });
+  forgetUser(username);
+}
+
+export async function updateBio(username: string, bio: string): Promise<void> {
+  await updateDoc(doc(usersCol, username), { bio });
   forgetUser(username);
 }
 

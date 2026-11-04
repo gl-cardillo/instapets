@@ -62,6 +62,12 @@ service cloud.firestore {
     }
 
     // profile pictures are small data URLs stored on the user doc
+    // older users have no bio field
+    function validBio() {
+      let bio = request.resource.data.get('bio', '');
+      return bio is string && bio.size() <= 150;
+    }
+
     function validProfilePic() {
       let pic = request.resource.data.profilePic;
       return pic == resource.data.profilePic
@@ -75,7 +81,7 @@ service cloud.firestore {
 
       allow create: if signedIn()
         && hasExactly(['email', 'username', 'usernameLower', 'follower',
-          'following', 'likes', 'comments', 'profilePic'])
+          'following', 'likes', 'comments', 'profilePic', 'bio'])
         && username.matches('^[^/]{2,15}$')
         && request.resource.data.username == username
         && request.resource.data.usernameLower == username.lower()
@@ -84,15 +90,17 @@ service cloud.firestore {
         && request.resource.data.following == []
         && request.resource.data.likes == []
         && request.resource.data.comments == []
-        && request.resource.data.profilePic == '';
+        && request.resource.data.profilePic == ''
+        && request.resource.data.bio == '';
 
       // owners edit their profile, not their identity or followers
       allow update: if signedIn()
         && verified()
         && resource.data.email.lower() == authEmail()
-        && onlyChanges(['following', 'likes', 'comments', 'profilePic', 'follower'])
+        && onlyChanges(['following', 'likes', 'comments', 'profilePic', 'follower', 'bio'])
         && added('follower').size() == 0
-        && validProfilePic();
+        && validProfilePic()
+        && validBio();
 
       // others follow, unfollow or clean up after deleting
       allow update: if onlyChanges(['follower']) && togglesSelf('follower');
