@@ -129,7 +129,7 @@ export function LikeAndComment({ post, onPostChange }: Props) {
           </Modal>
         )}
         {post.caption && (
-          <p className="text-sm break-words whitespace-pre-wrap">
+          <p className="text-sm wrap-break-word whitespace-pre-wrap">
             <Link to={`/profile/${post.user}`} className="font-bold">
               {post.user}
             </Link>{" "}
@@ -161,7 +161,7 @@ export function LikeAndComment({ post, onPostChange }: Props) {
                   />
                 </Link>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm break-words whitespace-pre-wrap">
+                  <p className="text-sm wrap-break-word whitespace-pre-wrap">
                     <Link
                       to={`/profile/${comment.username}`}
                       className="font-bold"

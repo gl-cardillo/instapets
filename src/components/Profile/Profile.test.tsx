@@ -1,10 +1,10 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AuthContext, type AuthState } from "../../auth/AuthContext";
 import { getComments } from "../../services/comments";
 import { getPost, getPostsByUser } from "../../services/posts";
-import { getUser, toggleFollow } from "../../services/users";
+import { getUser, toggleFollow, updateBio } from "../../services/users";
 import type { Post as PostType, UserProfile } from "../../types";
 import { Post } from "../Post/Post";
 import { UploadPost } from "../upload-post/UploadPost";
@@ -23,6 +23,7 @@ vi.mock("../../services/users", () => ({
   getUser: vi.fn(),
   toggleFollow: vi.fn(),
   changeProfilePic: vi.fn(),
+  updateBio: vi.fn(),
 }));
 vi.mock("../../services/comments", () => ({
   getComments: vi.fn(),
@@ -121,6 +122,50 @@ describe("Profile", () => {
     expect(toggleFollow).toHaveBeenCalledWith("bob", "alice", false);
     finish();
     expect(await screen.findByRole("button", { name: "Follow" })).toBeEnabled();
+  });
+});
+
+describe("Bio", () => {
+  it("shows a bio, with no way to edit someone else's", async () => {
+    vi.mocked(getUser).mockResolvedValue(user("bob", { bio: "Loves naps" }));
+    renderAt("/profile/bob");
+    expect(await screen.findByText("Loves naps")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /bio/ }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("lets you add your own, trimmed, and shows it after saving", async () => {
+    // saving changes what loading returns, like the real database
+    let savedBio = "";
+    vi.mocked(getUser).mockImplementation(async () =>
+      user("alice", { bio: savedBio }),
+    );
+    vi.mocked(updateBio).mockImplementation(async (_, bio) => {
+      savedBio = bio;
+    });
+    renderAt("/profile/alice");
+    fireEvent.click(await screen.findByRole("button", { name: "Add a bio" }));
+    const box = screen.getByRole("textbox", { name: "Bio" });
+    fireEvent.change(box, { target: { value: "  Good boy  " } });
+    expect(screen.getByText("12 / 150")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Edit bio" })).toBeVisible(),
+    );
+    expect(screen.getByText("Good boy")).toBeInTheDocument();
+    expect(updateBio).toHaveBeenCalledWith("alice", "Good boy");
+  });
+
+  it("cancels without saving", async () => {
+    vi.mocked(getUser).mockResolvedValue(alice);
+    renderAt("/profile/alice");
+    fireEvent.click(await screen.findByRole("button", { name: "Add a bio" }));
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    expect(updateBio).not.toHaveBeenCalled();
+    expect(
+      screen.queryByRole("textbox", { name: "Bio" }),
+    ).not.toBeInTheDocument();
   });
 });
 

@@ -30,6 +30,7 @@ const user = (username: string, extra = {}) => ({
   likes: [],
   comments: [],
   profilePic: "",
+  bio: "",
   ...extra,
 });
 
@@ -132,6 +133,24 @@ describe("users", () => {
   it("rejects guests editing profiles", async () => {
     await assertFails(
       updateDoc(doc(guest(), "users/alice"), { profilePic: pic }),
+    );
+  });
+
+  it("lets you write a bio of up to 150 characters", async () => {
+    const db = as("alice");
+    await assertSucceeds(
+      updateDoc(doc(db, "users/alice"), { bio: "b".repeat(150) }),
+    );
+    await assertFails(
+      updateDoc(doc(db, "users/alice"), { bio: "b".repeat(151) }),
+    );
+    await assertFails(updateDoc(doc(db, "users/alice"), { bio: 42 }));
+    await assertFails(updateDoc(doc(as("bob"), "users/alice"), { bio: "hi" }));
+  });
+
+  it("starts new profiles with an empty bio", async () => {
+    await assertFails(
+      setDoc(doc(as("carol"), "users/carol"), user("carol", { bio: "hi" })),
     );
   });
 

@@ -1,12 +1,19 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router";
 import { IoCameraOutline } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useAuth, useCanWrite } from "../../auth/AuthContext";
 import { useLoader } from "../../hooks/useLoader";
+import { MAX_BIO_LENGTH } from "../../limits";
 import { getPostsByUser } from "../../services/posts";
-import { changeProfilePic, getUser, toggleFollow } from "../../services/users";
+import {
+  changeProfilePic,
+  getUser,
+  toggleFollow,
+  updateBio,
+} from "../../services/users";
+import type { UserProfile } from "../../types";
 import { reportError } from "../../utils/alerts";
 import { Avatar } from "../Avatar/Avatar";
 import { UserCards } from "../Card/UserCards";
@@ -41,6 +48,93 @@ function Stat({ label, count, active, onClick }: StatProps) {
       </span>{" "}
       {label}
     </button>
+  );
+}
+
+interface BioProps {
+  user: UserProfile;
+  editable: boolean;
+  onSaved: () => Promise<unknown>;
+}
+
+function Bio({ user, editable, onSaved }: BioProps) {
+  const canWrite = useCanWrite();
+  const [editing, setEditing] = useState(false);
+  const [text, setText] = useState("");
+  const [saving, setSaving] = useState(false);
+  const bio = user.bio ?? "";
+
+  const startEditing = () => {
+    if (!canWrite()) return;
+    setText(bio);
+    setEditing(true);
+  };
+
+  const save = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!canWrite()) return;
+    setSaving(true);
+    try {
+      await updateBio(user.username, text.trim());
+      await onSaved();
+      setEditing(false);
+    } catch (error) {
+      reportError(error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (editing) {
+    return (
+      <form onSubmit={save} className="flex flex-col gap-2">
+        <textarea
+          aria-label="Bio"
+          rows={3}
+          autoFocus
+          value={text}
+          maxLength={MAX_BIO_LENGTH}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Tell everyone about your pet..."
+          className="w-full rounded-control border border-line bg-surface px-3 py-2 text-sm outline-none transition-colors focus:border-primary"
+        />
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-xs text-muted">
+            {text.length} / {MAX_BIO_LENGTH}
+          </span>
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setEditing(false)}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" size="sm" disabled={saving}>
+              {saving ? "Saving..." : "Save"}
+            </Button>
+          </div>
+        </div>
+      </form>
+    );
+  }
+
+  if (!bio && !editable) return null;
+  return (
+    <div className="flex flex-col items-start gap-1">
+      {bio && (
+        <p className="text-sm wrap-break-word whitespace-pre-wrap">{bio}</p>
+      )}
+      {editable && (
+        <button
+          type="button"
+          onClick={startEditing}
+          className="cursor-pointer text-sm font-bold text-primary hover:text-primary-hover"
+        >
+          {bio ? "Edit bio" : "Add a bio"}
+        </button>
+      )}
+    </div>
   );
 }
 
@@ -179,6 +273,13 @@ function ProfilePage({ profileName }: { profileName: string }) {
           </div>
         </div>
       </section>
+      {userProfile && (
+        <Bio
+          user={userProfile}
+          editable={isOwnProfile}
+          onSaved={() => load()}
+        />
+      )}
       {toShow === "posts" && userPosts?.length === 0 && (
         <Notice title="No posts yet" />
       )}
