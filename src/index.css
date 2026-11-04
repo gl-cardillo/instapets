@@ -43,6 +43,39 @@
   --radius-pill: 9999px;
 
   --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+
+  --animate-heart-pop: heart-pop 0.9s ease-out forwards;
+  --animate-heart-fade: heart-fade 0.9s ease-out forwards;
+
+  @keyframes heart-pop {
+    0% {
+      opacity: 0;
+      transform: scale(0.2);
+    }
+    15% {
+      opacity: 0.95;
+      transform: scale(1.2);
+    }
+    30%,
+    70% {
+      opacity: 0.95;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes heart-fade {
+    0%,
+    70% {
+      opacity: 0.95;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
 }
 
 @layer theme {

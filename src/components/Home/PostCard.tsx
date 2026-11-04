@@ -1,11 +1,10 @@
 import { Link } from "react-router";
 import { BsX } from "react-icons/bs";
 import { useAuth } from "../../auth/AuthContext";
-import { useLikeToggle } from "../../hooks/useLikeToggle";
 import type { Post } from "../../types";
 import { UserAvatar } from "../Avatar/Avatar";
 import { LikeAndComment } from "../LikesAndComments/LikesAndComments";
-import { PostImage } from "../PostImage/PostImage";
+import { LikeableImage } from "../PostImage/LikeableImage";
 import { IconButton } from "../ui/IconButton";
 
 interface Props {
@@ -16,7 +15,6 @@ interface Props {
 
 export function PostCard({ post, onPostChange, onDelete }: Props) {
   const { profile } = useAuth();
-  const toggleLike = useLikeToggle(onPostChange);
 
   return (
     <article className="overflow-hidden rounded-card border border-line bg-surface shadow-card">
@@ -38,10 +36,10 @@ export function PostCard({ post, onPostChange, onDelete }: Props) {
           </IconButton>
         )}
       </div>
-      <PostImage
+      <LikeableImage
         post={post}
-        className="block max-h-[80dvh] w-full bg-page object-contain"
-        onDoubleClick={() => toggleLike(post)}
+        onPostChange={onPostChange}
+        imageClassName="block max-h-[80dvh] w-full bg-page object-contain"
       />
       <LikeAndComment post={post} onPostChange={onPostChange} />
     </article>
