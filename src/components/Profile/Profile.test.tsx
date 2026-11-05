@@ -18,6 +18,7 @@ vi.mock("../../services/posts", () => ({
   addPost: vi.fn(),
   deletePost: vi.fn(),
   toggleLike: vi.fn(),
+  updateCaption: vi.fn(),
 }));
 vi.mock("../../services/users", () => ({
   getUser: vi.fn(),

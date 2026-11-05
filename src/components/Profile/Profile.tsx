@@ -1,4 +1,4 @@
-import { useCallback, useState, type FormEvent } from "react";
+import { useCallback, useState } from "react";
 import { Link, useParams } from "react-router";
 import { IoCameraOutline } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
@@ -20,6 +20,7 @@ import { UserCards } from "../Card/UserCards";
 import { PostImage } from "../PostImage/PostImage";
 import { Button } from "../ui/Button";
 import { Notice } from "../ui/Notice";
+import { TextEditor } from "../ui/TextEditor";
 
 const PAGE = "mx-auto flex w-full max-w-3xl flex-col gap-6 p-4";
 const AVATAR = "size-20 md:size-28";
@@ -60,62 +61,25 @@ interface BioProps {
 function Bio({ user, editable, onSaved }: BioProps) {
   const canWrite = useCanWrite();
   const [editing, setEditing] = useState(false);
-  const [text, setText] = useState("");
-  const [saving, setSaving] = useState(false);
   const bio = user.bio ?? "";
 
-  const startEditing = () => {
+  const save = async (text: string) => {
     if (!canWrite()) return;
-    setText(bio);
-    setEditing(true);
-  };
-
-  const save = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!canWrite()) return;
-    setSaving(true);
-    try {
-      await updateBio(user.username, text.trim());
-      await onSaved();
-      setEditing(false);
-    } catch (error) {
-      reportError(error);
-    } finally {
-      setSaving(false);
-    }
+    await updateBio(user.username, text);
+    await onSaved();
+    setEditing(false);
   };
 
   if (editing) {
     return (
-      <form onSubmit={save} className="flex flex-col gap-2">
-        <textarea
-          aria-label="Bio"
-          rows={3}
-          autoFocus
-          value={text}
-          maxLength={MAX_BIO_LENGTH}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Tell everyone about your pet..."
-          className="w-full rounded-control border border-line bg-surface px-3 py-2 text-sm outline-none transition-colors focus:border-primary"
-        />
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-xs text-muted">
-            {text.length} / {MAX_BIO_LENGTH}
-          </span>
-          <div className="flex gap-2">
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => setEditing(false)}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" size="sm" disabled={saving}>
-              {saving ? "Saving..." : "Save"}
-            </Button>
-          </div>
-        </div>
-      </form>
+      <TextEditor
+        label="Bio"
+        initial={bio}
+        maxLength={MAX_BIO_LENGTH}
+        placeholder="Tell everyone about your pet..."
+        onSave={save}
+        onCancel={() => setEditing(false)}
+      />
     );
   }
 
@@ -128,7 +92,9 @@ function Bio({ user, editable, onSaved }: BioProps) {
       {editable && (
         <button
           type="button"
-          onClick={startEditing}
+          onClick={() => {
+            if (canWrite()) setEditing(true);
+          }}
           className="cursor-pointer text-sm font-bold text-primary hover:text-primary-hover"
         >
           {bio ? "Edit bio" : "Add a bio"}

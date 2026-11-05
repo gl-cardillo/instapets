@@ -296,6 +296,22 @@ describe("posts and pictures", () => {
     );
   });
 
+  it("lets the author edit the caption, and nothing else", async () => {
+    const db = as("alice");
+    await assertSucceeds(
+      updateDoc(doc(db, "posts/p1"), { caption: "c".repeat(2200) }),
+    );
+    await assertFails(
+      updateDoc(doc(db, "posts/p1"), { caption: "c".repeat(2201) }),
+    );
+    await assertFails(
+      updateDoc(doc(db, "posts/p1"), { caption: "new", created: Date.now() }),
+    );
+    await assertFails(
+      updateDoc(doc(as("alice", false), "posts/p1"), { caption: "new" }),
+    );
+  });
+
   it("lets the author delete a post with its comments and picture", async () => {
     const db = as("alice");
     const batch = writeBatch(db);

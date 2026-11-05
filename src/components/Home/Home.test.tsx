@@ -3,7 +3,7 @@ import { MemoryRouter } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AuthContext, type AuthState } from "../../auth/AuthContext";
 import { addComment, getComments } from "../../services/comments";
-import { getFeed } from "../../services/posts";
+import { getFeed, updateCaption } from "../../services/posts";
 import type { Post, PostComment, UserProfile } from "../../types";
 import { Home } from "./Home";
 import { PostCard } from "./PostCard";
@@ -14,6 +14,7 @@ vi.mock("../../services/posts", () => ({
   getFeed: vi.fn(),
   deletePost: vi.fn(),
   toggleLike: vi.fn(),
+  updateCaption: vi.fn(),
 }));
 vi.mock("../../services/comments", () => ({
   getComments: vi.fn(),
@@ -96,6 +97,38 @@ describe("PostCard", () => {
     card(post(), alice, onDelete);
     fireEvent.click(await screen.findByRole("button", { name: "Delete post" }));
     expect(onDelete).toHaveBeenCalledWith("p1");
+  });
+
+  it("lets the author edit the caption", async () => {
+    vi.mocked(updateCaption).mockResolvedValue();
+    const onPostChange = vi.fn();
+    withAuth(
+      <PostCard post={post()} onPostChange={onPostChange} onDelete={vi.fn()} />,
+    );
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Edit caption" }),
+    );
+    const box = screen.getByRole("textbox", { name: "Caption" });
+    expect(box).toHaveValue("my cat");
+    fireEvent.change(box, { target: { value: " my sleepy cat " } });
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    await waitFor(() =>
+      expect(onPostChange).toHaveBeenCalledWith(
+        expect.objectContaining({ caption: "my sleepy cat" }),
+      ),
+    );
+    expect(updateCaption).toHaveBeenCalledWith("p1", "my sleepy cat");
+    expect(
+      screen.queryByRole("textbox", { name: "Caption" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("only shows caption editing to the author", async () => {
+    card(post({ user: "bob" }));
+    await screen.findByText("my cat");
+    expect(
+      screen.queryByRole("button", { name: "Edit caption" }),
+    ).not.toBeInTheDocument();
   });
 
   it("hides delete from other users", async () => {
