@@ -125,6 +125,12 @@ service cloud.firestore {
 
       allow update: if onlyChanges(['likes']) && togglesSelf('likes');
 
+      // authors can edit their caption
+      allow update: if isUser(resource.data.user)
+        && onlyChanges(['caption'])
+        && request.resource.data.caption is string
+        && request.resource.data.caption.size() <= 2200;
+
       allow delete: if isUser(resource.data.user);
     }
 

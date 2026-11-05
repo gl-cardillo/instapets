@@ -5,7 +5,13 @@ import {
   type KeyboardEvent,
 } from "react";
 import { Link } from "react-router";
-import { BsSuitHeart, BsSuitHeartFill, BsChat, BsX } from "react-icons/bs";
+import {
+  BsChat,
+  BsPencil,
+  BsSuitHeart,
+  BsSuitHeartFill,
+  BsX,
+} from "react-icons/bs";
 import { useAuth, useCanWrite } from "../../auth/AuthContext";
 import { useLikeToggle } from "../../hooks/useLikeToggle";
 import { useLoader } from "../../hooks/useLoader";
@@ -14,7 +20,8 @@ import {
   deleteComment,
   getComments,
 } from "../../services/comments";
-import { MAX_COMMENT_LENGTH } from "../../limits";
+import { MAX_CAPTION_LENGTH, MAX_COMMENT_LENGTH } from "../../limits";
+import { updateCaption } from "../../services/posts";
 import type { Post } from "../../types";
 import { reportError } from "../../utils/alerts";
 import { getTime } from "../../utils/time";
@@ -23,6 +30,7 @@ import { UserCards } from "../Card/UserCards";
 import { Button } from "../ui/Button";
 import { IconButton } from "../ui/IconButton";
 import { Modal } from "../ui/Modal";
+import { TextEditor } from "../ui/TextEditor";
 
 interface Props {
   post: Post;
@@ -42,6 +50,7 @@ export function LikeAndComment({ post, onPostChange }: Props) {
   const [showComments, setShowComments] = useState(false);
   const [showAddComments, setShowAddComments] = useState(false);
   const [showLikes, setShowLikes] = useState(false);
+  const [editingCaption, setEditingCaption] = useState(false);
   const closeLikes = useCallback(() => setShowLikes(false), []);
 
   const toggleAddComments = () => {
@@ -81,6 +90,14 @@ export function LikeAndComment({ post, onPostChange }: Props) {
     }
   };
 
+  const saveCaption = async (caption: string) => {
+    if (!canWrite()) return;
+    await updateCaption(post.id, caption);
+    onPostChange({ ...post, caption });
+    setEditingCaption(false);
+  };
+
+  const isAuthor = profile?.username === post.user;
   const liked = profile !== null && post.likes.includes(profile.username);
   const othersWhoLiked = post.likes.length - 1;
 
@@ -102,6 +119,17 @@ export function LikeAndComment({ post, onPostChange }: Props) {
           <IconButton label="Comment" onClick={toggleAddComments}>
             <BsChat className="size-6" />
           </IconButton>
+          {isAuthor && (
+            <IconButton
+              label="Edit caption"
+              onClick={() => {
+                if (canWrite()) setEditingCaption(true);
+              }}
+              className="ml-auto"
+            >
+              <BsPencil className="size-5" />
+            </IconButton>
+          )}
         </div>
         {post.likes.length > 0 && (
           <p className="text-sm">
@@ -128,7 +156,17 @@ export function LikeAndComment({ post, onPostChange }: Props) {
             <UserCards usernames={post.likes} />
           </Modal>
         )}
-        {post.caption && (
+        {editingCaption && (
+          <TextEditor
+            label="Caption"
+            initial={post.caption}
+            maxLength={MAX_CAPTION_LENGTH}
+            placeholder="Write a caption..."
+            onSave={saveCaption}
+            onCancel={() => setEditingCaption(false)}
+          />
+        )}
+        {post.caption && !editingCaption && (
           <p className="text-sm wrap-break-word whitespace-pre-wrap">
             <Link to={`/profile/${post.user}`} className="font-bold">
               {post.user}

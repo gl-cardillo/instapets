@@ -8,6 +8,7 @@ import {
   orderBy,
   query,
   startAfter,
+  updateDoc,
   where,
   writeBatch,
 } from "firebase/firestore";
@@ -93,6 +94,13 @@ export async function deletePost(id: string): Promise<void> {
   batch.delete(doc(postsCol, id));
   await batch.commit();
   forgetPostImage(id);
+}
+
+export async function updateCaption(
+  postId: string,
+  caption: string,
+): Promise<void> {
+  await updateDoc(doc(postsCol, postId), { caption });
 }
 
 // likes or unlikes the post and returns it with the updated likes
