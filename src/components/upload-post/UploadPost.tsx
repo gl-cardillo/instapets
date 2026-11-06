@@ -89,13 +89,18 @@ export function UploadPost() {
           maxLength={MAX_CAPTION_LENGTH}
           className="w-full p-3 text-sm outline-none"
         />
-        <div className="flex justify-end gap-2 border-t border-line p-3">
-          <Button variant="secondary" onClick={() => navigate(-1)}>
-            Cancel
-          </Button>
-          <Button onClick={submitPost} disabled={posting || !pic}>
-            {posting ? "Posting..." : "Post"}
-          </Button>
+        <div className="flex items-center justify-between gap-2 border-t border-line p-3">
+          <span className="text-xs text-muted">
+            {caption.length} / {MAX_CAPTION_LENGTH}
+          </span>
+          <div className="flex gap-2">
+            <Button variant="secondary" onClick={() => navigate(-1)}>
+              Cancel
+            </Button>
+            <Button onClick={submitPost} disabled={posting || !pic}>
+              {posting ? "Posting..." : "Post"}
+            </Button>
+          </div>
         </div>
       </div>
     </div>

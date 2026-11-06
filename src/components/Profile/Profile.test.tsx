@@ -204,4 +204,13 @@ describe("UploadPost", () => {
     expect(screen.getByRole("button", { name: "Post" })).toBeDisabled();
     expect(screen.getByLabelText("Choose a picture")).toBeInTheDocument();
   });
+
+  it("counts the caption's characters", () => {
+    renderAt("/uploadPost");
+    expect(screen.getByText("0 / 2200")).toBeInTheDocument();
+    fireEvent.change(screen.getByRole("textbox", { name: "Caption" }), {
+      target: { value: "Sunday nap" },
+    });
+    expect(screen.getByText("10 / 2200")).toBeInTheDocument();
+  });
 });
