@@ -8,6 +8,7 @@ import { Link } from "react-router";
 import {
   BsChat,
   BsPencil,
+  BsShare,
   BsSuitHeart,
   BsSuitHeartFill,
   BsX,
@@ -23,7 +24,8 @@ import {
 import { MAX_CAPTION_LENGTH, MAX_COMMENT_LENGTH } from "../../limits";
 import { updateCaption } from "../../services/posts";
 import type { Post } from "../../types";
-import { reportError } from "../../utils/alerts";
+import { handleError, handleSuccess, reportError } from "../../utils/alerts";
+import { sharePost } from "../../utils/share";
 import { getTime } from "../../utils/time";
 import { Avatar, UserAvatar } from "../Avatar/Avatar";
 import { UserCards } from "../Card/UserCards";
@@ -97,6 +99,14 @@ export function LikeAndComment({ post, onPostChange }: Props) {
     setEditingCaption(false);
   };
 
+  const share = async () => {
+    try {
+      if ((await sharePost(post)) === "copied") handleSuccess("Link copied");
+    } catch {
+      handleError("Couldn't share this post. Try copying the address bar.");
+    }
+  };
+
   const isAuthor = profile?.username === post.user;
   const liked = profile !== null && post.likes.includes(profile.username);
   const othersWhoLiked = post.likes.length - 1;
@@ -118,6 +128,9 @@ export function LikeAndComment({ post, onPostChange }: Props) {
           </IconButton>
           <IconButton label="Comment" onClick={toggleAddComments}>
             <BsChat className="size-6" />
+          </IconButton>
+          <IconButton label="Share" onClick={share}>
+            <BsShare className="size-5" />
           </IconButton>
           {isAuthor && (
             <IconButton
