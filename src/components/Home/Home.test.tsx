@@ -2,9 +2,14 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AuthContext, type AuthState } from "../../auth/AuthContext";
-import { addComment, getComments } from "../../services/comments";
+import {
+  addComment,
+  deleteComment,
+  getComments,
+} from "../../services/comments";
 import { getFeed, updateCaption } from "../../services/posts";
 import type { Post, PostComment, UserProfile } from "../../types";
+import { confirmDelete } from "../../utils/alerts";
 import { Home } from "./Home";
 import { PostCard } from "./PostCard";
 
@@ -27,6 +32,10 @@ vi.mock("../../services/images", () => ({
 vi.mock("../../hooks/useUser", () => ({
   useUser: () => null,
   useUsers: () => [],
+}));
+vi.mock("../../utils/alerts", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../../utils/alerts")>()),
+  confirmDelete: vi.fn(),
 }));
 
 const alice = { username: "alice", profilePic: "" } as UserProfile;
@@ -166,6 +175,28 @@ describe("PostCard", () => {
       await screen.findByRole("button", { name: "View 1 comment" }),
     );
     expect(screen.getByText("cute")).toBeInTheDocument();
+  });
+
+  it("asks before deleting your comment", async () => {
+    vi.mocked(getComments).mockResolvedValue([
+      { commentId: "c1", username: "alice", text: "cute", created: 1 },
+    ] as PostComment[]);
+    card(post());
+    fireEvent.click(
+      await screen.findByRole("button", { name: "View 1 comment" }),
+    );
+    const remove = screen.getByRole("button", { name: "Delete comment" });
+
+    vi.mocked(confirmDelete).mockResolvedValue(false);
+    fireEvent.click(remove);
+    await waitFor(() => expect(confirmDelete).toHaveBeenCalledOnce());
+    expect(deleteComment).not.toHaveBeenCalled();
+
+    vi.mocked(confirmDelete).mockResolvedValue(true);
+    fireEvent.click(remove);
+    await waitFor(() =>
+      expect(deleteComment).toHaveBeenCalledWith("c1", "alice"),
+    );
   });
 
   it("sends a comment with Enter but not Shift+Enter", async () => {
