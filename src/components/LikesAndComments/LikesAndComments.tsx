@@ -24,7 +24,12 @@ import {
 import { MAX_CAPTION_LENGTH, MAX_COMMENT_LENGTH } from "../../limits";
 import { updateCaption } from "../../services/posts";
 import type { Post } from "../../types";
-import { handleError, handleSuccess, reportError } from "../../utils/alerts";
+import {
+  confirmDelete,
+  handleError,
+  handleSuccess,
+  reportError,
+} from "../../utils/alerts";
 import { sharePost } from "../../utils/share";
 import { getTime } from "../../utils/time";
 import { Avatar, UserAvatar } from "../Avatar/Avatar";
@@ -84,6 +89,7 @@ export function LikeAndComment({ post, onPostChange }: Props) {
 
   const removeComment = async (commentId: string) => {
     if (!profile) return;
+    if (!(await confirmDelete("Delete this comment?"))) return;
     try {
       await deleteComment(commentId, profile.username);
       await loadComments();
