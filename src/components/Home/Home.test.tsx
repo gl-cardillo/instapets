@@ -7,7 +7,7 @@ import {
   deleteComment,
   getComments,
 } from "../../services/comments";
-import { getFeed, updateCaption } from "../../services/posts";
+import { getFeed, getFollowingFeed, updateCaption } from "../../services/posts";
 import type { Post, PostComment, UserProfile } from "../../types";
 import { confirmDelete } from "../../utils/alerts";
 import { Home } from "./Home";
@@ -17,6 +17,7 @@ vi.mock("../../firebase/config", () => ({ auth: {}, db: {} }));
 vi.mock("../../services/collections", () => ({}));
 vi.mock("../../services/posts", () => ({
   getFeed: vi.fn(),
+  getFollowingFeed: vi.fn(),
   deletePost: vi.fn(),
   toggleLike: vi.fn(),
   updateCaption: vi.fn(),
@@ -85,6 +86,45 @@ describe("Home", () => {
     expect(screen.getByText("share a picture")).toHaveAttribute(
       "href",
       "/uploadPost",
+    );
+  });
+
+  it("only offers the following tab when signed in", async () => {
+    vi.mocked(getFeed).mockResolvedValue({ posts: [], next: null });
+    withAuth(<Home />, null);
+    await screen.findByText("No pets here yet");
+    expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
+  });
+
+  it("switches to posts from pets you follow", async () => {
+    vi.mocked(getFeed).mockResolvedValue({ posts: [], next: null });
+    vi.mocked(getFollowingFeed).mockResolvedValue({
+      posts: [post({ user: "bob", caption: "bob's nap" })],
+      next: null,
+    });
+    withAuth(<Home />, { ...alice, following: ["bob", "carol"] });
+    const tab = await screen.findByRole("tab", { name: "Following" });
+    expect(screen.getByRole("tab", { name: "Everyone" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    fireEvent.click(tab);
+    expect(await screen.findByText("bob's nap")).toBeInTheDocument();
+    expect(tab).toHaveAttribute("aria-selected", "true");
+    expect(getFollowingFeed).toHaveBeenCalledWith(["bob", "carol"], null);
+  });
+
+  it("suggests finding pets when you follow no one", async () => {
+    vi.mocked(getFeed).mockResolvedValue({ posts: [], next: null });
+    vi.mocked(getFollowingFeed).mockResolvedValue({ posts: [], next: null });
+    withAuth(<Home />, { ...alice, following: [] });
+    fireEvent.click(await screen.findByRole("tab", { name: "Following" }));
+    expect(
+      await screen.findByText("You're not following anyone yet"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Find pets to follow")).toHaveAttribute(
+      "href",
+      "/searchPage",
     );
   });
 

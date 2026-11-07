@@ -14,15 +14,10 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase/config";
 import type { Post, UserProfile } from "../types";
+import { chunks, mergeNewest, type FeedPage } from "../utils/feed";
 import { compressImage } from "../utils/image";
 import { commentsCol, imagesCol, postsCol, usersCol } from "./collections";
 import { forgetPostImage } from "./images";
-
-export interface FeedPage {
-  posts: Post[];
-  // next page cursor, null at the end
-  next: number | null;
-}
 
 // newest first, `pageSize` at a time
 export async function getFeed(
@@ -42,6 +37,29 @@ export async function getFeed(
     posts,
     next: posts.length === pageSize ? posts[posts.length - 1].created : null,
   };
+}
+
+// posts by `usernames`, newest first; needs the posts (user, created) index
+export async function getFollowingFeed(
+  usernames: string[],
+  after: number | null = null,
+  pageSize = 10,
+): Promise<FeedPage> {
+  const pages = await Promise.all(
+    chunks(usernames).map(async (group) => {
+      const snapshot = await getDocs(
+        query(
+          postsCol,
+          where("user", "in", group),
+          orderBy("created", "desc"),
+          ...(after === null ? [] : [startAfter(after)]),
+          limit(pageSize),
+        ),
+      );
+      return snapshot.docs.map((d) => d.data());
+    }),
+  );
+  return mergeNewest(pages, pageSize);
 }
 
 // newest first
