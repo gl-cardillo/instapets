@@ -3,7 +3,11 @@ import { MemoryRouter, Route, Routes } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AuthContext, type AuthState } from "../../auth/AuthContext";
 import { getComments } from "../../services/comments";
-import { getPost, getPostsByUser } from "../../services/posts";
+import {
+  countPostsByUser,
+  getPost,
+  getPostsByUser,
+} from "../../services/posts";
 import { getUser, toggleFollow, updateBio } from "../../services/users";
 import type { Post as PostType, UserProfile } from "../../types";
 import { Post } from "../Post/Post";
@@ -15,6 +19,7 @@ vi.mock("../../services/collections", () => ({}));
 vi.mock("../../services/posts", () => ({
   getPost: vi.fn(),
   getPostsByUser: vi.fn(),
+  countPostsByUser: vi.fn(),
   addPost: vi.fn(),
   deletePost: vi.fn(),
   toggleLike: vi.fn(),
@@ -73,7 +78,8 @@ function renderAt(path: string, profile: UserProfile | null = alice) {
 
 beforeEach(() => {
   vi.clearAllMocks();
-  vi.mocked(getPostsByUser).mockResolvedValue([]);
+  vi.mocked(getPostsByUser).mockResolvedValue({ posts: [], next: null });
+  vi.mocked(countPostsByUser).mockResolvedValue(0);
   vi.mocked(getComments).mockResolvedValue([]);
 });
 
@@ -84,6 +90,30 @@ describe("Profile", () => {
     expect(
       await screen.findByText("No pet called ghost here"),
     ).toBeInTheDocument();
+  });
+
+  it("counts all posts, not just the ones loaded so far", async () => {
+    vi.mocked(getUser).mockResolvedValue(user("bob"));
+    vi.mocked(countPostsByUser).mockResolvedValue(40);
+    vi.mocked(getPostsByUser).mockResolvedValue({
+      posts: [
+        {
+          id: "p1",
+          user: "bob",
+          userPic: "",
+          caption: "",
+          urlPic: "",
+          likes: [],
+          created: 1,
+        },
+      ],
+      next: 1,
+    });
+    renderAt("/profile/bob");
+    expect(
+      await screen.findByRole("button", { name: "40 posts" }),
+    ).toBeInTheDocument();
+    expect(getPostsByUser).toHaveBeenCalledWith("bob", null);
   });
 
   it("switches between posts and followers", async () => {

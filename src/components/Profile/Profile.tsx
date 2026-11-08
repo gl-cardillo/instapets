@@ -5,8 +5,9 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useAuth, useCanWrite } from "../../auth/AuthContext";
 import { useLoader } from "../../hooks/useLoader";
+import { usePagedList } from "../../hooks/usePagedList";
 import { MAX_BIO_LENGTH } from "../../limits";
-import { getPostsByUser } from "../../services/posts";
+import { countPostsByUser, getPostsByUser } from "../../services/posts";
 import {
   changeProfilePic,
   getUser,
@@ -115,13 +116,24 @@ function ProfilePage({ profileName }: { profileName: string }) {
   const canWrite = useCanWrite();
   const { data, reload: load } = useLoader(
     useCallback(
-      () => Promise.all([getUser(profileName), getPostsByUser(profileName)]),
+      () => Promise.all([getUser(profileName), countPostsByUser(profileName)]),
       [profileName],
     ),
   );
   // undefined while loading, null if the user doesn't exist
   const userProfile = data?.[0];
-  const userPosts = data?.[1];
+  const postCount = data?.[1];
+  const {
+    page: postsPage,
+    endRef,
+    loadingMore,
+  } = usePagedList(
+    useCallback(
+      (after: number | null) => getPostsByUser(profileName, after),
+      [profileName],
+    ),
+  );
+  const userPosts = postsPage?.posts;
   const [toShow, setToShow] = useState<Tab>("posts");
   // blocks repeat clicks while saving
   const [busy, setBusy] = useState(false);
@@ -217,8 +229,8 @@ function ProfilePage({ profileName }: { profileName: string }) {
           </div>
           <div className="flex gap-4 md:gap-6">
             <Stat
-              label={userPosts?.length === 1 ? "post" : "posts"}
-              count={userPosts?.length}
+              label={postCount === 1 ? "post" : "posts"}
+              count={postCount}
               active={toShow === "posts"}
               onClick={() => setToShow("posts")}
             />
@@ -261,6 +273,9 @@ function ProfilePage({ profileName }: { profileName: string }) {
           ))}
         </div>
       )}
+      {toShow === "posts" && loadingMore && <Skeleton height={120} />}
+      {/* always rendered, so scrolling keeps working after switching tabs */}
+      <div ref={endRef} />
       {toShow !== "posts" &&
         userProfile &&
         (userProfile[followList].length > 0 ? (
