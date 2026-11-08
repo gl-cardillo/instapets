@@ -8,7 +8,12 @@ import {
   getPost,
   getPostsByUser,
 } from "../../services/posts";
-import { getUser, toggleFollow, updateBio } from "../../services/users";
+import {
+  getUser,
+  toggleFollow,
+  updateBio,
+  updatePetDetails,
+} from "../../services/users";
 import type { Post as PostType, UserProfile } from "../../types";
 import { Post } from "../Post/Post";
 import { UploadPost } from "../upload-post/UploadPost";
@@ -30,6 +35,7 @@ vi.mock("../../services/users", () => ({
   toggleFollow: vi.fn(),
   changeProfilePic: vi.fn(),
   updateBio: vi.fn(),
+  updatePetDetails: vi.fn(),
 }));
 vi.mock("../../services/comments", () => ({
   getComments: vi.fn(),
@@ -153,6 +159,65 @@ describe("Profile", () => {
     expect(toggleFollow).toHaveBeenCalledWith("bob", "alice", false);
     finish();
     expect(await screen.findByRole("button", { name: "Follow" })).toBeEnabled();
+  });
+});
+
+describe("Pet details", () => {
+  it("shows them as tags, with no way to edit someone else's", async () => {
+    vi.mocked(getUser).mockResolvedValue(
+      user("bob", { pet: { species: "cat", city: "Rome" } }),
+    );
+    renderAt("/profile/bob");
+    expect(await screen.findByText("🐱 Cat")).toBeInTheDocument();
+    expect(screen.getByText("Rome")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /pet details/ }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("saves only the details you fill in", async () => {
+    let saved = {};
+    vi.mocked(getUser).mockImplementation(async () =>
+      user("alice", { pet: saved }),
+    );
+    vi.mocked(updatePetDetails).mockImplementation(async (_, pet) => {
+      saved = pet;
+    });
+    renderAt("/profile/alice");
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Add pet details" }),
+    );
+    fireEvent.change(screen.getByLabelText("Species"), {
+      target: { value: "dog" },
+    });
+    fireEvent.change(screen.getByLabelText("City"), {
+      target: { value: " Rome " },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Edit pet details" }),
+      ).toBeVisible(),
+    );
+    expect(updatePetDetails).toHaveBeenCalledWith("alice", {
+      species: "dog",
+      city: "Rome",
+    });
+    expect(screen.getByText("🐶 Dog")).toBeInTheDocument();
+  });
+
+  it("won't save an impossible birth year", async () => {
+    vi.mocked(getUser).mockResolvedValue(alice);
+    renderAt("/profile/alice");
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Add pet details" }),
+    );
+    fireEvent.change(screen.getByLabelText("Birth year"), {
+      target: { value: "1850" },
+    });
+    expect(screen.getByRole("alert")).toHaveTextContent(/Between 1980 and/);
+    expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
+    expect(updatePetDetails).not.toHaveBeenCalled();
   });
 });
 

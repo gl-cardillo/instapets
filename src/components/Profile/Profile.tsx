@@ -21,6 +21,7 @@ import { UserCards } from "../Card/UserCards";
 import { PostImage } from "../PostImage/PostImage";
 import { Button } from "../ui/Button";
 import { Notice } from "../ui/Notice";
+import { PetDetailsSection } from "./PetDetailsSection";
 import { TextEditor } from "../ui/TextEditor";
 
 const PAGE = "mx-auto flex w-full max-w-3xl flex-col gap-6 p-4";
@@ -252,11 +253,18 @@ function ProfilePage({ profileName }: { profileName: string }) {
         </div>
       </section>
       {userProfile && (
-        <Bio
-          user={userProfile}
-          editable={isOwnProfile}
-          onSaved={() => load()}
-        />
+        <div className="flex flex-col gap-3">
+          <PetDetailsSection
+            user={userProfile}
+            editable={isOwnProfile}
+            onSaved={() => load()}
+          />
+          <Bio
+            user={userProfile}
+            editable={isOwnProfile}
+            onSaved={() => load()}
+          />
+        </div>
       )}
       {toShow === "posts" && userPosts?.length === 0 && (
         <Notice title="No posts yet" />

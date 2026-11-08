@@ -16,6 +16,18 @@ export interface UserProfile {
   profilePic: string;
   // missing on older users
   bio?: string;
+  // missing on older users; every field is optional
+  pet?: PetDetails;
+}
+
+export type Species =
+  "dog" | "cat" | "rabbit" | "bird" | "fish" | "reptile" | "other";
+
+export interface PetDetails {
+  species?: Species;
+  breed?: string;
+  birthYear?: number;
+  city?: string;
 }
 
 // posts/{id}
