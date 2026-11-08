@@ -1,15 +1,9 @@
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
+import { useCallback, type ReactNode } from "react";
 import { Link, useSearchParams } from "react-router";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useAuth } from "../../auth/AuthContext";
-import { useLoader } from "../../hooks/useLoader";
+import { usePagedList } from "../../hooks/usePagedList";
 import { deletePost, getFeed, getFollowingFeed } from "../../services/posts";
 import type { Post } from "../../types";
 import { confirmDelete, handleSuccess, reportError } from "../../utils/alerts";
@@ -113,12 +107,12 @@ interface FeedProps {
 }
 
 function Feed({ loadPage, empty }: FeedProps) {
-  const { data: feed, setData: setFeed } = useLoader(
-    useCallback(() => loadPage(null), [loadPage]),
-  );
-  const [loadingMore, setLoadingMore] = useState(false);
-  // more posts load when this scrolls into view
-  const endRef = useRef<HTMLDivElement>(null);
+  const {
+    page: feed,
+    setPage: setFeed,
+    endRef,
+    loadingMore,
+  } = usePagedList(loadPage);
 
   const updatePost = (updated: Post) =>
     setFeed(
@@ -130,32 +124,6 @@ function Feed({ loadPage, empty }: FeedProps) {
           ),
         },
     );
-
-  const next = feed?.next ?? null;
-  useEffect(() => {
-    if (next === null || loadingMore || !endRef.current) return;
-    const observer = new IntersectionObserver(async ([entry]) => {
-      if (!entry.isIntersecting) return;
-      observer.disconnect();
-      setLoadingMore(true);
-      try {
-        const page = await loadPage(next);
-        setFeed(
-          (current) =>
-            current && {
-              posts: [...current.posts, ...page.posts],
-              next: page.next,
-            },
-        );
-      } catch (error) {
-        reportError(error);
-      } finally {
-        setLoadingMore(false);
-      }
-    });
-    observer.observe(endRef.current);
-    return () => observer.disconnect();
-  }, [next, loadingMore, loadPage, setFeed]);
 
   const confirmDeletePost = async (postId: string) => {
     if (!(await confirmDelete("Are you sure you want to delete this post?")))

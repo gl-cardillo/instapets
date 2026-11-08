@@ -3,6 +3,7 @@ import {
   arrayUnion,
   doc,
   getDoc,
+  getCountFromServer,
   getDocs,
   limit,
   orderBy,
@@ -62,15 +63,30 @@ export async function getFollowingFeed(
   return mergeNewest(pages, pageSize);
 }
 
-// newest first
-export async function getPostsByUser(username: string): Promise<Post[]> {
-  // sorted here; orderBy would need a composite index
+// newest first; uses the posts (user, created) index
+export async function getPostsByUser(
+  username: string,
+  after: number | null = null,
+  pageSize = 12,
+): Promise<FeedPage> {
   const snapshot = await getDocs(
+    query(
+      postsCol,
+      where("user", "==", username),
+      orderBy("created", "desc"),
+      ...(after === null ? [] : [startAfter(after)]),
+      limit(pageSize),
+    ),
+  );
+  return mergeNewest([snapshot.docs.map((d) => d.data())], pageSize);
+}
+
+// about one read, however many posts there are
+export async function countPostsByUser(username: string): Promise<number> {
+  const snapshot = await getCountFromServer(
     query(postsCol, where("user", "==", username)),
   );
-  return snapshot.docs
-    .map((d) => d.data())
-    .sort((a, b) => b.created - a.created);
+  return snapshot.data().count;
 }
 
 export async function getPost(id: string): Promise<Post | null> {
