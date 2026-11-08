@@ -9,7 +9,7 @@ export function Card({ user }: { user: UserProfile }) {
       className="flex items-center gap-3 rounded-control p-2 hover:bg-surface-hover"
     >
       <Avatar src={user.profilePic} />
-      <span className="truncate font-bold">{user.username}</span>
+      <span className="truncate font-semibold">{user.username}</span>
     </Link>
   );
 }

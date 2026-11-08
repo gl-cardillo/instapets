@@ -46,7 +46,7 @@ export function BottomNav() {
         <IoSearch className="size-6" />
       </Tab>
       <Tab to="/uploadPost" label="New post">
-        <IoAddCircleOutline className="size-7" />
+        <IoAddCircleOutline className="size-6" />
       </Tab>
       <Tab
         to={profile ? `/profile/${profile.username}` : "/login"}

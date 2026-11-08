@@ -28,7 +28,7 @@ export function PostCard({ post, onPostChange, onDelete }: Props) {
             fallback={post.userPic}
             className="size-10"
           />
-          <span className="truncate font-bold">{post.user}</span>
+          <span className="truncate font-semibold">{post.user}</span>
         </Link>
         {post.user === profile?.username && (
           <IconButton label="Delete post" onClick={() => onDelete(post.id)}>

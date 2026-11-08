@@ -36,7 +36,7 @@ export function Login() {
     <div className="flex flex-1 items-center justify-center p-4">
       <div className="flex w-full max-w-sm flex-col items-center gap-5 rounded-card bg-surface p-6 shadow-card">
         <img src={logo} alt="" className="w-24" />
-        <h1 className="font-logo text-5xl font-bold">Instapets</h1>
+        <h1 className="font-logo text-5xl">Instapets</h1>
         <form
           onSubmit={handleSubmit(loginUser)}
           className="flex w-full flex-col gap-3"
@@ -61,18 +61,18 @@ export function Login() {
             {...register("password", { required: true })}
           />
           <Button type="submit" disabled={isSubmitting} className="w-full">
-            {isSubmitting ? "Loading..." : "Log in"}
+            {isSubmitting ? "Logging in…" : "Log in"}
           </Button>
         </form>
         <p className="text-sm">
           Don't have an account?{" "}
-          <Link to="/signIn" className="font-bold text-primary">
+          <Link to="/signIn" className="font-medium text-primary">
             Sign up
           </Link>
         </p>
         <p className="text-sm">
           Or continue as a{" "}
-          <Link to="/home" className="font-bold text-primary">
+          <Link to="/home" className="font-medium text-primary">
             guest
           </Link>
         </p>

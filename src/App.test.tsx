@@ -33,6 +33,6 @@ describe("routing", () => {
       "href",
       "#/home",
     );
-    expect(screen.getByPlaceholderText("Search pets...")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Search pets")).toBeInTheDocument();
   });
 });

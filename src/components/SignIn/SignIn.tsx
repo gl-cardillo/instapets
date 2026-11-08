@@ -56,7 +56,7 @@ export function SignIn() {
   return (
     <div className="flex flex-1 items-center justify-center p-4">
       <div className="flex w-full max-w-sm flex-col items-center gap-5 rounded-card bg-surface p-6 shadow-card">
-        <h1 className="font-logo text-5xl font-bold">Instapets</h1>
+        <h1 className="font-logo text-5xl">Instapets</h1>
         <p className="text-center text-sm text-muted">
           Sign up to see photos of beautiful pets
         </p>
@@ -111,12 +111,12 @@ export function SignIn() {
             })}
           />
           <Button type="submit" disabled={isSubmitting} className="w-full">
-            {isSubmitting ? "Loading..." : "Register"}
+            {isSubmitting ? "Signing up…" : "Sign up"}
           </Button>
         </form>
         <p className="text-sm">
           Have an account?{" "}
-          <Link to="/login" className="font-bold text-primary">
+          <Link to="/login" className="font-medium text-primary">
             Log in
           </Link>
         </p>

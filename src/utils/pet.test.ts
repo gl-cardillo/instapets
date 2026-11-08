@@ -20,7 +20,7 @@ describe("petTags", () => {
         { city: "Rome", species: "dog", birthYear: 2023, breed: "Labrador" },
         now,
       ),
-    ).toEqual(["🐶 Dog", "Labrador", "3 years", "Rome"]);
+    ).toEqual(["Dog", "Labrador", "3 years", "Rome"]);
     expect(petTags({ city: "Rome" }, now)).toEqual(["Rome"]);
   });
 

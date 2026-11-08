@@ -2,13 +2,13 @@ import type { PetDetails, Species } from "../types";
 
 // must match firestore.rules
 export const SPECIES: Record<Species, string> = {
-  dog: "🐶 Dog",
-  cat: "🐱 Cat",
-  rabbit: "🐰 Rabbit",
-  bird: "🐦 Bird",
-  fish: "🐟 Fish",
-  reptile: "🦎 Reptile",
-  other: "🐾 Other",
+  dog: "Dog",
+  cat: "Cat",
+  rabbit: "Rabbit",
+  bird: "Bird",
+  fish: "Fish",
+  reptile: "Reptile",
+  other: "Other",
 };
 export const MAX_PET_TEXT_LENGTH = 40;
 export const MIN_BIRTH_YEAR = 1980;

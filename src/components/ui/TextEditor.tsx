@@ -57,7 +57,7 @@ export function TextEditor({
             Cancel
           </Button>
           <Button type="submit" size="sm" disabled={saving}>
-            {saving ? "Saving..." : "Save"}
+            {saving ? "Saving…" : "Save"}
           </Button>
         </div>
       </div>

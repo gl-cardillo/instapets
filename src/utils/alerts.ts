@@ -2,12 +2,8 @@ import Swal, { type SweetAlertOptions } from "sweetalert2";
 
 export const swalStyle: SweetAlertOptions = {
   allowOutsideClick: false,
-  showClass: {
-    popup: "animate__animated animate__slideInDown animate__faster",
-  },
-  hideClass: {
-    popup: "animate__animated animate__fadeOutUp animate__faster",
-  },
+  showClass: { popup: "animate-dialog-in" },
+  hideClass: { popup: "animate-dialog-out" },
 };
 
 // resolves true only when the user explicitly clicks "Delete"
