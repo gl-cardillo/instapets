@@ -46,7 +46,7 @@ function Stat({ label, count, active, onClick }: StatProps) {
         active ? "border-primary text-ink" : "border-transparent text-muted"
       }`}
     >
-      <span className="font-bold text-ink">
+      <span className="font-semibold text-ink tabular-nums">
         {count ?? <Skeleton width={10} />}
       </span>{" "}
       {label}
@@ -78,7 +78,7 @@ function Bio({ user, editable, onSaved }: BioProps) {
         label="Bio"
         initial={bio}
         maxLength={MAX_BIO_LENGTH}
-        placeholder="Tell everyone about your pet..."
+        placeholder="Describe your pet"
         onSave={save}
         onCancel={() => setEditing(false)}
       />
@@ -97,7 +97,7 @@ function Bio({ user, editable, onSaved }: BioProps) {
           onClick={() => {
             if (canWrite()) setEditing(true);
           }}
-          className="cursor-pointer text-sm font-bold text-primary hover:text-primary-hover"
+          className="cursor-pointer text-sm font-medium text-primary hover:text-primary-hover"
         >
           {bio ? "Edit bio" : "Add a bio"}
         </button>
@@ -214,7 +214,7 @@ function ProfilePage({ profileName }: { profileName: string }) {
         )}
         <div className="flex min-w-0 flex-1 flex-col gap-3">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-            <h2 className="min-w-0 truncate text-2xl font-extrabold md:text-3xl">
+            <h2 className="min-w-0 truncate text-2xl font-semibold md:text-3xl">
               {userProfile?.username ?? <Skeleton width={160} />}
             </h2>
             {profile && userProfile && !isOwnProfile && (

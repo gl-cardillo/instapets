@@ -168,7 +168,7 @@ describe("Pet details", () => {
       user("bob", { pet: { species: "cat", city: "Rome" } }),
     );
     renderAt("/profile/bob");
-    expect(await screen.findByText("🐱 Cat")).toBeInTheDocument();
+    expect(await screen.findByText("Cat")).toBeInTheDocument();
     expect(screen.getByText("Rome")).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: /pet details/ }),
@@ -203,7 +203,7 @@ describe("Pet details", () => {
       species: "dog",
       city: "Rome",
     });
-    expect(screen.getByText("🐶 Dog")).toBeInTheDocument();
+    expect(screen.getByText("Dog")).toBeInTheDocument();
   });
 
   it("won't save an impossible birth year", async () => {

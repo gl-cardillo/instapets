@@ -57,7 +57,7 @@ export function UploadPost() {
       <div className="flex flex-col overflow-hidden rounded-card border border-line bg-surface shadow-card">
         <div className="flex items-center gap-3 p-3">
           <Avatar src={profile.profilePic} />
-          <span className="truncate font-bold">{profile.username}</span>
+          <span className="truncate font-semibold">{profile.username}</span>
         </div>
         <label className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 bg-surface-hover text-muted hover:text-primary has-focus-visible:outline-2 has-focus-visible:-outline-offset-2 has-focus-visible:outline-primary">
           {preview ? (
@@ -69,7 +69,7 @@ export function UploadPost() {
           ) : (
             <>
               <IoImageOutline className="size-12" />
-              <span className="text-sm font-bold">Choose a picture</span>
+              <span className="text-sm font-medium">Choose a picture</span>
             </>
           )}
           <input
@@ -85,7 +85,7 @@ export function UploadPost() {
           rows={3}
           value={caption}
           onChange={(e) => setCaption(e.target.value)}
-          placeholder="Write a caption..."
+          placeholder="Add a caption"
           maxLength={MAX_CAPTION_LENGTH}
           className="w-full p-3 text-sm outline-none"
         />
@@ -98,7 +98,7 @@ export function UploadPost() {
               Cancel
             </Button>
             <Button onClick={submitPost} disabled={posting || !pic}>
-              {posting ? "Posting..." : "Post"}
+              {posting ? "Posting…" : "Post"}
             </Button>
           </div>
         </div>

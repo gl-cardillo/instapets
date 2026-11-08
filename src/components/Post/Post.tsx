@@ -64,7 +64,7 @@ export function Post() {
             className="flex min-w-0 items-center gap-3"
           >
             <UserAvatar username={post.user} fallback={post.userPic} />
-            <span className="truncate font-bold">{post.user}</span>
+            <span className="truncate font-semibold">{post.user}</span>
           </Link>
           {post.user === profile?.username && (
             <IconButton label="Delete post" onClick={confirmDeletePost}>

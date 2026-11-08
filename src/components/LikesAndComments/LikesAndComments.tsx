@@ -153,7 +153,7 @@ export function LikeAndComment({ post, onPostChange }: Props) {
         {post.likes.length > 0 && (
           <p className="text-sm">
             Liked by{" "}
-            <Link to={`/profile/${post.likes[0]}`} className="font-bold">
+            <Link to={`/profile/${post.likes[0]}`} className="font-semibold">
               {post.likes[0]}
             </Link>
             {othersWhoLiked > 0 && (
@@ -162,7 +162,7 @@ export function LikeAndComment({ post, onPostChange }: Props) {
                 <button
                   type="button"
                   onClick={() => setShowLikes(true)}
-                  className={`${TEXT_BUTTON} font-bold`}
+                  className={`${TEXT_BUTTON} font-semibold`}
                 >
                   {othersWhoLiked} other{othersWhoLiked > 1 ? "s" : ""}
                 </button>
@@ -180,14 +180,14 @@ export function LikeAndComment({ post, onPostChange }: Props) {
             label="Caption"
             initial={post.caption}
             maxLength={MAX_CAPTION_LENGTH}
-            placeholder="Write a caption..."
+            placeholder="Add a caption"
             onSave={saveCaption}
             onCancel={() => setEditingCaption(false)}
           />
         )}
         {post.caption && !editingCaption && (
           <p className="text-sm wrap-break-word whitespace-pre-wrap">
-            <Link to={`/profile/${post.user}`} className="font-bold">
+            <Link to={`/profile/${post.user}`} className="font-semibold">
               {post.user}
             </Link>{" "}
             {post.caption}
@@ -221,7 +221,7 @@ export function LikeAndComment({ post, onPostChange }: Props) {
                   <p className="text-sm wrap-break-word whitespace-pre-wrap">
                     <Link
                       to={`/profile/${comment.username}`}
-                      className="font-bold"
+                      className="font-semibold"
                     >
                       {comment.username}
                     </Link>{" "}
@@ -256,7 +256,7 @@ export function LikeAndComment({ post, onPostChange }: Props) {
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
             onKeyDown={onCommentKeyDown}
-            placeholder="Write a comment..."
+            placeholder="Add a comment"
             maxLength={MAX_COMMENT_LENGTH}
             className="min-w-0 flex-1 rounded-control border border-line bg-page px-3 py-2 text-sm outline-none transition-colors focus:border-primary"
           />

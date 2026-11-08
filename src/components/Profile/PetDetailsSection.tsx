@@ -55,7 +55,7 @@ export function PetDetailsSection({ user, editable, onSaved }: Props) {
           onClick={() => {
             if (canWrite()) setEditing(true);
           }}
-          className="cursor-pointer text-sm font-bold text-primary hover:text-primary-hover"
+          className="cursor-pointer text-sm font-medium text-primary hover:text-primary-hover"
         >
           {tags.length ? "Edit pet details" : "Add pet details"}
         </button>
@@ -151,7 +151,7 @@ function PetDetailsForm({ pet, onSave, onCancel }: FormProps) {
           Cancel
         </Button>
         <Button type="submit" size="sm" disabled={saving || !!yearError}>
-          {saving ? "Saving..." : "Save"}
+          {saving ? "Saving…" : "Save"}
         </Button>
       </div>
     </form>

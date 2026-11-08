@@ -28,8 +28,8 @@ function Tab({
       role="tab"
       aria-selected={active}
       onClick={onClick}
-      className={`flex-1 cursor-pointer rounded-pill px-4 py-1.5 text-sm font-bold transition-colors ${
-        active ? "bg-primary text-on-primary" : "text-muted hover:text-ink"
+      className={`flex-1 cursor-pointer rounded-pill px-4 py-1.5 text-sm font-semibold transition-colors ${
+        active ? "bg-surface-hover text-ink" : "text-muted hover:text-ink"
       }`}
     >
       {children}
@@ -64,13 +64,13 @@ export function Home() {
     mode === "everyone" ? (
       <Notice title="No pets here yet">
         Be the first to{" "}
-        <Link to="/uploadPost" className="font-bold text-primary">
+        <Link to="/uploadPost" className="font-medium text-primary">
           share a picture
         </Link>
       </Notice>
     ) : following.length === 0 ? (
       <Notice title="You're not following anyone yet">
-        <Link to="/searchPage" className="font-bold text-primary">
+        <Link to="/searchPage" className="font-medium text-primary">
           Find pets to follow
         </Link>
       </Notice>

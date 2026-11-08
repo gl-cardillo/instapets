@@ -37,7 +37,7 @@ export function Mainbar() {
       <header className="sticky top-0 z-20 border-b border-line bg-surface">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-4 px-4">
           <Link to="/home">
-            <h1 className="font-logo text-4xl leading-none font-bold text-ink">
+            <h1 className="font-logo text-4xl leading-none text-ink">
               Instapets
             </h1>
           </Link>
@@ -47,7 +47,7 @@ export function Mainbar() {
               <IoHomeOutline className="size-6" />
             </HeaderLink>
             <HeaderLink to="/uploadPost" label="New post">
-              <IoAddCircleOutline className="size-7" />
+              <IoAddCircleOutline className="size-6" />
             </HeaderLink>
             <ThemeToggle />
             <UserMenu />

@@ -79,7 +79,7 @@ export function UserMenu() {
     return (
       <Link
         to="/login"
-        className="rounded-control bg-primary px-3 py-1 text-sm font-bold text-on-primary hover:bg-primary-hover"
+        className="rounded-control bg-primary px-3 py-1 text-sm font-semibold text-on-primary hover:bg-primary-hover"
       >
         Log in
       </Link>

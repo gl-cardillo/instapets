@@ -21,7 +21,7 @@ export function SearchPage() {
         className="md:hidden"
       />
       {search.trim() && (
-        <h2 className="text-center text-lg font-bold">Users found</h2>
+        <h2 className="text-sm font-medium text-muted">Pets</h2>
       )}
       {loading ? (
         <Skeleton count={3} />

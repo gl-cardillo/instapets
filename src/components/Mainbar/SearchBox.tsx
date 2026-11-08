@@ -29,7 +29,7 @@ export function SearchBox({ className = "" }: { className?: string }) {
         type="text"
         aria-label="Search pets"
         value={text}
-        placeholder="Search pets..."
+        placeholder="Search pets"
         onChange={(e) => setText(e.target.value)}
         onBlur={() => setText("")}
         onKeyDown={(e) => {
@@ -53,7 +53,7 @@ export function SearchBox({ className = "" }: { className?: string }) {
               to={`/profile/${user.username}`}
               onMouseDown={keepFocus}
               onClick={() => setText("")}
-              className="flex items-center gap-3 px-4 py-2 font-bold text-ink hover:bg-surface-hover"
+              className="flex items-center gap-3 px-4 py-2 font-semibold text-ink hover:bg-surface-hover"
             >
               <Avatar src={user.profilePic} className="size-8" />
               {user.username}
