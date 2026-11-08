@@ -68,6 +68,23 @@ service cloud.firestore {
       return bio is string && bio.size() <= 150;
     }
 
+    // older users have no pet field; every detail is optional
+    function validPet() {
+      let pet = request.resource.data.get('pet', {});
+      return pet is map
+        && pet.keys().hasOnly(['species', 'breed', 'birthYear', 'city'])
+        && pet.get('species', 'other')
+          in ['dog', 'cat', 'rabbit', 'bird', 'fish', 'reptile', 'other']
+        && pet.get('breed', '') is string
+        && pet.get('breed', '').size() <= 40
+        && pet.get('city', '') is string
+        && pet.get('city', '').size() <= 40
+        && (!('birthYear' in pet)
+          || (pet.birthYear is int
+            && pet.birthYear >= 1980
+            && pet.birthYear <= request.time.year()));
+    }
+
     function validProfilePic() {
       let pic = request.resource.data.profilePic;
       return pic == resource.data.profilePic
@@ -81,7 +98,7 @@ service cloud.firestore {
 
       allow create: if signedIn()
         && hasExactly(['email', 'username', 'usernameLower', 'follower',
-          'following', 'likes', 'comments', 'profilePic', 'bio'])
+          'following', 'likes', 'comments', 'profilePic', 'bio', 'pet'])
         && username.matches('^[^/]{2,15}$')
         && request.resource.data.username == username
         && request.resource.data.usernameLower == username.lower()
@@ -91,16 +108,18 @@ service cloud.firestore {
         && request.resource.data.likes == []
         && request.resource.data.comments == []
         && request.resource.data.profilePic == ''
-        && request.resource.data.bio == '';
+        && request.resource.data.bio == ''
+        && request.resource.data.pet == {};
 
       // owners edit their profile, not their identity or followers
       allow update: if signedIn()
         && verified()
         && resource.data.email.lower() == authEmail()
-        && onlyChanges(['following', 'likes', 'comments', 'profilePic', 'follower', 'bio'])
+        && onlyChanges(['following', 'likes', 'comments', 'profilePic', 'follower', 'bio', 'pet'])
         && added('follower').size() == 0
         && validProfilePic()
-        && validBio();
+        && validBio()
+        && validPet();
 
       // others follow, unfollow or clean up after deleting
       allow update: if onlyChanges(['follower']) && togglesSelf('follower');

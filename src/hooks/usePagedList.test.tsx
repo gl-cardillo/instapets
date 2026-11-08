@@ -21,15 +21,18 @@ class FakeObserver {
     this.entry.observing = false;
   }
 }
-const scrollToEnd = () =>
-  act(async () => {
+// waits for the hook to start watching, or the scroll would be missed
+const scrollToEnd = async () => {
+  await waitFor(() => expect(observers.some((o) => o.observing)).toBe(true));
+  await act(async () => {
     for (const o of observers.filter((o) => o.observing)) {
-      o.callback(
+      await o.callback(
         [{ isIntersecting: true } as IntersectionObserverEntry],
         {} as IntersectionObserver,
       );
     }
   });
+};
 
 const post = (id: string, created: number) => ({ id, created }) as Post;
 
@@ -69,8 +72,8 @@ describe("usePagedList", () => {
     expect(await screen.findByText("c")).toBeInTheDocument();
     expect(loadPage).toHaveBeenLastCalledWith(2);
 
-    await scrollToEnd();
-    await waitFor(() => expect(loadPage).toHaveBeenCalledTimes(2));
-    expect(observers.some((o) => o.observing)).toBe(false);
+    // nothing left, so it stops watching for the end
+    await waitFor(() => expect(observers.some((o) => o.observing)).toBe(false));
+    expect(loadPage).toHaveBeenCalledTimes(2);
   });
 });

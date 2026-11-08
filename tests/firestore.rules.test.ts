@@ -31,6 +31,7 @@ const user = (username: string, extra = {}) => ({
   comments: [],
   profilePic: "",
   bio: "",
+  pet: {},
   ...extra,
 });
 
@@ -146,6 +147,49 @@ describe("users", () => {
     );
     await assertFails(updateDoc(doc(db, "users/alice"), { bio: 42 }));
     await assertFails(updateDoc(doc(as("bob"), "users/alice"), { bio: "hi" }));
+  });
+
+  it("lets you set pet details, all optional", async () => {
+    const db = as("alice");
+    const pet = (details: Record<string, unknown>) =>
+      updateDoc(doc(db, "users/alice"), { pet: details });
+    await assertSucceeds(
+      pet({
+        species: "dog",
+        breed: "b".repeat(40),
+        birthYear: 2020,
+        city: "Rome",
+      }),
+    );
+    await assertSucceeds(pet({}));
+    await assertSucceeds(pet({ city: "Rome" }));
+    await assertFails(
+      updateDoc(doc(as("bob"), "users/alice"), { pet: { city: "Rome" } }),
+    );
+  });
+
+  it("rejects unknown species, long text, odd years and extra fields", async () => {
+    const pet = (details: Record<string, unknown>) =>
+      updateDoc(doc(as("alice"), "users/alice"), { pet: details });
+    await assertFails(pet({ species: "dragon" }));
+    await assertFails(pet({ breed: "b".repeat(41) }));
+    await assertFails(pet({ city: 42 }));
+    await assertFails(pet({ birthYear: 1979 }));
+    await assertFails(pet({ birthYear: new Date().getFullYear() + 1 }));
+    await assertFails(pet({ birthYear: "2020" }));
+    await assertFails(pet({ owner: "someone else" }));
+    await assertFails(
+      updateDoc(doc(as("alice"), "users/alice"), { pet: "dog" }),
+    );
+  });
+
+  it("starts new profiles with empty pet details", async () => {
+    await assertFails(
+      setDoc(
+        doc(as("carol"), "users/carol"),
+        user("carol", { pet: { species: "cat" } }),
+      ),
+    );
   });
 
   it("starts new profiles with an empty bio", async () => {

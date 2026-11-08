@@ -18,7 +18,7 @@ import {
   reauthenticateWithCredential,
 } from "firebase/auth";
 import { auth, db } from "../firebase/config";
-import type { UserProfile } from "../types";
+import type { PetDetails, UserProfile } from "../types";
 import { compressImage } from "../utils/image";
 import { commentsCol, postsCol, usersCol } from "./collections";
 import { deletePost } from "./posts";
@@ -96,7 +96,17 @@ export async function createUserProfile(
     comments: [],
     profilePic: "",
     bio: "",
+    pet: {},
   });
+  forgetUser(username);
+}
+
+// replaces all the pet details at once
+export async function updatePetDetails(
+  username: string,
+  pet: PetDetails,
+): Promise<void> {
+  await updateDoc(doc(usersCol, username), { pet });
   forgetUser(username);
 }
 
