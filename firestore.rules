@@ -185,5 +185,17 @@ service cloud.firestore {
 
       allow delete: if isUser(resource.data.owner);
     }
+
+    // saved posts are private to their owner
+    match /saves/{username} {
+      allow read, delete: if signedIn()
+        && get(/databases/$(database)/documents/users/$(username)).data.email.lower()
+          == authEmail();
+
+      allow create, update: if isUser(username)
+        && request.resource.data.keys().hasOnly(['posts'])
+        && request.resource.data.posts is list
+        && request.resource.data.posts.size() <= 500;
+    }
   }
 }

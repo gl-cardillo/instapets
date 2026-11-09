@@ -4,7 +4,13 @@ import {
   type QueryDocumentSnapshot,
 } from "firebase/firestore";
 import { db } from "../firebase/config";
-import type { Post, PostComment, PostImage, UserProfile } from "../types";
+import type {
+  Post,
+  PostComment,
+  PostImage,
+  SavedPosts,
+  UserProfile,
+} from "../types";
 
 // the converter only adds typing
 function converter<T extends DocumentData>() {
@@ -25,4 +31,7 @@ export const commentsCol = collection(db, "comments").withConverter(
 );
 export const imagesCol = collection(db, "images").withConverter(
   converter<PostImage>(),
+);
+export const savesCol = collection(db, "saves").withConverter(
+  converter<SavedPosts>(),
 );
