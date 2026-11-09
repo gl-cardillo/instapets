@@ -15,6 +15,8 @@ import {
   updatePetDetails,
 } from "../../services/users";
 import type { Post as PostType, UserProfile } from "../../types";
+import { forgetSaved } from "../../hooks/useSaved";
+import { getSavedIds } from "../../services/saves";
 import { Post } from "../Post/Post";
 import { UploadPost } from "../upload-post/UploadPost";
 import { Profile } from "./Profile";
@@ -41,6 +43,10 @@ vi.mock("../../services/comments", () => ({
   getComments: vi.fn(),
   addComment: vi.fn(),
   deleteComment: vi.fn(),
+}));
+vi.mock("../../services/saves", () => ({
+  getSavedIds: vi.fn(async () => []),
+  setSaved: vi.fn(),
 }));
 vi.mock("../../services/images", () => ({
   getPostImage: async () => "data:image/webp;base64,AAAA",
@@ -218,6 +224,56 @@ describe("Pet details", () => {
     expect(screen.getByRole("alert")).toHaveTextContent(/Between 1980 and/);
     expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
     expect(updatePetDetails).not.toHaveBeenCalled();
+  });
+});
+
+describe("Saved tab", () => {
+  beforeEach(() => {
+    forgetSaved();
+  });
+
+  it("lists your saved posts, newest saved first, skipping deleted ones", async () => {
+    vi.mocked(getUser).mockResolvedValue(alice);
+    vi.mocked(getSavedIds).mockResolvedValue(["old", "gone", "new"]);
+    vi.mocked(getPost).mockImplementation(async (id) =>
+      id === "gone"
+        ? null
+        : ({
+            id,
+            user: "bob",
+            userPic: "",
+            caption: `${id} post`,
+            urlPic: "",
+            likes: [],
+            created: 1,
+          } as PostType),
+    );
+    renderAt("/profile/alice");
+    fireEvent.click(await screen.findByRole("button", { name: "3 saved" }));
+    const links = await screen.findAllByRole("link");
+    expect(links.map((l) => l.getAttribute("href"))).toEqual([
+      "/post/new",
+      "/post/old",
+    ]);
+  });
+
+  it("explains it's private when empty", async () => {
+    vi.mocked(getUser).mockResolvedValue(alice);
+    vi.mocked(getSavedIds).mockResolvedValue([]);
+    renderAt("/profile/alice");
+    fireEvent.click(await screen.findByRole("button", { name: "0 saved" }));
+    expect(
+      await screen.findByText(/Only you can see them/),
+    ).toBeInTheDocument();
+  });
+
+  it("isn't on other people's profiles", async () => {
+    vi.mocked(getUser).mockResolvedValue(user("bob"));
+    renderAt("/profile/bob");
+    await screen.findByRole("button", { name: "Follow" });
+    expect(
+      screen.queryByRole("button", { name: /saved/ }),
+    ).not.toBeInTheDocument();
   });
 });
 

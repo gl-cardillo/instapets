@@ -63,3 +63,9 @@ export interface PostImage {
   // data URL
   src: string;
 }
+
+// saves/{username}: private to its owner
+export interface SavedPosts {
+  // post ids, oldest saved first
+  posts: string[];
+}

@@ -1,11 +1,12 @@
 import { useCallback, useState } from "react";
-import { Link, useParams } from "react-router";
+import { useParams } from "react-router";
 import { IoCameraOutline } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useAuth, useCanWrite } from "../../auth/AuthContext";
 import { useLoader } from "../../hooks/useLoader";
 import { usePagedList } from "../../hooks/usePagedList";
+import { useSavedIds } from "../../hooks/useSaved";
 import { MAX_BIO_LENGTH } from "../../limits";
 import { countPostsByUser, getPostsByUser } from "../../services/posts";
 import {
@@ -18,16 +19,17 @@ import type { UserProfile } from "../../types";
 import { reportError } from "../../utils/alerts";
 import { Avatar } from "../Avatar/Avatar";
 import { UserCards } from "../Card/UserCards";
-import { PostImage } from "../PostImage/PostImage";
 import { Button } from "../ui/Button";
 import { Notice } from "../ui/Notice";
 import { PetDetailsSection } from "./PetDetailsSection";
+import { PostGrid } from "./PostGrid";
+import { SavedPosts } from "./SavedPosts";
 import { TextEditor } from "../ui/TextEditor";
 
 const PAGE = "mx-auto flex w-full max-w-3xl flex-col gap-6 p-4";
 const AVATAR = "size-20 md:size-28";
 
-type Tab = "posts" | "follower" | "following";
+type Tab = "posts" | "follower" | "following" | "saved";
 
 interface StatProps {
   label: string;
@@ -140,6 +142,7 @@ function ProfilePage({ profileName }: { profileName: string }) {
   const [busy, setBusy] = useState(false);
 
   const isOwnProfile = profile?.username === profileName;
+  const savedIds = useSavedIds();
   const isFollowing =
     profile !== null && userProfile?.follower.includes(profile.username);
 
@@ -249,6 +252,14 @@ function ProfilePage({ profileName }: { profileName: string }) {
               active={toShow === "following"}
               onClick={() => setToShow("following")}
             />
+            {isOwnProfile && (
+              <Stat
+                label="saved"
+                count={savedIds.length}
+                active={toShow === "saved"}
+                onClick={() => setToShow("saved")}
+              />
+            )}
           </div>
         </div>
       </section>
@@ -270,21 +281,13 @@ function ProfilePage({ profileName }: { profileName: string }) {
         <Notice title="No posts yet" />
       )}
       {toShow === "posts" && !!userPosts?.length && (
-        <div className="grid grid-cols-3 gap-1 md:gap-2">
-          {userPosts.map((post) => (
-            <Link to={`/post/${post.id}`} key={post.id}>
-              <PostImage
-                post={post}
-                className="block aspect-square w-full rounded-control object-cover"
-              />
-            </Link>
-          ))}
-        </div>
+        <PostGrid posts={userPosts} />
       )}
       {toShow === "posts" && loadingMore && <Skeleton height={120} />}
       {/* always rendered, so scrolling keeps working after switching tabs */}
       <div ref={endRef} />
-      {toShow !== "posts" &&
+      {toShow === "saved" && isOwnProfile && <SavedPosts />}
+      {(toShow === "follower" || toShow === "following") &&
         userProfile &&
         (userProfile[followList].length > 0 ? (
           <div className="rounded-card border border-line bg-surface p-2">

@@ -22,6 +22,7 @@ import type { PetDetails, UserProfile } from "../types";
 import { compressImage } from "../utils/image";
 import { commentsCol, postsCol, usersCol } from "./collections";
 import { deletePost } from "./posts";
+import { deleteSaved } from "./saves";
 
 async function fetchUser(username: string): Promise<UserProfile | null> {
   const snapshot = await getDoc(doc(usersCol, username));
@@ -167,6 +168,7 @@ export async function deleteAccount(
     ...profile.following.map((name) => toggleFollow(name, username, true)),
     ...profile.follower.map((name) => toggleFollow(username, name, true)),
     ...profile.comments.map((id) => deleteDoc(doc(commentsCol, id))),
+    deleteSaved(username),
   ]);
 
   // rules check the profile and login, so they go last

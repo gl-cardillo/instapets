@@ -9,7 +9,9 @@ import {
 } from "../../services/comments";
 import { getFeed, getFollowingFeed, updateCaption } from "../../services/posts";
 import type { Post, PostComment, UserProfile } from "../../types";
-import { confirmDelete } from "../../utils/alerts";
+import { confirmDelete, reportError } from "../../utils/alerts";
+import { forgetSaved } from "../../hooks/useSaved";
+import { getSavedIds, setSaved } from "../../services/saves";
 import { Home } from "./Home";
 import { PostCard } from "./PostCard";
 
@@ -27,6 +29,10 @@ vi.mock("../../services/comments", () => ({
   addComment: vi.fn(),
   deleteComment: vi.fn(),
 }));
+vi.mock("../../services/saves", () => ({
+  getSavedIds: vi.fn(async () => []),
+  setSaved: vi.fn(),
+}));
 vi.mock("../../services/images", () => ({
   getPostImage: async () => "data:image/webp;base64,AAAA",
 }));
@@ -37,6 +43,7 @@ vi.mock("../../hooks/useUser", () => ({
 vi.mock("../../utils/alerts", async (importOriginal) => ({
   ...(await importOriginal<typeof import("../../utils/alerts")>()),
   confirmDelete: vi.fn(),
+  reportError: vi.fn(),
 }));
 
 const alice = { username: "alice", profilePic: "" } as UserProfile;
@@ -254,5 +261,47 @@ describe("PostCard", () => {
       expect(addComment).toHaveBeenCalledWith("p1", "nice", alice),
     );
     await waitFor(() => expect(box).toHaveValue(""));
+  });
+});
+
+describe("Saving posts", () => {
+  beforeEach(() => {
+    forgetSaved();
+    vi.mocked(getComments).mockResolvedValue([]);
+    vi.mocked(getSavedIds).mockResolvedValue([]);
+    vi.mocked(setSaved).mockReset();
+  });
+
+  it("saves a post and shows it saved", async () => {
+    vi.mocked(setSaved).mockResolvedValue();
+    card(post({ user: "bob" }));
+    const button = await screen.findByRole("button", { name: "Save post" });
+    expect(button).toHaveAttribute("aria-pressed", "false");
+    fireEvent.click(button);
+    expect(
+      screen.getByRole("button", { name: "Remove from saved" }),
+    ).toHaveAttribute("aria-pressed", "true");
+    expect(setSaved).toHaveBeenCalledWith("alice", "p1", true);
+  });
+
+  it("shows posts you saved before, and unsaves them", async () => {
+    vi.mocked(getSavedIds).mockResolvedValue(["p1"]);
+    vi.mocked(setSaved).mockResolvedValue();
+    card(post({ user: "bob" }));
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Remove from saved" }),
+    );
+    expect(screen.getByRole("button", { name: "Save post" })).toBeVisible();
+    expect(setSaved).toHaveBeenCalledWith("alice", "p1", false);
+  });
+
+  it("goes back if saving fails", async () => {
+    vi.mocked(setSaved).mockRejectedValue(new Error("offline"));
+    card(post({ user: "bob" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Save post" }));
+    expect(
+      await screen.findByRole("button", { name: "Save post" }),
+    ).toHaveAttribute("aria-pressed", "false");
+    expect(reportError).toHaveBeenCalled();
   });
 });

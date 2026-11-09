@@ -6,6 +6,8 @@ import {
 } from "react";
 import { Link } from "react-router";
 import {
+  BsBookmark,
+  BsBookmarkFill,
   BsChat,
   BsPencil,
   BsShare,
@@ -16,6 +18,7 @@ import {
 import { useAuth, useCanWrite } from "../../auth/AuthContext";
 import { useLikeToggle } from "../../hooks/useLikeToggle";
 import { useLoader } from "../../hooks/useLoader";
+import { useSaved } from "../../hooks/useSaved";
 import {
   addComment,
   deleteComment,
@@ -48,6 +51,7 @@ const TEXT_BUTTON = "cursor-pointer hover:text-primary";
 
 export function LikeAndComment({ post, onPostChange }: Props) {
   const { profile } = useAuth();
+  const { saved, toggle: toggleSaved } = useSaved(post.id);
   const canWrite = useCanWrite();
   const toggleLike = useLikeToggle(onPostChange);
   const { data: comments = [], reload: loadComments } = useLoader(
@@ -138,17 +142,29 @@ export function LikeAndComment({ post, onPostChange }: Props) {
           <IconButton label="Share" onClick={share}>
             <BsShare className="size-5" />
           </IconButton>
-          {isAuthor && (
+          <div className="ml-auto flex gap-4">
+            {isAuthor && (
+              <IconButton
+                label="Edit caption"
+                onClick={() => {
+                  if (canWrite()) setEditingCaption(true);
+                }}
+              >
+                <BsPencil className="size-5" />
+              </IconButton>
+            )}
             <IconButton
-              label="Edit caption"
-              onClick={() => {
-                if (canWrite()) setEditingCaption(true);
-              }}
-              className="ml-auto"
+              label={saved ? "Remove from saved" : "Save post"}
+              aria-pressed={saved}
+              onClick={toggleSaved}
             >
-              <BsPencil className="size-5" />
+              {saved ? (
+                <BsBookmarkFill className="size-5" />
+              ) : (
+                <BsBookmark className="size-5" />
+              )}
             </IconButton>
-          )}
+          </div>
         </div>
         {post.likes.length > 0 && (
           <p className="text-sm">

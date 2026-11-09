@@ -463,6 +463,44 @@ describe("unverified email", () => {
   });
 });
 
+describe("saved posts", () => {
+  it("lets you save and unsave, and read your own list", async () => {
+    const db = as("alice");
+    await assertSucceeds(setDoc(doc(db, "saves/alice"), { posts: ["p1"] }));
+    await assertSucceeds(updateDoc(doc(db, "saves/alice"), { posts: [] }));
+    await assertSucceeds(getDoc(doc(db, "saves/alice")));
+    await assertSucceeds(deleteDoc(doc(db, "saves/alice")));
+  });
+
+  it("keeps your list private", async () => {
+    await env.withSecurityRulesDisabled((context) =>
+      setDoc(doc(context.firestore(), "saves/alice"), { posts: ["p1"] }),
+    );
+    await assertFails(getDoc(doc(as("bob"), "saves/alice")));
+    await assertFails(getDoc(doc(guest(), "saves/alice")));
+    await assertFails(
+      setDoc(doc(as("bob"), "saves/alice"), { posts: ["spam"] }),
+    );
+    await assertFails(deleteDoc(doc(as("bob"), "saves/alice")));
+  });
+
+  it("rejects extra fields, non-lists and huge lists", async () => {
+    const db = as("alice");
+    await assertFails(
+      setDoc(doc(db, "saves/alice"), { posts: [], junk: true }),
+    );
+    await assertFails(setDoc(doc(db, "saves/alice"), { posts: "p1" }));
+    await assertFails(
+      setDoc(doc(db, "saves/alice"), {
+        posts: Array.from({ length: 501 }, (_, i) => "p" + i),
+      }),
+    );
+    await assertFails(
+      setDoc(doc(as("alice", false), "saves/alice"), { posts: ["p1"] }),
+    );
+  });
+});
+
 describe("account deletion", () => {
   it("lets a deleted user remove themselves from others' following", async () => {
     await env.withSecurityRulesDisabled((context) =>
