@@ -98,8 +98,12 @@ service cloud.firestore {
 
       allow create: if signedIn()
         && hasExactly(['email', 'username', 'usernameLower', 'follower',
-          'following', 'likes', 'comments', 'profilePic', 'bio', 'pet'])
+          'following', 'likes', 'comments', 'profilePic', 'bio', 'pet',
+          'searchTerms'])
         && username.matches('^[^/]{2,15}$')
+        // a 15-letter name has at most 105 fragments
+        && request.resource.data.searchTerms is list
+        && request.resource.data.searchTerms.size() <= 105
         && request.resource.data.username == username
         && request.resource.data.usernameLower == username.lower()
         && request.resource.data.email.lower() == authEmail()

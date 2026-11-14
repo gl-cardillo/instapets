@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
 import {
   createUserWithEmailAndPassword,
+  deleteUser,
   sendEmailVerification,
 } from "firebase/auth";
 import { auth } from "../../firebase/config";
@@ -38,7 +39,13 @@ export function SignIn() {
         data.email,
         data.password,
       );
-      await createUserProfile(data.email, data.name);
+      try {
+        await createUserProfile(data.email, data.name);
+      } catch (error) {
+        // undo the login so the email can sign up again
+        await deleteUser(user).catch(console.error);
+        throw error;
+      }
       // the auth listener fires before the profile doc exists
       await refreshProfile();
       try {

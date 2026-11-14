@@ -32,6 +32,7 @@ const user = (username: string, extra = {}) => ({
   profilePic: "",
   bio: "",
   pet: {},
+  searchTerms: [],
   ...extra,
 });
 
