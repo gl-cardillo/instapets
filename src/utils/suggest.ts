@@ -3,12 +3,13 @@ import type { UserProfile } from "../types";
 // pets followed by the pets you follow, most shared first, then recent
 // posters; never you or anyone you already follow
 export function rankSuggestions(
-  me: UserProfile,
+  username: string,
+  following: string[],
   follows: UserProfile[],
   recentAuthors: string[],
   max: number,
 ): string[] {
-  const skip = new Set([me.username, ...me.following]);
+  const skip = new Set([username, ...following]);
   const counts = new Map<string, number>();
   for (const follow of follows) {
     for (const name of follow.following) {

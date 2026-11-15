@@ -96,15 +96,17 @@ export async function addSearchTerms(username: string): Promise<void> {
 
 // pets to follow, see rankSuggestions
 export async function suggestPets(
-  me: UserProfile,
+  username: string,
+  following: string[],
   max = 6,
 ): Promise<UserProfile[]> {
   const [follows, feed] = await Promise.all([
-    getUsers(me.following.slice(0, 10)),
+    getUsers(following.slice(0, 10)),
     getFeed(null, 20),
   ]);
   const names = rankSuggestions(
-    me,
+    username,
+    following,
     follows,
     feed.posts.map((post) => post.user),
     max,

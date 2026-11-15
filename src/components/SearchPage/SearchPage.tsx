@@ -3,6 +3,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useUserSearch } from "../../hooks/useUserSearch";
 import { Card } from "../Card/Card";
+import { SuggestedPets } from "../Card/SuggestedPets";
 import { TextField } from "../ui/TextField";
 
 export function SearchPage() {
@@ -23,6 +24,7 @@ export function SearchPage() {
       {search.trim() && (
         <h2 className="text-sm font-medium text-muted">Pets</h2>
       )}
+      {!search.trim() && <SuggestedPets />}
       {loading ? (
         <Skeleton count={3} />
       ) : (

@@ -7,11 +7,7 @@ import {
 } from "react";
 import { onAuthStateChanged, type User } from "firebase/auth";
 import { auth } from "../firebase/config";
-import {
-  addSearchTerms,
-  forgetUser,
-  getUserByEmail,
-} from "../services/users";
+import { addSearchTerms, forgetUser, getUserByEmail } from "../services/users";
 import type { UserProfile } from "../types";
 import { AuthContext } from "./AuthContext";
 

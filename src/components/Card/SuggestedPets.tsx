@@ -12,14 +12,16 @@ export function SuggestedPets() {
   const canWrite = useCanWrite();
   const [following, setFollowing] = useState<string | null>(null);
   // reload when who you follow changes, not on every new profile object
-  const key = profile ? `${profile.username}\n${profile.following.join("\n")}` : "";
+  const key = profile
+    ? `${profile.username}\n${profile.following.join("\n")}`
+    : "";
 
   const { data: suggestions } = useLoader(
-    useCallback(
-      () => (profile ? suggestPets(profile) : Promise.resolve([])),
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [key],
-    ),
+    useCallback(() => {
+      if (!key) return Promise.resolve([]);
+      const [username, ...following] = key.split("\n");
+      return suggestPets(username, following.filter(Boolean));
+    }, [key]),
   );
 
   const follow = async (username: string) => {

@@ -8,6 +8,7 @@ import { deletePost, getFeed, getFollowingFeed } from "../../services/posts";
 import type { Post } from "../../types";
 import { confirmDelete, handleSuccess, reportError } from "../../utils/alerts";
 import type { FeedPage } from "../../utils/feed";
+import { SuggestedPets } from "../Card/SuggestedPets";
 import { Notice } from "../ui/Notice";
 import { PostCard } from "./PostCard";
 
@@ -69,11 +70,14 @@ export function Home() {
         </Link>
       </Notice>
     ) : following.length === 0 ? (
-      <Notice title="You're not following anyone yet">
-        <Link to="/searchPage" className="font-medium text-primary">
-          Find pets to follow
-        </Link>
-      </Notice>
+      <>
+        <Notice title="You're not following anyone yet">
+          <Link to="/searchPage" className="font-medium text-primary">
+            Find pets to follow
+          </Link>
+        </Notice>
+        <SuggestedPets />
+      </>
     ) : (
       <Notice title="No posts from pets you follow yet" />
     );
