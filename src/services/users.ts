@@ -20,8 +20,10 @@ import {
 import { auth, db } from "../firebase/config";
 import type { PetDetails, UserProfile } from "../types";
 import { compressImage } from "../utils/image";
+import { rankResults, searchTermsFor } from "../utils/search";
+import { rankSuggestions } from "../utils/suggest";
 import { commentsCol, postsCol, usersCol } from "./collections";
-import { deletePost } from "./posts";
+import { deletePost, getFeed } from "./posts";
 import { deleteSaved } from "./saves";
 
 async function fetchUser(username: string): Promise<UserProfile | null> {
@@ -60,7 +62,7 @@ export async function searchUsers(
 ): Promise<UserProfile[]> {
   const prefix = text.toLowerCase().trim();
   if (!prefix) return [];
-  const snapshot = await getDocs(
+  const byPrefix = getDocs(
     query(
       usersCol,
       where("usernameLower", ">=", prefix),
@@ -68,7 +70,46 @@ export async function searchUsers(
       limit(max),
     ),
   );
-  return snapshot.docs.map((d) => d.data());
+  // users without searchTerms yet are still found by prefix
+  const inside =
+    prefix.length < 2
+      ? null
+      : getDocs(
+          query(
+            usersCol,
+            where("searchTerms", "array-contains", prefix),
+            limit(max),
+          ),
+        );
+  const results = await Promise.all([byPrefix, inside]);
+  const users = results.flatMap((s) => s?.docs.map((d) => d.data()) ?? []);
+  return rankResults(users, prefix, max);
+}
+
+// adds search fragments to users who signed up before they existed
+export async function addSearchTerms(username: string): Promise<void> {
+  await updateDoc(doc(usersCol, username), {
+    searchTerms: searchTermsFor(username),
+  });
+  forgetUser(username);
+}
+
+// pets to follow, see rankSuggestions
+export async function suggestPets(
+  me: UserProfile,
+  max = 6,
+): Promise<UserProfile[]> {
+  const [follows, feed] = await Promise.all([
+    getUsers(me.following.slice(0, 10)),
+    getFeed(null, 20),
+  ]);
+  const names = rankSuggestions(
+    me,
+    follows,
+    feed.posts.map((post) => post.user),
+    max,
+  );
+  return getUsers(names);
 }
 
 export async function getUserByEmail(
@@ -98,6 +139,7 @@ export async function createUserProfile(
     profilePic: "",
     bio: "",
     pet: {},
+    searchTerms: searchTermsFor(username),
   });
   forgetUser(username);
 }

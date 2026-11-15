@@ -7,7 +7,11 @@ import {
 } from "react";
 import { onAuthStateChanged, type User } from "firebase/auth";
 import { auth } from "../firebase/config";
-import { forgetUser, getUserByEmail } from "../services/users";
+import {
+  addSearchTerms,
+  forgetUser,
+  getUserByEmail,
+} from "../services/users";
 import type { UserProfile } from "../types";
 import { AuthContext } from "./AuthContext";
 
@@ -24,6 +28,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const loaded = user?.email ? await getUserByEmail(user.email) : null;
     if (load === latestLoad.current) setProfile(loaded);
     if (loaded) forgetUser(loaded.username);
+    // older users get search fragments once they can write
+    if (loaded && !loaded.searchTerms && user?.emailVerified) {
+      addSearchTerms(loaded.username).catch(console.error);
+    }
   }, []);
 
   const refreshProfile = useCallback(

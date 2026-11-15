@@ -61,7 +61,6 @@ service cloud.firestore {
         && isUser(removed(field)[0]);
     }
 
-    // profile pictures are small data URLs stored on the user doc
     // older users have no bio field
     function validBio() {
       let bio = request.resource.data.get('bio', '');
@@ -85,6 +84,20 @@ service cloud.firestore {
             && pet.birthYear <= request.time.year()));
     }
 
+    // name fragments for search; rules can't check them all, so cap them
+    // (a 15-letter name has at most 105) and require the full name
+    function validSearchTerms(terms, name) {
+      return terms is list && terms.size() <= 105 && terms.hasAll([name]);
+    }
+
+    // older users get search terms added once; after that they're fixed
+    function addsSearchTerms() {
+      return !('searchTerms' in request.resource.data.diff(resource.data).affectedKeys())
+        || (!('searchTerms' in resource.data)
+          && validSearchTerms(request.resource.data.searchTerms, resource.data.usernameLower));
+    }
+
+    // profile pictures are small data URLs stored on the user doc
     function validProfilePic() {
       let pic = request.resource.data.profilePic;
       return pic == resource.data.profilePic
@@ -101,9 +114,7 @@ service cloud.firestore {
           'following', 'likes', 'comments', 'profilePic', 'bio', 'pet',
           'searchTerms'])
         && username.matches('^[^/]{2,15}$')
-        // a 15-letter name has at most 105 fragments
-        && request.resource.data.searchTerms is list
-        && request.resource.data.searchTerms.size() <= 105
+        && validSearchTerms(request.resource.data.searchTerms, username.lower())
         && request.resource.data.username == username
         && request.resource.data.usernameLower == username.lower()
         && request.resource.data.email.lower() == authEmail()
@@ -119,11 +130,12 @@ service cloud.firestore {
       allow update: if signedIn()
         && verified()
         && resource.data.email.lower() == authEmail()
-        && onlyChanges(['following', 'likes', 'comments', 'profilePic', 'follower', 'bio', 'pet'])
+        && onlyChanges(['following', 'likes', 'comments', 'profilePic', 'follower', 'bio', 'pet', 'searchTerms'])
         && added('follower').size() == 0
         && validProfilePic()
         && validBio()
-        && validPet();
+        && validPet()
+        && addsSearchTerms();
 
       // others follow, unfollow or clean up after deleting
       allow update: if onlyChanges(['follower']) && togglesSelf('follower');

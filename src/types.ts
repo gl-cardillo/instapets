@@ -18,6 +18,8 @@ export interface UserProfile {
   bio?: string;
   // missing on older users; every field is optional
   pet?: PetDetails;
+  // lowercase name fragments for search; added at login for older users
+  searchTerms?: string[];
 }
 
 export type Species =

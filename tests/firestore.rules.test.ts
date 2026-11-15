@@ -18,6 +18,7 @@ import {
   type Firestore,
 } from "firebase/firestore";
 import { afterAll, beforeAll, beforeEach, describe, it } from "vitest";
+import { searchTermsFor } from "../src/utils/search";
 
 let env: RulesTestEnvironment;
 
@@ -32,7 +33,7 @@ const user = (username: string, extra = {}) => ({
   profilePic: "",
   bio: "",
   pet: {},
-  searchTerms: [],
+  searchTerms: searchTermsFor(username),
   ...extra,
 });
 
@@ -461,6 +462,57 @@ describe("unverified email", () => {
 
   it("still lets you delete your account", async () => {
     await assertSucceeds(deleteDoc(doc(as("bob", false), "users/bob")));
+  });
+});
+
+describe("search terms", () => {
+  it("requires new profiles to list their full name", async () => {
+    const db = as("carol");
+    await assertFails(
+      setDoc(doc(db, "users/carol"), user("carol", { searchTerms: [] })),
+    );
+    await assertFails(
+      setDoc(
+        doc(db, "users/carol"),
+        user("carol", {
+          searchTerms: [
+            "carol",
+            ...Array.from({ length: 105 }, (_, i) => "x" + i),
+          ],
+        }),
+      ),
+    );
+    await assertFails(
+      setDoc(doc(db, "users/carol"), user("carol", { searchTerms: "carol" })),
+    );
+  });
+
+  it("lets older users add theirs once, and nobody change them after", async () => {
+    await env.withSecurityRulesDisabled(async (context) => {
+      const { searchTerms, ...old } = user("dave");
+      void searchTerms;
+      await setDoc(doc(context.firestore(), "users/dave"), old);
+    });
+    await assertFails(
+      updateDoc(doc(as("bob"), "users/dave"), {
+        searchTerms: searchTermsFor("dave"),
+      }),
+    );
+    await assertSucceeds(
+      updateDoc(doc(as("dave"), "users/dave"), {
+        searchTerms: searchTermsFor("dave"),
+      }),
+    );
+    await assertFails(
+      updateDoc(doc(as("dave"), "users/dave"), {
+        searchTerms: ["dave", "cute", "dog"],
+      }),
+    );
+    await assertFails(
+      updateDoc(doc(as("alice"), "users/alice"), {
+        searchTerms: ["alice", "cute"],
+      }),
+    );
   });
 });
 
