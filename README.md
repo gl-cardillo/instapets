@@ -27,6 +27,11 @@ I used React and React Router and firebase for this project.
 - Delete pictures.
 - Delete comments.
 - Delete users.
+- Profile bio and pet details.
+- Edit captions, share posts, double-tap to like.
+- Following feed and saved posts.
+- Suggested pets and search by any part of a name.
+- Light and dark theme.
 
 ## Link
 
